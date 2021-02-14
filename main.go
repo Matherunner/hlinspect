@@ -10,11 +10,12 @@ func main() {}
 // OnProcessAttach called from DllMain on process attach
 //export OnProcessAttach
 func OnProcessAttach() {
-
+	initLogs()
+	initHooks()
 }
 
 // OnProcessDetach called from DllMain on process detach
 //export OnProcessDetach
 func OnProcessDetach() {
-
+	cleanupHooks()
 }
