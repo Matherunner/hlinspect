@@ -10,7 +10,6 @@ func main() {}
 // OnProcessAttach called from DllMain on process attach
 //export OnProcessAttach
 func OnProcessAttach() {
-	initLogs()
 	initHooks()
 }
 

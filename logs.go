@@ -11,7 +11,7 @@ import (
 */
 import "C"
 
-var dllLog = logging.MustGetLogger("hlinspect")
+var dllLog = mustInitLogs()
 
 type debugOutputWriter struct{}
 
@@ -23,7 +23,8 @@ func (w debugOutputWriter) Write(p []byte) (n int, err error) {
 	return
 }
 
-func initLogs() {
+func mustInitLogs() *logging.Logger {
+	logger := logging.MustGetLogger("hlinspect")
 	writer := debugOutputWriter{}
 	format := logging.MustStringFormatter(`%{time:15:04:05.000000} %{shortfunc} %{level:.4s} %{id:03x}: %{message}`)
 	backend := logging.NewLogBackend(writer, "hlinspect ", 0)
@@ -31,4 +32,5 @@ func initLogs() {
 	levelled := logging.AddModuleLevel(formatter)
 	levelled.SetLevel(logging.DEBUG, "hlinspect")
 	logging.SetBackend(levelled)
+	return logger
 }
