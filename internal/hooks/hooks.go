@@ -2,6 +2,7 @@ package hooks
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"unsafe"
@@ -12,7 +13,6 @@ import (
 /*
 #cgo 386 LDFLAGS: -Llib -lMinHook
 
-#include <windows.h>
 #include "MinHook.h"
 */
 import "C"
@@ -63,6 +63,31 @@ func (pat *FunctionPattern) Find(module *Module) (foundName string, address unsa
 			break
 		}
 	}
+	return
+}
+
+func (pat *FunctionPattern) Hook(module *Module, fn unsafe.Pointer) (foundName string, address unsafe.Pointer, err error) {
+	foundName, address, err = pat.Find(module)
+	if err != nil || foundName == "" {
+		return
+	}
+
+	if pat.replaceAddr != nil {
+		return
+	}
+
+	var origFunc uintptr
+	if ret := C.MH_CreateHook(C.LPVOID(address), C.LPVOID(fn), (*C.LPVOID)(unsafe.Pointer(&origFunc))); ret != C.MH_OK {
+		err = fmt.Errorf("Unable to create hook: %v", ret)
+		return
+	}
+
+	if ret := C.MH_EnableHook(C.LPVOID(address)); ret != C.MH_OK {
+		err = fmt.Errorf("Unable to enable hook: %v", ret)
+		return
+	}
+
+	pat.replaceAddr = fn
 	return
 }
 

@@ -7,6 +7,9 @@ import (
 	"unsafe"
 )
 
+/*
+#include "defs.h"
+*/
 import "C"
 
 var hwDLL *hooks.Module
@@ -32,11 +35,18 @@ func BuildNumber() int {
 func CvarRegisterVariable(name string, value string) {
 	floatVal, _ := strconv.ParseFloat(value, 32)
 	cvar := rawCVar{
+		// Probably don't need to free these strings?
 		Name:   uintptr(unsafe.Pointer(C.CString(name))),
 		String: uintptr(unsafe.Pointer(C.CString(value))),
 		Value:  float32(floatVal),
 	}
 	hooks.CallFuncInts1(cvarRegisterVariablePattern.Address(), uintptr(unsafe.Pointer(&cvar)))
+}
+
+// HookedVFadeAlpha V_FadeAlpha
+//export HookedVFadeAlpha
+func HookedVFadeAlpha() int {
+	return 0
 }
 
 // InitHWDLL initialise hw.dll hooks and symbol search
@@ -55,6 +65,9 @@ func InitHWDLL() (err error) {
 
 	name, addr, err = cvarRegisterVariablePattern.Find(hwDLL)
 	logs.DLLLog.Debugf("Found %v at %v using %v", cvarRegisterVariablePattern.Name(), addr, name)
+
+	name, addr, err = vFadeAlphaPattern.Hook(hwDLL, C.HookedVFadeAlpha)
+	logs.DLLLog.Debugf("Found %v at %v using %v", vFadeAlphaPattern.Name(), addr, name)
 
 	return
 }
