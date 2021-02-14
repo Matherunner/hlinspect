@@ -66,7 +66,11 @@ func (pat *FunctionPattern) Find(module *Module) (foundName string, address unsa
 	return
 }
 
-func (pat *FunctionPattern) GetAddress() unsafe.Pointer {
+func (pat *FunctionPattern) Name() string {
+	return pat.functionName
+}
+
+func (pat *FunctionPattern) Address() unsafe.Pointer {
 	return pat.addrPointer
 }
 
