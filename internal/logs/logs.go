@@ -1,4 +1,4 @@
-package main
+package logs
 
 import (
 	"unsafe"
@@ -11,7 +11,8 @@ import (
 */
 import "C"
 
-var dllLog = mustInitLogs()
+// DLLLog main logger
+var DLLLog = mustInitLogs()
 
 type debugOutputWriter struct{}
 

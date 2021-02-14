@@ -1,5 +1,10 @@
 package main
 
+import (
+	"hlinspect/internal/gamelibs/hw"
+	"hlinspect/internal/hooks"
+)
+
 /*
 #include "dllmain.h"
 */
@@ -10,11 +15,12 @@ func main() {}
 // OnProcessAttach called from DllMain on process attach
 //export OnProcessAttach
 func OnProcessAttach() {
-	initHooks()
+	hooks.InitHooks()
+	hw.InitHWDLL()
 }
 
 // OnProcessDetach called from DllMain on process detach
 //export OnProcessDetach
 func OnProcessDetach() {
-	cleanupHooks()
+	hooks.CleanupHooks()
 }
