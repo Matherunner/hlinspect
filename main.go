@@ -1,6 +1,7 @@
 package main
 
 import (
+	"hlinspect/internal/gamelibs/cl"
 	"hlinspect/internal/gamelibs/hw"
 	"hlinspect/internal/hooks"
 	"hlinspect/internal/logs"
@@ -24,6 +25,11 @@ func OnProcessAttach() {
 	logs.DLLLog.Debug("Initialising HWDLL")
 	if err := hw.InitHWDLL(); err != nil {
 		logs.DLLLog.Panicf("Unable to initialise HWDLL: %v", err)
+	}
+
+	logs.DLLLog.Debug("Initialising ClientDLL")
+	if err := cl.InitClientDLL(); err != nil {
+		logs.DLLLog.Panicf("Unable to initialise ClientDLL: %v", err)
 	}
 }
 

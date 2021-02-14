@@ -18,18 +18,47 @@ import (
 import "C"
 
 type Module struct {
-	name string
-	base unsafe.Pointer
-	size uint
+	name   string
+	base   unsafe.Pointer
+	size   uint
+	handle windows.Handle
 }
 
 func NewModule(name string) (module *Module, err error) {
-	base, size, err := getModuleInfo(name)
+	type moduleInfo struct {
+		BaseOfDll   uintptr
+		SizeOfImage uint32
+		EntryPoint  uintptr
+	}
+
+	cname, err := windows.UTF16PtrFromString(name)
 	if err != nil {
 		return
 	}
 
-	module = &Module{name: name, base: base, size: size}
+	var handle windows.Handle
+	err = windows.GetModuleHandleEx(0, cname, &handle)
+	if err != nil {
+		return
+	}
+
+	psapi := windows.MustLoadDLL("psapi.dll")
+	getModuleInformation := psapi.MustFindProc("GetModuleInformation")
+	procHandle := windows.CurrentProcess()
+
+	var info moduleInfo
+	ret, _, _ := getModuleInformation.Call(uintptr(procHandle), uintptr(handle), uintptr(unsafe.Pointer(&info)), unsafe.Sizeof(info))
+	if ret == 0 {
+		err = errors.New("GetModuleInformation failed")
+		return
+	}
+
+	module = &Module{
+		name:   name,
+		base:   unsafe.Pointer(info.BaseOfDll),
+		size:   uint(info.SizeOfImage),
+		handle: handle,
+	}
 	return
 }
 
@@ -40,17 +69,28 @@ type SearchPattern struct {
 
 type FunctionPattern struct {
 	functionName string
-	symbolName   string
+	symbolNames  map[string]string
 	patterns     map[string]SearchPattern
 	addrPointer  unsafe.Pointer
 	replaceAddr  unsafe.Pointer
 }
 
-func MakeFunctionPattern(functionName string, patterns map[string]SearchPattern) FunctionPattern {
-	return FunctionPattern{functionName: functionName, patterns: patterns}
+func MakeFunctionPattern(functionName string, symbols map[string]string, patterns map[string]SearchPattern) FunctionPattern {
+	return FunctionPattern{functionName: functionName, symbolNames: symbols, patterns: patterns}
 }
 
 func (pat *FunctionPattern) Find(module *Module) (foundName string, address unsafe.Pointer, err error) {
+	for key, symbolName := range pat.symbolNames {
+		var proc uintptr
+		proc, err = windows.GetProcAddress(module.handle, symbolName)
+		if proc != 0 && err == nil {
+			foundName = key
+			address = unsafe.Pointer(proc)
+			pat.addrPointer = address
+			return
+		}
+	}
+
 	for patternName, pattern := range pat.patterns {
 		addr, found, err := findSubstringPattern(pattern, module.base, module.size)
 		if err != nil {
@@ -59,7 +99,7 @@ func (pat *FunctionPattern) Find(module *Module) (foundName string, address unsa
 		if found {
 			foundName = patternName
 			address = addr
-			pat.addrPointer = addr
+			pat.addrPointer = address
 			break
 		}
 	}
@@ -87,6 +127,7 @@ func (pat *FunctionPattern) Hook(module *Module, fn unsafe.Pointer) (foundName s
 		return
 	}
 
+	pat.addrPointer = unsafe.Pointer(origFunc)
 	pat.replaceAddr = fn
 	return
 }
@@ -116,40 +157,6 @@ func MustMakePattern(pattern string) SearchPattern {
 		patternBytes[i] = uint8(val)
 	}
 	return SearchPattern{Bytes: patternBytes, Ignore: ignoreBytes}
-}
-
-func getModuleInfo(name string) (base unsafe.Pointer, size uint, err error) {
-	type moduleInfo struct {
-		BaseOfDll   uintptr
-		SizeOfImage uint32
-		EntryPoint  uintptr
-	}
-
-	cname, err := windows.UTF16PtrFromString(name)
-	if err != nil {
-		return
-	}
-
-	var handle windows.Handle
-	err = windows.GetModuleHandleEx(0, cname, &handle)
-	if err != nil {
-		return
-	}
-	defer windows.FreeLibrary(handle)
-
-	psapi := windows.MustLoadDLL("psapi.dll")
-	getModuleInformation := psapi.MustFindProc("GetModuleInformation")
-	procHandle := windows.CurrentProcess()
-
-	var info moduleInfo
-	ret, _, _ := getModuleInformation.Call(uintptr(procHandle), uintptr(handle), uintptr(unsafe.Pointer(&info)), unsafe.Sizeof(info))
-	if ret == 0 {
-		err = errors.New("GetModuleInformation failed")
-		return
-	}
-	base = unsafe.Pointer(info.BaseOfDll)
-	size = uint(info.SizeOfImage)
-	return
 }
 
 func findSubstringPattern(pattern SearchPattern, base unsafe.Pointer, size uint) (addr unsafe.Pointer, found bool, err error) {
