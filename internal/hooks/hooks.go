@@ -31,7 +31,8 @@ func NewModule(name string) (module *Module, err error) {
 		EntryPoint  uintptr
 	}
 
-	cname, err := windows.UTF16PtrFromString(name)
+	var cname *uint16
+	cname, err = windows.UTF16PtrFromString(name)
 	if err != nil {
 		return
 	}
@@ -62,6 +63,11 @@ func NewModule(name string) (module *Module, err error) {
 	return
 }
 
+// Base get the base pointer of the DLL
+func (mod Module) Base() unsafe.Pointer {
+	return mod.base
+}
+
 type SearchPattern struct {
 	Bytes  []uint8
 	Ignore []bool
@@ -89,16 +95,25 @@ func (pat *FunctionPattern) Find(module *Module) (foundName string, address unsa
 			pat.addrPointer = address
 			return
 		}
+
+		var relAddr uintptr
+		relAddr, err = findSym(symbolName)
+		if err == nil {
+			foundName = key
+			address = unsafe.Pointer(uintptr(module.Base()) + relAddr)
+			pat.addrPointer = address
+			return
+		}
 	}
 
 	for patternName, pattern := range pat.patterns {
-		addr, found, err := findSubstringPattern(pattern, module.base, module.size)
+		var found bool
+		address, found, err = findSubstringPattern(pattern, module.base, module.size)
 		if err != nil {
 			break
 		}
 		if found {
 			foundName = patternName
-			address = addr
 			pat.addrPointer = address
 			break
 		}
@@ -180,23 +195,37 @@ func findSubstringPattern(pattern SearchPattern, base unsafe.Pointer, size uint)
 	return
 }
 
-var minHookInitialized = false
+var hookInitialized = false
 
 // InitHooks initialise hooks
 func InitHooks() (ok bool) {
-	if minHookInitialized {
+	if hookInitialized {
 		ok = true
 		return
 	}
+
+	if ret := initSym(); !ret {
+		return
+	}
+
 	if err := C.MH_Initialize(); err != C.MH_OK {
 		return
 	}
-	minHookInitialized = true
+
+	hookInitialized = true
 	ok = true
 	return
 }
 
 // CleanupHooks cleanup hooks
 func CleanupHooks() {
+	if !hookInitialized {
+		return
+	}
+
+	cleanupSym()
+
 	C.MH_Uninitialize()
+
+	hookInitialized = false
 }

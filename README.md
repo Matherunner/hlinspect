@@ -1,5 +1,12 @@
 # hlinspect
 
+Half-Life hooking mod for research.
+
+## Features
+
+- Fast compilation and set up
+- Ability to hook custom compiled `hl.dll` and `client.dll` using debug information in PDB files
+
 ## Building
 
 Relies heavily on CGO. Suggested environmental variables:

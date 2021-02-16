@@ -79,7 +79,10 @@ func InitHWDLL() (err error) {
 		return
 	}
 
-	name, addr, err := buildNumberPattern.Find(hwDLL)
+	var name string
+	var addr unsafe.Pointer
+
+	name, addr, err = buildNumberPattern.Find(hwDLL)
 	logs.DLLLog.Debugf("Found %v at %v using %v", buildNumberPattern.Name(), addr, name)
 
 	name, addr, err = cvarRegisterVariablePattern.Find(hwDLL)

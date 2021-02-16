@@ -1,3 +1,3 @@
 #pragma once
 
-extern int HookedVFadeAlpha();
+int HookedVFadeAlpha();
