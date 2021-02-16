@@ -1,8 +1,5 @@
 #include "dllmain.h"
 
-extern void OnProcessAttach();
-extern void OnProcessDetach();
-
 static DWORD WINAPI OnAttachThread(LPVOID lpParam)
 {
     OnProcessAttach();
@@ -26,4 +23,25 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
         break;
     }
     return TRUE;
+}
+
+// Have to write these entirely in C because we cannot define stdcall Go functions
+HMODULE WINAPI HookedLoadLibraryA(LPCSTR lpLibFileName)
+{
+    HMODULE ret;
+    ret = ((HMODULE WINAPI (*)(LPCSTR))GetLoadLibraryAAddr())(lpLibFileName);
+    if (ret) {
+        LoadLibraryACallback(lpLibFileName);
+    }
+    return ret;
+}
+
+HMODULE WINAPI HookedLoadLibraryW(LPCWSTR lpLibFileName)
+{
+    HMODULE ret;
+    ret = ((HMODULE WINAPI (*)(LPCWSTR))GetLoadLibraryWAddr())(lpLibFileName);
+    if (ret) {
+        LoadLibraryWCallback(lpLibFileName);
+    }
+    return ret;
 }
