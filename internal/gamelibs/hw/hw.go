@@ -79,23 +79,22 @@ func InitHWDLL() (err error) {
 		return
 	}
 
-	var name string
-	var addr unsafe.Pointer
+	items := map[*hooks.FunctionPattern]unsafe.Pointer{
+		&buildNumberPattern:                nil,
+		&cvarRegisterVariablePattern:       nil,
+		&vFadeAlphaPattern:                 C.HookedVFadeAlpha,
+		&drawStringPattern:                 nil,
+		&vgui2DrawSetTextColorAlphaPattern: nil,
+	}
 
-	name, addr, err = buildNumberPattern.Find(hwDLL)
-	logs.DLLLog.Debugf("Found %v at %v using %v", buildNumberPattern.Name(), addr, name)
-
-	name, addr, err = cvarRegisterVariablePattern.Find(hwDLL)
-	logs.DLLLog.Debugf("Found %v at %v using %v", cvarRegisterVariablePattern.Name(), addr, name)
-
-	name, addr, err = vFadeAlphaPattern.Hook(hwDLL, C.HookedVFadeAlpha)
-	logs.DLLLog.Debugf("Found %v at %v using %v", vFadeAlphaPattern.Name(), addr, name)
-
-	name, addr, err = drawStringPattern.Find(hwDLL)
-	logs.DLLLog.Debugf("Found %v at %v using %v", drawStringPattern.Name(), addr, name)
-
-	name, addr, err = vgui2DrawSetTextColorAlphaPattern.Find(hwDLL)
-	logs.DLLLog.Debugf("Found %v at %v using %v", vgui2DrawSetTextColorAlphaPattern.Name(), addr, name)
+	errors := hooks.BatchFind(hwDLL, items)
+	for pat, err := range errors {
+		if err == nil {
+			logs.DLLLog.Debugf("Found %v at %v", pat.Name(), pat.Address())
+		} else {
+			logs.DLLLog.Debugf("Failed to find %v: %v", pat.Name(), err)
+		}
+	}
 
 	return
 }

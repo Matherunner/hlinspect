@@ -18,6 +18,12 @@ func main() {}
 // OnProcessAttach called from DllMain on process attach
 //export OnProcessAttach
 func OnProcessAttach() {
+	defer func() {
+		if r := recover(); r != nil {
+			logs.DLLLog.Panicf("Got a panic during initialisation: %v", r)
+		}
+	}()
+
 	logs.DLLLog.Debug("Initialising hooks")
 	if !hooks.InitHooks() {
 		logs.DLLLog.Panic("Unable to initialise hooks")
