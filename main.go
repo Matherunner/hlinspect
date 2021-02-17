@@ -53,6 +53,7 @@ var libraryInitializers = map[string]func() error{
 }
 
 func onLibraryLoaded(fileName string) {
+	hooks.RefreshModuleList()
 	base := filepath.Base(fileName)
 	if initializer, ok := libraryInitializers[base]; ok {
 		if err := initializer(); err != nil {

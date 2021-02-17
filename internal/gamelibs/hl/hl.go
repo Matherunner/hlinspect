@@ -1,8 +1,10 @@
 package hl
 
 import (
+	"hlinspect/internal/engine"
 	"hlinspect/internal/hooks"
 	"hlinspect/internal/logs"
+	"unsafe"
 )
 
 /*
@@ -21,6 +23,14 @@ var pmPlayerMovePattern = hooks.MakeFunctionPattern("PM_PlayerMove", map[string]
 	"TWHL-Tower-2": hooks.MustMakePattern("55 8B EC 51 A1 ?? ?? ?? ?? 8B 4D 08 53 56 57 33 FF 89 7D FC 89 48 04 E8 D8 FC FF FF A1 ?? ?? ?? ?? 89 B8 8C 54 04 00 A1 ?? ?? ?? ?? 0F B6 88 5A 54 04 00"),
 })
 
+// HookedPMInit PM_Init
+//export HookedPMInit
+func HookedPMInit(ppm uintptr) {
+	hooks.CallFuncInts1(pmInitPattern.Address(), ppm)
+	engine.Engine.SetPPMove(ppm)
+	logs.DLLLog.Debugf("Set PPMOVE with address = %x", ppm)
+}
+
 // HookedPMPlayerMove PM_PlayerMove
 //export HookedPMPlayerMove
 func HookedPMPlayerMove(server int) {
@@ -38,8 +48,19 @@ func InitHLDLL() (err error) {
 		return
 	}
 
-	name, addr, err := pmPlayerMovePattern.Hook(hlDLL, C.HookedPMPlayerMove)
-	logs.DLLLog.Debugf("Found %v at %v using %v", pmPlayerMovePattern.Name(), addr, name)
+	items := map[*hooks.FunctionPattern]unsafe.Pointer{
+		&pmInitPattern:       C.HookedPMInit,
+		&pmPlayerMovePattern: C.HookedPMPlayerMove,
+	}
+
+	errors := hooks.BatchFind(hlDLL, items)
+	for pat, err := range errors {
+		if err == nil {
+			logs.DLLLog.Debugf("Found %v at %v", pat.Name(), pat.Address())
+		} else {
+			logs.DLLLog.Debugf("Failed to find %v: %v", pat.Name(), err)
+		}
+	}
 
 	return
 }

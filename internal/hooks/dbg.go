@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"sync"
 	"unsafe"
-
-	"golang.org/x/sys/windows"
 )
 
 /*
@@ -20,9 +18,15 @@ import "C"
 
 var symLock sync.Mutex
 
+// RefreshModuleList calls SymRefreshModuleList, must be called on DLL load
+func RefreshModuleList() {
+	symLock.Lock()
+	C.SymRefreshModuleList(C.GetCurrentProcess())
+	symLock.Unlock()
+}
+
 func initSym() (ok bool) {
-	procHandle := C.HANDLE(windows.CurrentProcess())
-	if ret := C.SymInitialize(procHandle, nil, 1); ret == 0 {
+	if ret := C.SymInitialize(C.GetCurrentProcess(), nil, 1); ret == 0 {
 		return
 	}
 	ok = true
@@ -30,8 +34,7 @@ func initSym() (ok bool) {
 }
 
 func cleanupSym() {
-	procHandle := C.HANDLE(windows.CurrentProcess())
-	C.SymCleanup(procHandle)
+	C.SymCleanup(C.GetCurrentProcess())
 }
 
 func findSym(name string) (relAddr uintptr, err error) {
@@ -42,12 +45,11 @@ func findSym(name string) (relAddr uintptr, err error) {
 	info.si.SizeOfStruct = C.ulong(unsafe.Sizeof(info.si))
 	info.si.MaxNameLen = C.ulong(unsafe.Sizeof(info.name))
 
-	procHandle := C.HANDLE(windows.CurrentProcess())
 	symLock.Lock()
-	ret := C.SymFromName(procHandle, cname, (*C.SYMBOL_INFO)(unsafe.Pointer(&info)))
+	ret := C.SymFromName(C.GetCurrentProcess(), cname, (*C.SYMBOL_INFO)(unsafe.Pointer(&info)))
+	lastErr := C.GetLastError()
 	symLock.Unlock()
 	if ret == 0 {
-		lastErr := windows.GetLastError()
 		err = fmt.Errorf("Unable to find symbol: %v", lastErr)
 		return
 	}

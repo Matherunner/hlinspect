@@ -1,12 +1,16 @@
 package cl
 
 import (
+	"hlinspect/internal/graphics"
 	"hlinspect/internal/hooks"
-	"hlinspect/internal/hud"
 	"hlinspect/internal/logs"
+	"unsafe"
 )
 
 /*
+#cgo 386 LDFLAGS: -lopengl32
+
+#include <GL/gl.h>
 #include "defs.h"
 */
 import "C"
@@ -14,16 +18,22 @@ import "C"
 var clientDLL *hooks.Module
 
 var hudRedrawPattern = hooks.MakeFunctionPattern("HUD_Redraw", map[string]string{"Windows": "HUD_Redraw"}, nil)
-
-func hudRedraw(time float32, intermission int32) {
-	hooks.CallFuncFloatInt(hudRedrawPattern.Address(), time, uintptr(intermission))
-}
+var hudDrawTransparentTriangles = hooks.MakeFunctionPattern("HUD_DrawTransparentTriangles", map[string]string{"Windows": "HUD_DrawTransparentTriangles"}, nil)
 
 // HookedHUDRedraw hooked HUD_Redraw
 //export HookedHUDRedraw
 func HookedHUDRedraw(time float32, intermission int32) {
-	hudRedraw(time, intermission)
-	hud.Draw(time, intermission)
+	hooks.CallFuncFloatInt(hudRedrawPattern.Address(), time, uintptr(intermission))
+	graphics.DrawHUD(time, intermission)
+}
+
+// HookedHUDDrawTransparentTriangles HUD_DrawTransparentTriangles
+//export HookedHUDDrawTransparentTriangles
+func HookedHUDDrawTransparentTriangles() {
+	hooks.CallFuncInts0(hudDrawTransparentTriangles.Address())
+	C.glDisable(C.GL_TEXTURE_2D)
+	graphics.DrawTriangles()
+	C.glEnable(C.GL_TEXTURE_2D)
 }
 
 // InitClientDLL initialise client.dll
@@ -37,8 +47,19 @@ func InitClientDLL() (err error) {
 		return
 	}
 
-	name, addr, err := hudRedrawPattern.Hook(clientDLL, C.HookedHUDRedraw)
-	logs.DLLLog.Debugf("Found %v at %v using %v", hudRedrawPattern.Name(), addr, name)
+	items := map[*hooks.FunctionPattern]unsafe.Pointer{
+		&hudRedrawPattern:            C.HookedHUDRedraw,
+		&hudDrawTransparentTriangles: C.HookedHUDDrawTransparentTriangles,
+	}
+
+	errors := hooks.BatchFind(clientDLL, items)
+	for pat, err := range errors {
+		if err == nil {
+			logs.DLLLog.Debugf("Found %v at %v", pat.Name(), pat.Address())
+		} else {
+			logs.DLLLog.Debugf("Failed to find %v: %v", pat.Name(), err)
+		}
+	}
 
 	return
 }

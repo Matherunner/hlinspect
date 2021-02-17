@@ -3,6 +3,7 @@ package hooks
 import (
 	"errors"
 	"fmt"
+	"hlinspect/internal/logs"
 	"strconv"
 	"strings"
 	"unsafe"
@@ -107,17 +108,16 @@ func (pat *FunctionPattern) Find(module *Module) (foundName string, address unsa
 	}
 
 	for patternName, pattern := range pat.patterns {
-		var found bool
-		address, found, err = findSubstringPattern(pattern, module.base, module.size)
-		if err != nil {
-			break
-		}
-		if found {
+		address, err = findSubstringPattern(pattern, module.base, module.size)
+		if err == nil {
 			foundName = patternName
 			pat.addrPointer = address
-			break
+			return
 		}
 	}
+
+	logs.DLLLog.Debugf("ERR: %v", err)
+
 	return
 }
 
@@ -174,10 +174,10 @@ func MustMakePattern(pattern string) SearchPattern {
 	return SearchPattern{Bytes: patternBytes, Ignore: ignoreBytes}
 }
 
-func findSubstringPattern(pattern SearchPattern, base unsafe.Pointer, size uint) (addr unsafe.Pointer, found bool, err error) {
+func findSubstringPattern(pattern SearchPattern, base unsafe.Pointer, size uint) (addr unsafe.Pointer, err error) {
 	patternLen := uint(len(pattern.Bytes))
 	for i := uint(0); i < size-patternLen; i++ {
-		found = true
+		found := true
 		for j := uint(0); j < patternLen; j++ {
 			if pattern.Ignore[j] {
 				continue
@@ -189,9 +189,10 @@ func findSubstringPattern(pattern SearchPattern, base unsafe.Pointer, size uint)
 		}
 		if found {
 			addr = unsafe.Pointer(uintptr(base) + uintptr(i))
-			break
+			return
 		}
 	}
+	err = fmt.Errorf("Failed to find pattern")
 	return
 }
 
