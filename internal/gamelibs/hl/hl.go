@@ -1,7 +1,9 @@
 package hl
 
 import (
+	"fmt"
 	"hlinspect/internal/engine"
+	"hlinspect/internal/feed"
 	"hlinspect/internal/hooks"
 	"hlinspect/internal/logs"
 	"unsafe"
@@ -34,6 +36,8 @@ func HookedPMInit(ppm uintptr) {
 // HookedPMPlayerMove PM_PlayerMove
 //export HookedPMPlayerMove
 func HookedPMPlayerMove(server int) {
+	vel := engine.Engine.PMoveVelocity()
+	feed.Broadcast(fmt.Sprintf("%v %v %v", vel[0], vel[1], vel[2]))
 	hooks.CallFuncInts1(pmPlayerMovePattern.Address(), uintptr(server))
 }
 

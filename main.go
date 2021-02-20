@@ -1,6 +1,7 @@
 package main
 
 import (
+	"hlinspect/internal/feed"
 	"hlinspect/internal/gamelibs/cl"
 	"hlinspect/internal/gamelibs/hl"
 	"hlinspect/internal/gamelibs/hw"
@@ -106,6 +107,8 @@ func OnProcessAttach() {
 			logs.DLLLog.Warningf("Unable to initialise %v: %v", base, err)
 		}
 	}
+
+	go feed.Serve()
 }
 
 // OnProcessDetach called from DllMain on process detach
