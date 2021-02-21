@@ -29,11 +29,11 @@ func (pool *connectionPool) registerListener(key string, client *websocket.Conn)
 	pool.clients[key] = client
 }
 
-func (pool *connectionPool) broadcast(message string) {
+func (pool *connectionPool) broadcast(message []byte) {
 	pool.clientLock.Lock()
 	defer pool.clientLock.Unlock()
 	for key, client := range pool.clients {
-		err := client.WriteMessage(websocket.TextMessage, []byte(message))
+		err := client.WriteMessage(websocket.BinaryMessage, message)
 		if err != nil {
 			client.Close()
 			delete(pool.clients, key)
@@ -64,7 +64,7 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request) {
 	pool.registerListener(r.RemoteAddr, conn)
 }
 
-func Broadcast(message string) {
+func Broadcast(message []byte) {
 	pool.broadcast(message)
 }
 

@@ -1,11 +1,11 @@
 package hl
 
 import (
-	"fmt"
 	"hlinspect/internal/engine"
 	"hlinspect/internal/feed"
 	"hlinspect/internal/hooks"
 	"hlinspect/internal/logs"
+	"hlinspect/internal/proto"
 	"unsafe"
 )
 
@@ -37,7 +37,12 @@ func HookedPMInit(ppm uintptr) {
 //export HookedPMPlayerMove
 func HookedPMPlayerMove(server int) {
 	vel := engine.Engine.PMoveVelocity()
-	feed.Broadcast(fmt.Sprintf("%v %v %v", vel[0], vel[1], vel[2]))
+	data := &proto.PMove{Velocity: vel}
+	binary, err := proto.Serialize(data)
+	if err == nil {
+		feed.Broadcast(binary)
+	}
+
 	hooks.CallFuncInts1(pmPlayerMovePattern.Address(), uintptr(server))
 }
 
