@@ -6,6 +6,8 @@ PROTO_PATH=../modlib/internal/proto
 PROTOC_GEN_TS_PATH="$(yarn bin protoc-gen-ts)"
 OUT_DIR=protobuf
 
+mkdir -p "$OUT_DIR"
+
 protoc \
     --plugin=protoc-gen-ts="$PROTOC_GEN_TS_PATH" \
     --js_out=import_style=commonjs,binary:"$OUT_DIR" \
