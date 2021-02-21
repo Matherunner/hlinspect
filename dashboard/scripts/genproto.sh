@@ -4,7 +4,7 @@ set -e
 
 PROTO_PATH=../modlib/internal/proto
 PROTOC_GEN_TS_PATH="$(yarn bin protoc-gen-ts)"
-OUT_DIR=protobuf
+OUT_DIR=./src/protobuf
 
 mkdir -p "$OUT_DIR"
 
