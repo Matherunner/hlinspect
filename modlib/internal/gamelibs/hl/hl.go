@@ -36,9 +36,24 @@ func HookedPMInit(ppm uintptr) {
 // HookedPMPlayerMove PM_PlayerMove
 //export HookedPMPlayerMove
 func HookedPMPlayerMove(server int) {
-	vel := engine.Engine.PMoveVelocity()
-	data := &proto.PMove{Velocity: vel}
-	binary, err := proto.Serialize(data)
+	binary, err := proto.Serialize(&proto.PMove{
+		Stage:        proto.PMoveStagePre,
+		Velocity:     engine.Engine.PMoveVelocity(),
+		Position:     engine.Engine.PMovePosition(),
+		Viewangles:   engine.Engine.PMoveViewangles(),
+		Basevelocity: engine.Engine.PMoveBasevelocity(),
+		FSU:          engine.Engine.PMoveCmdFSU(),
+		Punchangles:  engine.Engine.PMovePunchangles(),
+		EntFriction:  engine.Engine.PMoveEntFriction(),
+		EntGravity:   engine.Engine.PMoveEntGravity(),
+		FrameTime:    engine.Engine.PMoveFrameTime(),
+		Buttons:      engine.Engine.PMoveCmdButtons(),
+		Onground:     engine.Engine.PMoveOnground(),
+		Flags:        engine.Engine.PMoveFlags(),
+		Waterlevel:   engine.Engine.PMoveWaterlevel(),
+		InDuck:       engine.Engine.PMoveInDuck(),
+		Impulse:      engine.Engine.PMoveImpulse(),
+	})
 	if err == nil {
 		feed.Broadcast(binary)
 	}

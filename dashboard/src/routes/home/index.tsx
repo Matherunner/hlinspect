@@ -8,6 +8,8 @@ const Home: FunctionalComponent = () => {
     const [address, setAddress] = useState('ws://localhost:32001/ws')
     const [connectionState, setConnectionState] = useState<number | undefined>(undefined)
     const [velocity, setVelocity] = useState<number[] | undefined>(undefined)
+    const [position, setPosition] = useState<number[] | undefined>(undefined)
+    const [fsu, setFSU] = useState<number[] | undefined>(undefined)
     const websocketRef = useRef<WebSocket | undefined>()
 
     const onButtonClick = () => {
@@ -38,6 +40,8 @@ const Home: FunctionalComponent = () => {
         websocketRef.current.onmessage = (e) => {
             const pmove = feedPB.PMove.deserializeBinary(e.data);
             setVelocity(pmove.getVelocityList())
+            setPosition(pmove.getPositionList())
+            setFSU(pmove.getFsuList())
         }
     }
 
@@ -72,7 +76,9 @@ const Home: FunctionalComponent = () => {
             <div>Connection state: {connectionStateText}</div>
             <button onClick={onButtonClick}>Connect</button>
 
-            {velocity ? <div>Velocity: {velocity[0]} {velocity[1]} {velocity[2]}</div> : null}
+            {velocity ? <div>Velocity: {velocity[0].toFixed(6)} {velocity[1].toFixed(6)} {velocity[2].toFixed(6)}</div> : null}
+            {position ? <div>Position: {position[0].toFixed(6)} {position[1].toFixed(6)} {position[2].toFixed(6)}</div> : null}
+            {fsu ? <div>FSU: {fsu[0].toFixed(6)} {fsu[1].toFixed(6)} {fsu[2].toFixed(6)}</div> : null}
         </div>
     );
 };
