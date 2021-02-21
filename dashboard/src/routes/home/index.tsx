@@ -1,5 +1,5 @@
 import { FunctionalComponent, h } from 'preact';
-import { useRef, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import feedPB from '../../protobuf/feed_pb';
 import style from './style.css';
 
@@ -11,6 +11,23 @@ const Home: FunctionalComponent = () => {
     const [position, setPosition] = useState<number[] | undefined>(undefined)
     const [fsu, setFSU] = useState<number[] | undefined>(undefined)
     const websocketRef = useRef<WebSocket | undefined>()
+    const dataReceived = useRef(0)
+    const [dataRate, setDataRate] = useState(0)
+
+    useEffect(() => {
+        let prevDataReceived = 0
+        let prevTime = 0
+        const interval = setInterval(() => {
+            const timeNow = +new Date()
+            const timeDelta = (timeNow - prevTime) / 1000
+            setDataRate((dataReceived.current - prevDataReceived) / timeDelta)
+            prevTime = timeNow
+            prevDataReceived = dataReceived.current
+        }, 1000)
+        return () => {
+            clearInterval(interval)
+        }
+    }, [])
 
     const onButtonClick = () => {
         if (websocketRef.current) {
@@ -38,6 +55,7 @@ const Home: FunctionalComponent = () => {
             websocketRef.current = undefined
         }
         websocketRef.current.onmessage = (e) => {
+            dataReceived.current += e.data.byteLength;
             const pmove = feedPB.PMove.deserializeBinary(e.data);
             setVelocity(pmove.getVelocityList())
             setPosition(pmove.getPositionList())
@@ -52,6 +70,9 @@ const Home: FunctionalComponent = () => {
     }
 
     const connectionStateText = (() => {
+        if (typeof connectionState !== 'number') {
+            return 'Idle'
+        }
         switch (connectionState) {
             case WebSocket.CONNECTING:
                 return 'Connecting';
@@ -74,6 +95,7 @@ const Home: FunctionalComponent = () => {
                 Address: <input type="text" value={address} onInput={onAddressInput} />
             </label>
             <div>Connection state: {connectionStateText}</div>
+            <div>Downlink data rate: {(dataRate / 1000).toFixed(3)} KB/s</div>
             <button onClick={onButtonClick}>Connect</button>
 
             {velocity ? <div>Velocity: {velocity[0].toFixed(6)} {velocity[1].toFixed(6)} {velocity[2].toFixed(6)}</div> : null}
