@@ -18,4 +18,11 @@ export GOOS=windows
 export GOARCH=386
 ```
 
-Run `make` to build the DLL.
+Run the following to build:
+
+```bash
+cd hlinspect
+go generate ./...
+make
+```
+
