@@ -1,0 +1,49 @@
+syntax = "proto3";
+package feed;
+
+option go_package = "feedpb";
+
+message PMove {
+    enum Stage {
+        PRE_PLAYER_MOVE = 0;
+        POST_PLAYER_MOVE = 1;
+    }
+    Stage stage = 1;
+
+    repeated float velocity = 2;
+    repeated float position = 3;
+    repeated float viewangles = 4;
+    repeated float basevelocity = 5;
+    repeated float fsu = 6;
+    repeated float punchangles = 7;
+
+    float entFriction = 8;
+    float entGravity = 9;
+
+    uint32 frameTime = 10;
+    uint32 buttons = 11;
+    bool onground = 12;
+    uint32 flags = 13;
+
+    uint32 waterlevel = 14;
+    bool inDuck = 15;
+    bool ladder = 16;
+    uint32 impulse = 17;
+}
+
+message Player {
+    float health = 1
+    float armor = 2;
+}
+
+message Damage {
+    float damage = 1;
+    repeated float direction = 2;
+    uint32 type = 3;
+}
+
+message Collision {
+    repeated float normal = 1;
+    float distance = 2;
+    repeated float impactVelocity = 3;
+}
