@@ -1,7 +1,7 @@
 syntax = "proto3";
 package feed;
 
-option go_package = "feedpb";
+option go_package = "feedpb/feedpb";
 
 message PMove {
     enum Stage {
@@ -32,7 +32,7 @@ message PMove {
 }
 
 message Player {
-    float health = 1
+    float health = 1;
     float armor = 2;
 }
 
