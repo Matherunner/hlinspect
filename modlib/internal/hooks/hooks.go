@@ -3,7 +3,6 @@ package hooks
 import (
 	"errors"
 	"fmt"
-	"hlinspect/internal/logs"
 	"strconv"
 	"strings"
 	"unsafe"
@@ -78,6 +77,8 @@ type FunctionPattern struct {
 	functionName string
 	symbolNames  map[string]string
 	patterns     map[string]SearchPattern
+	symbolKey    string
+	patternKey   string
 	addrPointer  unsafe.Pointer
 	replaceAddr  unsafe.Pointer
 }
@@ -94,6 +95,8 @@ func (pat *FunctionPattern) Find(module *Module) (foundName string, address unsa
 			foundName = key
 			address = unsafe.Pointer(proc)
 			pat.addrPointer = address
+			pat.symbolKey = key
+			pat.patternKey = ""
 			return
 		}
 
@@ -103,6 +106,8 @@ func (pat *FunctionPattern) Find(module *Module) (foundName string, address unsa
 			foundName = key
 			address = unsafe.Pointer(uintptr(module.Base()) + relAddr)
 			pat.addrPointer = address
+			pat.symbolKey = key
+			pat.patternKey = ""
 			return
 		}
 	}
@@ -112,12 +117,11 @@ func (pat *FunctionPattern) Find(module *Module) (foundName string, address unsa
 		if err == nil {
 			foundName = patternName
 			pat.addrPointer = address
+			pat.symbolKey = ""
+			pat.patternKey = patternName
 			return
 		}
 	}
-
-	logs.DLLLog.Debugf("ERR: %v", err)
-
 	return
 }
 
@@ -145,6 +149,14 @@ func (pat *FunctionPattern) Hook(module *Module, fn unsafe.Pointer) (foundName s
 	pat.addrPointer = unsafe.Pointer(origFunc)
 	pat.replaceAddr = fn
 	return
+}
+
+func (pat *FunctionPattern) SymbolKey() string {
+	return pat.symbolKey
+}
+
+func (pat *FunctionPattern) PatternKey() string {
+	return pat.patternKey
 }
 
 func (pat *FunctionPattern) Name() string {
