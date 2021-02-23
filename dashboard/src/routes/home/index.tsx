@@ -13,6 +13,51 @@ const Home: FunctionalComponent = () => {
     const websocketRef = useRef<WebSocket | undefined>()
     const dataReceived = useRef(0)
     const [dataRate, setDataRate] = useState(0)
+    const canvasRef = useRef<HTMLCanvasElement>()
+    const drawQueue = useRef<number[][]>([])
+
+    useEffect(() => {
+        const ctx = canvasRef.current.getContext('2d')
+        if (!ctx) {
+            return;
+        }
+
+        ctx.strokeStyle = 'red'
+        ctx.lineWidth = 1
+    }, [])
+
+    useEffect(() => {
+        const transformPoint = (ctx: CanvasRenderingContext2D, [x, y]: [number, number]) => {
+            x *= 0.1
+            y *= 0.1
+            x += ctx.canvas.width / 2
+            y += ctx.canvas.height / 2
+            return [Math.round(x), Math.round(y)]
+        }
+
+        const func = () => {
+            window.requestAnimationFrame(func)
+
+            if (!drawQueue.current.length) {
+                return;
+            }
+
+            const ctx = canvasRef.current.getContext('2d')
+            if (!ctx) {
+                return;
+            }
+
+            const initialPoint = transformPoint(ctx, drawQueue.current[0] as [number, number])
+            ctx.moveTo(initialPoint[0], initialPoint[1])
+            for (let i = 1; i < drawQueue.current.length; i++) {
+                const point = transformPoint(ctx, drawQueue.current[i] as [number, number])
+                ctx.lineTo(point[0], point[1])
+            }
+            ctx.stroke()
+            drawQueue.current = [drawQueue.current[drawQueue.current.length - 1]]
+        }
+        window.requestAnimationFrame(func)
+    }, [])
 
     useEffect(() => {
         let prevDataReceived = 0
@@ -57,8 +102,10 @@ const Home: FunctionalComponent = () => {
         websocketRef.current.onmessage = (e) => {
             dataReceived.current += e.data.byteLength;
             const pmove = feedPB.PMove.deserializeBinary(e.data);
+            const newPosition = pmove.getPositionList();
+            drawQueue.current.push(newPosition)
             setVelocity(pmove.getVelocityList())
-            setPosition(pmove.getPositionList())
+            setPosition(newPosition)
             setFSU(pmove.getFsuList())
         }
     }
@@ -101,6 +148,10 @@ const Home: FunctionalComponent = () => {
             {velocity ? <div>Velocity: {velocity[0].toFixed(6)} {velocity[1].toFixed(6)} {velocity[2].toFixed(6)}</div> : null}
             {position ? <div>Position: {position[0].toFixed(6)} {position[1].toFixed(6)} {position[2].toFixed(6)}</div> : null}
             {fsu ? <div>FSU: {fsu[0].toFixed(6)} {fsu[1].toFixed(6)} {fsu[2].toFixed(6)}</div> : null}
+
+            <div>
+                <canvas ref={canvasRef} width={500} height={500} style="border: 1px solid" />
+            </div>
         </div>
     );
 };
