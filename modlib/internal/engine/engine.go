@@ -11,7 +11,7 @@ type GlobalVariables struct {
 }
 
 func (globals *GlobalVariables) StringBase() uintptr {
-	return globals.address + 0x98
+	return *(*uintptr)(unsafe.Pointer(globals.address + 0x98))
 }
 
 func (globals *GlobalVariables) String(offset uint) string {
