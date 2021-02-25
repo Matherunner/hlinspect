@@ -14,7 +14,7 @@ func (globals *GlobalVariables) StringBase() uintptr {
 	return *(*uintptr)(unsafe.Pointer(globals.address + 0x98))
 }
 
-func (globals *GlobalVariables) String(offset uint) string {
+func (globals *GlobalVariables) String(offset uint32) string {
 	return C.GoString((*C.char)(unsafe.Pointer(globals.StringBase() + uintptr(offset))))
 }
 

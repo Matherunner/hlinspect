@@ -8,9 +8,6 @@ import (
 )
 
 /*
-#cgo 386 LDFLAGS: -lopengl32
-
-#include <GL/gl.h>
 #include "defs.h"
 */
 import "C"
@@ -31,9 +28,9 @@ func HookedHUDRedraw(time float32, intermission int32) {
 //export HookedHUDDrawTransparentTriangles
 func HookedHUDDrawTransparentTriangles() {
 	hooks.CallFuncInts0(hudDrawTransparentTriangles.Address())
-	C.glDisable(C.GL_TEXTURE_2D)
+	graphics.GLDisable(graphics.GLTexture2D)
 	graphics.DrawTriangles()
-	C.glEnable(C.GL_TEXTURE_2D)
+	graphics.GLEnable(graphics.GLTexture2D)
 }
 
 // InitClientDLL initialise client.dll
