@@ -22,8 +22,14 @@ type EntVars struct {
 	address uintptr
 }
 
+// Origin returns entvars_t::origin
 func (entvars *EntVars) Origin() [3]float32 {
 	return *(*[3]float32)(unsafe.Pointer(entvars.address + 0x8))
+}
+
+// Angles returns entvars_t::angles
+func (entvars *EntVars) Angles() [3]float32 {
+	return *(*[3]float32)(unsafe.Pointer(entvars.address + 0x50))
 }
 
 func (entvars *EntVars) Classname() uint32 {
@@ -39,9 +45,15 @@ func (edict *Edict) Free() bool {
 	return *(*int)(unsafe.Pointer(edict.address)) != 0
 }
 
+// EntVars returns edict_t::v
 func (edict *Edict) EntVars() *EntVars {
 	address := uintptr(unsafe.Pointer(edict.address + 0x80))
 	return &EntVars{address: address}
+}
+
+// PrivateData returns edict_t::pvPrivateData
+func (edict *Edict) PrivateData() uintptr {
+	return *(*uintptr)(unsafe.Pointer(edict.address + 124))
 }
 
 // SV represents the type of server_t
@@ -54,7 +66,7 @@ func (sv *SV) NumEdicts() int {
 	return *(*int)(unsafe.Pointer(sv.address + 0x3bc58))
 }
 
-// Edict returns the address of the edict_t, or sv.edict[index]
+// Edict returns sv.edict[index]
 func (sv *SV) Edict(index int) *Edict {
 	base := *(*uintptr)(unsafe.Pointer(sv.address + 0x3bc60))
 	// 804 is sizeof(edict_t)

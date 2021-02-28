@@ -25,4 +25,3 @@ cd hlinspect
 go generate ./...
 make
 ```
-

@@ -29,3 +29,10 @@ func drawPyramid(origin [3]float32, width, height float32) {
 	}
 	hw.TriGLEnd()
 }
+
+func worldToHUDScreen(point [3]float32, width, height int) (screen [2]int, clipped bool) {
+	fscreen, clipped := hw.ScreenTransform(point)
+	screen[0] = int((1 + fscreen[0]) * 0.5 * float32(width))
+	screen[1] = int((1 - fscreen[1]) * 0.5 * float32(height))
+	return
+}

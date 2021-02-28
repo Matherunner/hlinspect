@@ -15,6 +15,30 @@ import (
 */
 import "C"
 
+const (
+	TriTriangles = iota
+	TriTriangleFan
+	TriQuads
+	TriPolygon
+	TriLines
+	TriTriangleStrip
+	TriQuadStrip
+)
+
+const (
+	TriFront = iota
+	TriNone
+)
+
+const (
+	KRenderNormal = iota
+	KRenderTransColor
+	KRenderTransTexture
+	KRenderGlow
+	KRenderTransAlpha
+	KRenderTransAdd
+)
+
 var hwDLL *hooks.Module
 
 var buildNumberPattern = hooks.MakeFunctionPattern("build_number", nil, map[string]hooks.SearchPattern{
@@ -29,6 +53,8 @@ var vFadeAlphaPattern = hooks.MakeFunctionPattern("V_FadeAlpha", nil, map[string
 	gamelibs.HL4554: hooks.MustMakePattern("D9 05 ?? ?? ?? ?? DC 1D ?? ?? ?? ?? 8A 0D ?? ?? ?? ?? 83 EC"),
 })
 var drawStringPattern = hooks.MakeFunctionPattern("Draw_String", nil, map[string]hooks.SearchPattern{
+	// Search for "%i %i %i", there is a thunk that call this function. There are two functions that call the thunk.
+	// The shorter one is Draw_String.
 	gamelibs.HL8684: hooks.MustMakePattern("55 8B EC 56 57 E8 ?? ?? ?? ?? 8B 4D 0C 8B 75 08 50 8B 45 10 50 51 56 E8 ?? ?? ?? ?? 83 C4 10 8B F8 E8 ?? ?? ?? ?? 8D 04 37"),
 })
 var vgui2DrawSetTextColorAlphaPattern = hooks.MakeFunctionPattern("VGUI2_Draw_SetTextColorAlpha", nil, map[string]hooks.SearchPattern{
@@ -38,6 +64,7 @@ var hostAutoSaveFPattern = hooks.MakeFunctionPattern("Host_AutoSave_f", nil, map
 	gamelibs.HL8684: hooks.MustMakePattern("A1 ?? ?? ?? ?? B9 01 00 00 00 3B C1 0F 85 9F 00 00 00 A1 ?? ?? ?? ?? 85 C0 75 10 68 ?? ?? ?? ?? E8 ?? ?? ?? ?? 83 C4 04 33 C0 C3 39 0D"),
 })
 var hostNoclipFPattern = hooks.MakeFunctionPattern("Host_Noclip_f", nil, map[string]hooks.SearchPattern{
+	// Search for "noclip ON\n"
 	gamelibs.HL8684: hooks.MustMakePattern("55 8B EC 83 EC 24 A1 ?? ?? ?? ?? BA 01 00 00 00 3B C2 75 09 E8 ?? ?? ?? ?? 8B E5 5D C3 D9 05 ?? ?? ?? ?? D8 1D"),
 })
 var pfTracelineDLLPattern = hooks.MakeFunctionPattern("PF_traceline_DLL", nil, map[string]hooks.SearchPattern{
@@ -61,6 +88,27 @@ var triGLCullFacePattern = hooks.MakeFunctionPattern("tri_GL_CullFace", nil, map
 var triGLVertex3fvPattern = hooks.MakeFunctionPattern("tri_GL_Vertex3fv", nil, map[string]hooks.SearchPattern{
 	gamelibs.HL8684: hooks.MustMakePattern("55 8B EC 8B 45 08 50 FF 15 ?? ?? ?? ?? 5D C3 90 55 8B EC 8B 45 10 8B 4D 0C 8B 55 08 50 51 52"),
 })
+var screenTransformPattern = hooks.MakeFunctionPattern("ScreenTransform", nil, map[string]hooks.SearchPattern{
+	gamelibs.HL8684: hooks.MustMakePattern("55 8B EC 51 8B 45 08 8B 4D 0C D9 05 ?? ?? ?? ?? D8 08 D9 05 ?? ?? ?? ?? D8 48 08 DE C1"),
+})
+var worldTransformPattern = hooks.MakeFunctionPattern("WorldTransform", nil, map[string]hooks.SearchPattern{
+	// Most likely the function below ScreenTransform
+	gamelibs.HL8684: hooks.MustMakePattern("55 8B EC 83 EC 08 8B 45 08 8B 4D 0C D9 05 ?? ?? ?? ?? D8 08 D9 05 ?? ?? ?? ?? D8 48"),
+})
+var hudGetScreenInfoPattern = hooks.MakeFunctionPattern("hudGetScreenInfo", nil, map[string]hooks.SearchPattern{
+	// Search for "Half-Life %i/%s (hw build %d)". This function is Draw_ConsoleBackground
+	// The function below it should be Draw_FillRGBA. Get the cross references to Draw_FillRGBA. One of them
+	// is a global variable of enginefuncs. The next entry is hudGetScreenInfo.
+	gamelibs.HL8684: hooks.MustMakePattern("55 8B EC 8D 45 08 50 FF 15 ?? ?? ?? ?? 8B 45 08 83 C4 04 85 C0 75 02 5d"),
+})
+
+// GetScreenInfo proxies hudGetScreenInfo
+func GetScreenInfo() ScreenInfo {
+	screenInfo := ScreenInfo{}
+	screenInfo.Size = int32(unsafe.Sizeof(screenInfo))
+	hooks.CallFuncInts1(hudGetScreenInfoPattern.Address(), uintptr(unsafe.Pointer(&screenInfo)))
+	return screenInfo
+}
 
 // TraceLine traces a line and return the hit results
 func TraceLine() {
@@ -102,30 +150,6 @@ func HookedVFadeAlpha() int {
 	return 0
 }
 
-const (
-	TriTriangles = iota
-	TriTriangleFan
-	TriQuads
-	TriPolygon
-	TriLines
-	TriTriangleStrip
-	TriQuadStrip
-)
-
-const (
-	TriFront = iota
-	TriNone
-)
-
-const (
-	KRenderNormal = iota
-	KRenderTransColor
-	KRenderTransTexture
-	KRenderGlow
-	KRenderTransAlpha
-	KRenderTransAdd
-)
-
 // TriGLRenderMode tri_GL_RenderMode
 func TriGLRenderMode(mode int) {
 	hooks.CallFuncInts1(triGLRenderModePattern.Address(), uintptr(mode))
@@ -156,13 +180,19 @@ func TriGLCullFace(style int) {
 	hooks.CallFuncInts1(triGLCullFacePattern.Address(), uintptr(style))
 }
 
+// ScreenTransform ScreenTransform, similar to WorldToScreen in TriAPI
+func ScreenTransform(point [3]float32) (screen [3]float32, clipped bool) {
+	clipped = hooks.CallFuncInts2(screenTransformPattern.Address(), uintptr(unsafe.Pointer(&point[0])), uintptr(unsafe.Pointer(&screen[0]))) != 0
+	return
+}
+
 // InitHWDLL initialise hw.dll hooks and symbol search
-func InitHWDLL() (err error) {
+func InitHWDLL(base string) (err error) {
 	if hwDLL != nil {
 		return
 	}
 
-	hwDLL, err = hooks.NewModule("hw.dll")
+	hwDLL, err = hooks.NewModule(base)
 	if err != nil {
 		return
 	}
@@ -182,16 +212,13 @@ func InitHWDLL() (err error) {
 		&triGLColor4fPattern:               nil,
 		&triGLCullFacePattern:              nil,
 		&triGLVertex3fvPattern:             nil,
+		&screenTransformPattern:            nil,
+		&worldTransformPattern:             nil,
+		&hudGetScreenInfoPattern:           nil,
 	}
 
 	errors := hooks.BatchFind(hwDLL, items)
-	for pat, err := range errors {
-		if err == nil {
-			logs.DLLLog.Debugf("Found %v at %v", pat.Name(), pat.Address())
-		} else {
-			logs.DLLLog.Debugf("Failed to find %v: %v", pat.Name(), err)
-		}
-	}
+	gamelibs.PrintBatchFindErrors(errors)
 
 	switch hostAutoSaveFPattern.PatternKey() {
 	case gamelibs.HL8684:

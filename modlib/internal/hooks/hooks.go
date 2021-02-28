@@ -115,10 +115,16 @@ func (pat *FunctionPattern) Find(module *Module) (foundName string, address unsa
 	for patternName, pattern := range pat.patterns {
 		address, err = findSubstringPattern(pattern, module.base, module.size)
 		if err == nil {
-			foundName = patternName
-			pat.addrPointer = address
-			pat.symbolKey = ""
-			pat.patternKey = patternName
+			_, newErr := findSubstringPattern(pattern, module.base, module.size)
+			if newErr != nil {
+				// Found a second instance of the pattern, must be an error
+				err = fmt.Errorf("Pattern is non-unique")
+			} else {
+				foundName = patternName
+				pat.addrPointer = address
+				pat.symbolKey = ""
+				pat.patternKey = patternName
+			}
 			return
 		}
 	}

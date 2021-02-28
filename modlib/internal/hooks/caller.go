@@ -15,6 +15,11 @@ static inline int call_func_ints_1(void *fp, uintptr_t a)
 	return ((int (*)(uintptr_t))fp)(a);
 }
 
+static inline int call_func_ints_2(void *fp, uintptr_t a, uintptr_t b)
+{
+	return ((int (*)(uintptr_t, uintptr_t))fp)(a, b);
+}
+
 static inline int call_func_ints_3(void *fp, uintptr_t a, uintptr_t b, uintptr_t c)
 {
 	return ((int (*)(uintptr_t, uintptr_t, uintptr_t))fp)(a, b, c);
@@ -43,6 +48,10 @@ func CallFuncInts0(address unsafe.Pointer) int {
 
 func CallFuncInts1(address unsafe.Pointer, a uintptr) int {
 	return int(C.call_func_ints_1(address, C.uint(a)))
+}
+
+func CallFuncInts2(address unsafe.Pointer, a, b uintptr) int {
+	return int(C.call_func_ints_2(address, C.uint(a), C.uint(b)))
 }
 
 func CallFuncInts3(address unsafe.Pointer, a, b, c uintptr) int {

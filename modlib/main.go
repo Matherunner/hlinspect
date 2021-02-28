@@ -47,8 +47,9 @@ func LoadLibraryWCallback(fileName C.LPCWSTR) {
 	onLibraryLoaded(windows.UTF16PtrToString((*uint16)(unsafe.Pointer(fileName))))
 }
 
-var libraryInitializers = map[string]func() error{
+var libraryInitializers = map[string]func(base string) error{
 	"hl.dll":     hl.InitHLDLL,
+	"opfor.dll":  hl.InitHLDLL,
 	"hw.dll":     hw.InitHWDLL,
 	"client.dll": cl.InitClientDLL,
 }
@@ -57,7 +58,7 @@ func onLibraryLoaded(fileName string) {
 	hooks.RefreshModuleList()
 	base := filepath.Base(fileName)
 	if initializer, ok := libraryInitializers[base]; ok {
-		if err := initializer(); err != nil {
+		if err := initializer(base); err != nil {
 			logs.DLLLog.Warningf("Unable to hook %v when loaded: %v", base, initializer)
 		} else {
 			logs.DLLLog.Debugf("Initialised %v", base)
@@ -103,7 +104,7 @@ func OnProcessAttach() {
 
 	for base, initializer := range libraryInitializers {
 		logs.DLLLog.Debugf("Initialising %v", base)
-		if err := initializer(); err != nil {
+		if err := initializer(base); err != nil {
 			logs.DLLLog.Warningf("Unable to initialise %v: %v", base, err)
 		}
 	}
