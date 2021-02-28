@@ -27,6 +27,11 @@ func drawScriptedSequences() {
 		if className == "scripted_sequence" {
 			origin := edict.EntVars().Origin()
 			drawPyramid(origin, 10, 20)
+
+			cine := engine.MakeCine(edict.PrivateData())
+			radius := cine.Radius()
+			drawSphere(origin, radius, 10, 10)
+
 		}
 	}
 }
