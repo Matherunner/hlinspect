@@ -54,6 +54,17 @@ func drawEntitiesOverlay() {
 					angles := edict.EntVars().Angles()
 					hw.DrawString(screen[0], screen[1]+2*int(screenInfo.CharHeight), fmt.Sprintf("%v %v", angles[0], angles[1]))
 					hw.DrawString(screen[0], screen[1]+3*int(screenInfo.CharHeight), fmt.Sprintf("%v %v %v", origin[0], origin[1], origin[2]))
+
+					cineAddr := engine.MakeMonster(edict.PrivateData()).CineAddr()
+					if cineAddr == 0 {
+						continue
+					}
+					cine := engine.MakeCine(cineAddr)
+					if cine.Interruptible() {
+						hw.DrawString(screen[0], screen[1]+4*int(screenInfo.CharHeight), "I")
+					} else {
+						hw.DrawString(screen[0], screen[1]+4*int(screenInfo.CharHeight), "UI")
+					}
 				}
 			}
 		}

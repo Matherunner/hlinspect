@@ -31,7 +31,6 @@ func drawScriptedSequences() {
 			cine := engine.MakeCine(edict.PrivateData())
 			radius := cine.Radius()
 			drawSphere(origin, radius, 10, 10)
-
 		}
 	}
 }

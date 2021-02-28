@@ -112,11 +112,14 @@ func InitHLDLL(base string) (err error) {
 		engine.MonsterOffsets.Schedule = 0x184
 		engine.MonsterOffsets.ScheduleIndex = 0x188
 		engine.MonsterOffsets.Cine = 0x29c
+		engine.CineOffsets.Radius = 0x2dc
+		engine.CineOffsets.Interruptible = 0x2f8
 	}
 
 	switch cbaseMonsterChangeSchedulePattern.SymbolKey() {
 	case gamelibs.WindowsHLDLL:
 		engine.CineOffsets.Radius = 0x2a8
+		engine.CineOffsets.Interruptible = 0x2c4
 	}
 
 	return
