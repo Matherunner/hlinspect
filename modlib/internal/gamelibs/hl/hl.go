@@ -34,6 +34,7 @@ var csoundEntSoundPointerForIndexPattern = hooks.MakeFunctionPattern("CSoundEnt:
 	gamelibs.HL8684: hooks.MustMakePattern("8B 0D ?? ?? ?? ?? 85 C9 75 03 33 C0 C3 8B 44 24 04 83 F8 3F 7E 13 68 ?? ?? ?? ?? 6A 01 FF 15 ?? ?? ?? ??"),
 })
 var cbaseMonsterChangeSchedulePattern = hooks.MakeFunctionPattern("CBaseMonster::ChangeSchedule", map[string]string{gamelibs.WindowsHLDLL: "CBaseMonster::ChangeSchedule"}, map[string]hooks.SearchPattern{
+	// Search for COND_HEAR_SOUND
 	gamelibs.HL8684: hooks.MustMakePattern("8B 44 24 04 33 D2 89 81 78 01 00 00 89 91 7C 01 00 00 89 91 74 01 00 00 89 91 F0 00 00 00 89 91 68 02 00 00"),
 	gamelibs.OF8684: hooks.MustMakePattern("8B 81 84 01 00 00 33 D2 3B C2 56 74 55 8B 00 3B C2 74 4F 8B B1 88 01 00 00 57 8B 3C F0"),
 })
@@ -110,6 +111,7 @@ func InitHLDLL(base string) (err error) {
 	case gamelibs.OF8684:
 		engine.MonsterOffsets.Schedule = 0x184
 		engine.MonsterOffsets.ScheduleIndex = 0x188
+		engine.MonsterOffsets.Cine = 0x29c
 	}
 
 	return

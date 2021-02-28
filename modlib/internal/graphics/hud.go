@@ -41,14 +41,14 @@ func drawEntitiesOverlay() {
 		}
 
 		className := engine.Engine.GlobalVariables.String(edict.EntVars().Classname())
-		if className == "monster_scientist" || className == "monster_barney" || className == "monster_bigmomma" {
+		if className == "monster_scientist" || className == "monster_barney" || className == "monster_bigmomma" || className == "monster_human_torch_ally" {
 			monster := engine.MakeMonster(edict.PrivateData())
 			schedule := monster.Schedule()
 			if schedule != nil {
 				origin := edict.EntVars().Origin()
 				screen, clipped := worldToHUDScreen(origin, int(screenInfo.Width), int(screenInfo.Height))
 				if !clipped {
-					hw.DrawString(screen[0], screen[1], fmt.Sprintf("%v %v", schedule.Name(), screenInfo.CharHeight))
+					hw.DrawString(screen[0], screen[1], schedule.Name())
 					task := schedule.Task(monster.ScheduleIndex())
 					hw.DrawString(screen[0], screen[1]+int(screenInfo.CharHeight), fmt.Sprintf("%v (%v)", task.Name(), task.Data))
 					angles := edict.EntVars().Angles()

@@ -8,11 +8,15 @@ import (
 var MonsterOffsets monsterOffsets = monsterOffsets{
 	Schedule:      0x178,
 	ScheduleIndex: 0x17c,
+	Cine:          0x290,
 }
 
 type monsterOffsets struct {
+	// Look inside CBaseMonster::ChangeSchedule.
 	Schedule      uintptr
 	ScheduleIndex uintptr
+	// Look inside CBaseMonster::GetScheduleOfType. Search for "Script failed for %s"
+	Cine uintptr
 }
 
 // Monster represents CBaseMonster
@@ -38,4 +42,9 @@ func (monster Monster) Schedule() *Schedule {
 // ScheduleIndex returns CBaseMonster::m_iScheduleIndex
 func (monster Monster) ScheduleIndex() int {
 	return int(*(*int32)(unsafe.Pointer(monster.address + MonsterOffsets.ScheduleIndex)))
+}
+
+// Cine returns CBaseMonster::m_pCine
+func (monster Monster) CineAddr() uintptr {
+	return *(*uintptr)(unsafe.Pointer(monster.address + MonsterOffsets.Cine))
 }

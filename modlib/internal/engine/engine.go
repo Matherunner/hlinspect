@@ -18,8 +18,14 @@ func (globals *GlobalVariables) String(offset uint32) string {
 	return C.GoString((*C.char)(unsafe.Pointer(globals.StringBase() + uintptr(offset))))
 }
 
+// EntVars represents entvars_t
 type EntVars struct {
 	address uintptr
+}
+
+// MakeEntVars creates an instance of EntVars
+func MakeEntVars(address uintptr) EntVars {
+	return EntVars{address: address}
 }
 
 // Origin returns entvars_t::origin
@@ -53,7 +59,7 @@ func (edict *Edict) EntVars() *EntVars {
 
 // PrivateData returns edict_t::pvPrivateData
 func (edict *Edict) PrivateData() uintptr {
-	return *(*uintptr)(unsafe.Pointer(edict.address + 124))
+	return *(*uintptr)(unsafe.Pointer(edict.address + 0x7c))
 }
 
 // SV represents the type of server_t

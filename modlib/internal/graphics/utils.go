@@ -30,6 +30,14 @@ func drawPyramid(origin [3]float32, width, height float32) {
 	hw.TriGLEnd()
 }
 
+func drawLines(positions [][3]float32) {
+	hw.TriGLBegin(hw.TriLines)
+	for _, pos := range positions {
+		hw.TriGLVertex3fv(pos)
+	}
+	hw.TriGLEnd()
+}
+
 func worldToHUDScreen(point [3]float32, width, height int) (screen [2]int, clipped bool) {
 	fscreen, clipped := hw.ScreenTransform(point)
 	screen[0] = int((1 + fscreen[0]) * 0.5 * float32(width))

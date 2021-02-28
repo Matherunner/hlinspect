@@ -21,3 +21,8 @@ func GLEnable(cap uint) {
 func GLDisable(cap uint) {
 	C.glDisable(C.uint(cap))
 }
+
+// GLLineWidth glLineWidth
+func GLLineWidth(width float32) {
+	C.glLineWidth(C.float(width))
+}
