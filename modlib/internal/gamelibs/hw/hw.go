@@ -3,6 +3,7 @@ package hw
 import (
 	"hlinspect/internal/engine"
 	"hlinspect/internal/gamelibs"
+	"hlinspect/internal/graphics"
 	"hlinspect/internal/hooks"
 	"hlinspect/internal/logs"
 	"strconv"
@@ -101,6 +102,10 @@ var hudGetScreenInfoPattern = hooks.MakeFunctionPattern("hudGetScreenInfo", nil,
 	// is a global variable of enginefuncs. The next entry is hudGetScreenInfo.
 	gamelibs.HL8684: hooks.MustMakePattern("55 8B EC 8D 45 08 50 FF 15 ?? ?? ?? ?? 8B 45 08 83 C4 04 85 C0 75 02 5d"),
 })
+var rDrawSequentialPolyPattern = hooks.MakeFunctionPattern("R_DrawSequentialPoly", nil, map[string]hooks.SearchPattern{
+	gamelibs.HL8684: hooks.MustMakePattern("55 8B EC 51 A1 ?? ?? ?? ?? 53 56 57 83 B8 F8 02 00 00 01 75 63 E8 ?? ?? ?? ?? 68 03 03 00 00 68 02 03 00 00"),
+	gamelibs.HL4554: hooks.MustMakePattern("A1 ?? ?? ?? ?? 53 55 56 8B 88 F8 02 00 00 BE 01 00 00 00 3B CE 57 75 62 E8 ?? ?? ?? ?? 68 03 03 00 00 68 02 03 00 00"),
+})
 
 // GetScreenInfo proxies hudGetScreenInfo
 func GetScreenInfo() ScreenInfo {
@@ -148,6 +153,16 @@ func VGUI2DrawSetTextColorAlpha(r, g, b, a int) {
 //export HookedVFadeAlpha
 func HookedVFadeAlpha() int {
 	return 0
+}
+
+// HookedRDrawSequentialPoly R_DrawSequentialPoly
+//export HookedRDrawSequentialPoly
+func HookedRDrawSequentialPoly(surf uintptr, free int) {
+	graphics.GLEnable(graphics.GLBlend)
+
+	hooks.CallFuncInts2(rDrawSequentialPolyPattern.Address(), surf, uintptr(free))
+
+	graphics.GLDisable(graphics.GLBlend)
 }
 
 // TriGLRenderMode tri_GL_RenderMode
@@ -215,6 +230,7 @@ func InitHWDLL(base string) (err error) {
 		&screenTransformPattern:            nil,
 		&worldTransformPattern:             nil,
 		&hudGetScreenInfoPattern:           nil,
+		&rDrawSequentialPolyPattern:        nil,
 	}
 
 	errors := hooks.BatchFind(hwDLL, items)

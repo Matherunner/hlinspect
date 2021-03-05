@@ -10,6 +10,7 @@ import "C"
 const (
 	// GLTexture2D GL_TEXTURE_2D
 	GLTexture2D = C.GL_TEXTURE_2D
+	GLBlend     = C.GL_BLEND
 )
 
 // GLEnable glEnable
