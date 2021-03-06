@@ -3,7 +3,7 @@ package hw
 import (
 	"hlinspect/internal/engine"
 	"hlinspect/internal/gamelibs"
-	"hlinspect/internal/graphics"
+	"hlinspect/internal/gl"
 	"hlinspect/internal/hooks"
 	"hlinspect/internal/logs"
 	"strconv"
@@ -158,11 +158,15 @@ func HookedVFadeAlpha() int {
 // HookedRDrawSequentialPoly R_DrawSequentialPoly
 //export HookedRDrawSequentialPoly
 func HookedRDrawSequentialPoly(surf uintptr, free int) {
-	graphics.GLEnable(graphics.GLBlend)
+	gl.Enable(gl.Blend)
+	gl.DepthMask(false)
+	gl.BlendFunc(gl.SrcAlpha, gl.OneMinusSrcAlpha)
+	gl.Color4f(1, 1, 1, 0.3)
 
 	hooks.CallFuncInts2(rDrawSequentialPolyPattern.Address(), surf, uintptr(free))
 
-	graphics.GLDisable(graphics.GLBlend)
+	gl.DepthMask(true)
+	gl.Disable(gl.Blend)
 }
 
 // TriGLRenderMode tri_GL_RenderMode
@@ -230,7 +234,7 @@ func InitHWDLL(base string) (err error) {
 		&screenTransformPattern:            nil,
 		&worldTransformPattern:             nil,
 		&hudGetScreenInfoPattern:           nil,
-		&rDrawSequentialPolyPattern:        nil,
+		&rDrawSequentialPolyPattern:        C.HookedRDrawSequentialPoly,
 	}
 
 	errors := hooks.BatchFind(hwDLL, items)

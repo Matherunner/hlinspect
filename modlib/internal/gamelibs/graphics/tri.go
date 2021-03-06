@@ -3,6 +3,7 @@ package graphics
 import (
 	"hlinspect/internal/engine"
 	"hlinspect/internal/gamelibs/hw"
+	"hlinspect/internal/gl"
 )
 
 // DrawTriangles draw OpenGL triangles
@@ -28,15 +29,16 @@ func drawScriptedSequences() {
 			origin := edict.EntVars().Origin()
 			drawPyramid(origin, 10, 20)
 
-			cine := engine.MakeCine(edict.PrivateData())
-			radius := cine.Radius()
-			drawSphere(origin, radius, 10, 10)
+			// TODO: re-enable this?
+			// cine := engine.MakeCine(edict.PrivateData())
+			// radius := cine.Radius()
+			// drawSphere(origin, radius, 10, 10)
 		}
 	}
 }
 
 func drawScriptedSequencesPossessions() {
-	GLLineWidth(4)
+	gl.LineWidth(4)
 	hw.TriGLColor4f(1, 0, 0, 1)
 	hw.TriGLCullFace(hw.TriNone)
 	hw.TriGLRenderMode(hw.KRenderTransAdd)

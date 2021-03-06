@@ -2,8 +2,9 @@ package cl
 
 import (
 	"hlinspect/internal/gamelibs"
+	"hlinspect/internal/gamelibs/graphics"
 	"hlinspect/internal/gamelibs/hw"
-	"hlinspect/internal/graphics"
+	"hlinspect/internal/gl"
 	"hlinspect/internal/hooks"
 	"unsafe"
 )
@@ -31,9 +32,9 @@ func HookedHUDRedraw(time float32, intermission int32) {
 //export HookedHUDDrawTransparentTriangles
 func HookedHUDDrawTransparentTriangles() {
 	hooks.CallFuncInts0(hudDrawTransparentTrianglesPattern.Address())
-	graphics.GLDisable(graphics.GLTexture2D)
+	gl.Disable(gl.Texture2D)
 	graphics.DrawTriangles()
-	graphics.GLEnable(graphics.GLTexture2D)
+	gl.Enable(gl.Texture2D)
 }
 
 // HookedHUDVidInit HUD_VidInit
