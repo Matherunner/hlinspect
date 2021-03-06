@@ -15,6 +15,8 @@ const (
 	SrcAlpha         = C.GL_SRC_ALPHA
 	One              = C.GL_ONE
 	OneMinusSrcAlpha = C.GL_ONE_MINUS_SRC_ALPHA
+
+	ColorBufferBit = C.GL_COLOR_BUFFER_BIT
 )
 
 func boolToGL(val bool) C.uchar {
@@ -52,4 +54,14 @@ func BlendFunc(sfactor, dfactor uint) {
 // Color4f glColor4f
 func Color4f(r, g, b, a float32) {
 	C.glColor4f(C.float(r), C.float(g), C.float(b), C.float(a))
+}
+
+// Clear glClear
+func Clear(mask uint) {
+	C.glClear(C.uint(mask))
+}
+
+// ClearColor glClearColor
+func ClearColor(r, g, b, a float32) {
+	C.glClearColor(C.float(r), C.float(g), C.float(b), C.float(a))
 }

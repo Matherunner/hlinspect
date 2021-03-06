@@ -1,12 +1,12 @@
 package hw
 
 import (
+	"hlinspect/internal/cvar"
 	"hlinspect/internal/engine"
 	"hlinspect/internal/gamelibs"
 	"hlinspect/internal/gl"
 	"hlinspect/internal/hooks"
 	"hlinspect/internal/logs"
-	"strconv"
 	"unsafe"
 )
 
@@ -106,6 +106,12 @@ var rDrawSequentialPolyPattern = hooks.MakeFunctionPattern("R_DrawSequentialPoly
 	gamelibs.HL8684: hooks.MustMakePattern("55 8B EC 51 A1 ?? ?? ?? ?? 53 56 57 83 B8 F8 02 00 00 01 75 63 E8 ?? ?? ?? ?? 68 03 03 00 00 68 02 03 00 00"),
 	gamelibs.HL4554: hooks.MustMakePattern("A1 ?? ?? ?? ?? 53 55 56 8B 88 F8 02 00 00 BE 01 00 00 00 3B CE 57 75 62 E8 ?? ?? ?? ?? 68 03 03 00 00 68 02 03 00 00"),
 })
+var rClearPattern = hooks.MakeFunctionPattern("R_Clear", nil, map[string]hooks.SearchPattern{
+	gamelibs.HL8684: hooks.MustMakePattern("8B 15 ?? ?? ?? ?? 33 C0 83 FA 01 0F 9F C0 50 E8 ?? ?? ?? ?? D9 05 ?? ?? ?? ?? DC 1D ?? ?? ?? ?? 83 C4 04 DF E0"),
+})
+var memoryInitPattern = hooks.MakeFunctionPattern("Memory_Init", nil, map[string]hooks.SearchPattern{
+	gamelibs.HL8684: hooks.MustMakePattern("55 8B EC 8B 45 08 8B 4D 0C 56 BE 00 00 20 00 A3 ?? ?? ?? ?? 89 ?? ?? ?? ?? ?? C7 ?? ?? ?? ?? ?? ?? ?? ?? ?? C7 ?? ?? ?? ?? ?? ?? ?? ?? ?? E8 ?? ?? ?? ?? 68 ?? ?? ?? ?? E8"),
+})
 
 // GetScreenInfo proxies hudGetScreenInfo
 func GetScreenInfo() ScreenInfo {
@@ -126,15 +132,8 @@ func BuildNumber() int {
 }
 
 // CvarRegisterVariable Cvar_RegisterVariable
-func CvarRegisterVariable(name string, value string) {
-	floatVal, _ := strconv.ParseFloat(value, 32)
-	cvar := rawCVar{
-		// Probably don't need to free these strings?
-		Name:   uintptr(unsafe.Pointer(C.CString(name))),
-		String: uintptr(unsafe.Pointer(C.CString(value))),
-		Value:  float32(floatVal),
-	}
-	hooks.CallFuncInts1(cvarRegisterVariablePattern.Address(), uintptr(unsafe.Pointer(&cvar)))
+func CvarRegisterVariable(cvar uintptr) {
+	hooks.CallFuncInts1(cvarRegisterVariablePattern.Address(), cvar)
 }
 
 // DrawString Draw_String
@@ -155,9 +154,24 @@ func HookedVFadeAlpha() int {
 	return 0
 }
 
+// HookedRClear R_Clear
+//export HookedRClear
+func HookedRClear() {
+	if cvar.Wallhack.Float32() != 0 {
+		gl.ClearColor(0, 0, 0, 1)
+		gl.Clear(gl.ColorBufferBit)
+	}
+	hooks.CallFuncInts0(rClearPattern.Address())
+}
+
 // HookedRDrawSequentialPoly R_DrawSequentialPoly
 //export HookedRDrawSequentialPoly
 func HookedRDrawSequentialPoly(surf uintptr, free int) {
+	if cvar.Wallhack.Float32() == 0 {
+		hooks.CallFuncInts2(rDrawSequentialPolyPattern.Address(), surf, uintptr(free))
+		return
+	}
+
 	gl.Enable(gl.Blend)
 	gl.DepthMask(false)
 	gl.BlendFunc(gl.SrcAlpha, gl.OneMinusSrcAlpha)
@@ -167,6 +181,13 @@ func HookedRDrawSequentialPoly(surf uintptr, free int) {
 
 	gl.DepthMask(true)
 	gl.Disable(gl.Blend)
+}
+
+// HookedMemoryInit Memory_Init
+//export HookedMemoryInit
+func HookedMemoryInit(buf uintptr, size int) {
+	hooks.CallFuncInts2(memoryInitPattern.Address(), buf, uintptr(size))
+	registerCVars()
 }
 
 // TriGLRenderMode tri_GL_RenderMode
@@ -234,7 +255,9 @@ func InitHWDLL(base string) (err error) {
 		&screenTransformPattern:            nil,
 		&worldTransformPattern:             nil,
 		&hudGetScreenInfoPattern:           nil,
+		&rClearPattern:                     C.HookedRClear,
 		&rDrawSequentialPolyPattern:        C.HookedRDrawSequentialPoly,
+		&memoryInitPattern:                 C.HookedMemoryInit,
 	}
 
 	errors := hooks.BatchFind(hwDLL, items)
