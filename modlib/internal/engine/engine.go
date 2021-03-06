@@ -46,6 +46,10 @@ type Edict struct {
 	address uintptr
 }
 
+func (edict *Edict) Pointer() unsafe.Pointer {
+	return unsafe.Pointer(edict.address)
+}
+
 // Free returns free != 0
 func (edict *Edict) Free() bool {
 	return *(*int)(unsafe.Pointer(edict.address)) != 0
@@ -67,13 +71,19 @@ type SV struct {
 	address uintptr
 }
 
+// EntOffset returns the address offset of edict from sv.edicts
+func (sv SV) EntOffset(edict uintptr) uintptr {
+	edicts := *(*uintptr)(unsafe.Pointer(sv.address + 0x3bc60))
+	return edict - edicts
+}
+
 // NumEdicts returns the number of edicts, sv.num_edicts
-func (sv *SV) NumEdicts() int {
+func (sv SV) NumEdicts() int {
 	return *(*int)(unsafe.Pointer(sv.address + 0x3bc58))
 }
 
-// Edict returns sv.edict[index]
-func (sv *SV) Edict(index int) *Edict {
+// Edict returns sv.edicts[index]
+func (sv SV) Edict(index int) *Edict {
 	base := *(*uintptr)(unsafe.Pointer(sv.address + 0x3bc60))
 	// 804 is sizeof(edict_t)
 	return &Edict{address: base + uintptr(index*804)}

@@ -9,6 +9,7 @@ import (
 import "C"
 
 var Wallhack = makeCVar("hli_wallhack", "0")
+var FadeRemove = makeCVar("hli_fade_remove", "0")
 
 func makeCVar(name, value string) engine.CVar {
 	floatVal, _ := strconv.ParseFloat(value, 32)

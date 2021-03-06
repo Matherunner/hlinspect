@@ -56,14 +56,20 @@ func drawEntitiesOverlay() {
 					hw.DrawString(screen[0], screen[1]+3*int(screenInfo.CharHeight), fmt.Sprintf("%v %v %v", origin[0], origin[1], origin[2]))
 
 					cineAddr := engine.MakeMonster(edict.PrivateData()).CineAddr()
-					if cineAddr == 0 {
-						continue
+					if cineAddr != 0 {
+						cine := engine.MakeCine(cineAddr)
+						if cine.Interruptible() {
+							hw.DrawString(screen[0], screen[1]+4*int(screenInfo.CharHeight), "I")
+						} else {
+							hw.DrawString(screen[0], screen[1]+4*int(screenInfo.CharHeight), "UI")
+						}
 					}
-					cine := engine.MakeCine(cineAddr)
-					if cine.Interruptible() {
-						hw.DrawString(screen[0], screen[1]+4*int(screenInfo.CharHeight), "I")
+
+					e := hw.PFCheckClientI(edict.Pointer())
+					if e != 0 && engine.Engine.SV.EntOffset(e) != 0 {
+						hw.DrawString(screen[0], screen[1]+5*int(screenInfo.CharHeight), "V")
 					} else {
-						hw.DrawString(screen[0], screen[1]+4*int(screenInfo.CharHeight), "UI")
+						hw.DrawString(screen[0], screen[1]+5*int(screenInfo.CharHeight), "IV")
 					}
 				}
 			}

@@ -112,6 +112,12 @@ var rClearPattern = hooks.MakeFunctionPattern("R_Clear", nil, map[string]hooks.S
 var memoryInitPattern = hooks.MakeFunctionPattern("Memory_Init", nil, map[string]hooks.SearchPattern{
 	gamelibs.HL8684: hooks.MustMakePattern("55 8B EC 8B 45 08 8B 4D 0C 56 BE 00 00 20 00 A3 ?? ?? ?? ?? 89 ?? ?? ?? ?? ?? C7 ?? ?? ?? ?? ?? ?? ?? ?? ?? C7 ?? ?? ?? ?? ?? ?? ?? ?? ?? E8 ?? ?? ?? ?? 68 ?? ?? ?? ?? E8"),
 })
+var pfCheckClientIPattern = hooks.MakeFunctionPattern("PF_checkclient_I", nil, map[string]hooks.SearchPattern{
+	// Search for "Spawned a NULL entity!", the referencing function is CreateNamedEntity
+	// Find cross references, go to the global data, that data is g_engfuncsExportedToDlls
+	// Go up 6 entries, we will end up at PF_checkclient_I
+	gamelibs.HL8684: hooks.MustMakePattern("55 8B EC 83 EC 0C DD 05 ?? ?? ?? ?? DC 25 ?? ?? ?? ?? DC 1D ?? ?? ?? ?? DF E0 25 00 01 00 00 A1 ?? ?? ?? ?? 75 26"),
+})
 
 // GetScreenInfo proxies hudGetScreenInfo
 func GetScreenInfo() ScreenInfo {
@@ -151,7 +157,10 @@ func VGUI2DrawSetTextColorAlpha(r, g, b, a int) {
 // HookedVFadeAlpha V_FadeAlpha
 //export HookedVFadeAlpha
 func HookedVFadeAlpha() int {
-	return 0
+	if cvar.FadeRemove.Float32() != 0 {
+		return 0
+	}
+	return hooks.CallFuncInts0(vFadeAlphaPattern.Address())
 }
 
 // HookedRClear R_Clear
@@ -226,6 +235,11 @@ func ScreenTransform(point [3]float32) (screen [3]float32, clipped bool) {
 	return
 }
 
+// PFCheckClientI calls PF_checkclient_I, or FindClientInPVS as exported to DLL
+func PFCheckClientI(edict unsafe.Pointer) uintptr {
+	return uintptr(hooks.CallFuncInts1(pfCheckClientIPattern.Address(), uintptr(edict)))
+}
+
 // InitHWDLL initialise hw.dll hooks and symbol search
 func InitHWDLL(base string) (err error) {
 	if hwDLL != nil {
@@ -258,6 +272,7 @@ func InitHWDLL(base string) (err error) {
 		&rClearPattern:                     C.HookedRClear,
 		&rDrawSequentialPolyPattern:        C.HookedRDrawSequentialPoly,
 		&memoryInitPattern:                 C.HookedMemoryInit,
+		&pfCheckClientIPattern:             nil,
 	}
 
 	errors := hooks.BatchFind(hwDLL, items)
