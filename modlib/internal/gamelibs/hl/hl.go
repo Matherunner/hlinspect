@@ -38,18 +38,23 @@ var cbaseMonsterChangeSchedulePattern = hooks.MakeFunctionPattern("CBaseMonster:
 	gamelibs.HL8684: hooks.MustMakePattern("8B 44 24 04 33 D2 89 81 78 01 00 00 89 91 7C 01 00 00 89 91 74 01 00 00 89 91 F0 00 00 00 89 91 68 02 00 00"),
 	gamelibs.OF8684: hooks.MustMakePattern("8B 81 84 01 00 00 33 D2 3B C2 56 74 55 8B 00 3B C2 74 4F 8B B1 88 01 00 00 57 8B 3C F0"),
 })
+var cbaseMonsterRouteNewPattern = hooks.MakeFunctionPattern("CBaseMonster::RouteNew", map[string]string{
+	gamelibs.WindowsHLDLL: "CBaseMonster::RouteNew",
+}, map[string]hooks.SearchPattern{
+	// Search for "No Path from %d to %d!" to find CBaseMonster::FGetNodeRoute
+	// Go to any of the cross reference, the first function should be CBaseMonster::RouteNew
+	// This pattern includes the initial part of CBaseMonster::FRouteClear, and mask out the offsets
+	gamelibs.HL8684: hooks.MustMakePattern("33 C0 89 81 ?? ?? ?? ?? 89 81 ?? ?? ?? ?? C3 90 8B 81 ?? ?? ?? ?? C1 E0 04"),
+})
 var worldGraphPattern = hooks.MakeFunctionPattern("WorldGraph", map[string]string{
 	// Not actually a function
 	gamelibs.WindowsHLDLL: "WorldGraph",
 }, nil)
 var cgraphInitGraphPattern = hooks.MakeFunctionPattern("CGraph::InitGraph", nil, map[string]hooks.SearchPattern{
+	// Search for "Couldn't malloc %d nodes!" to find CGraph::AllocNodes
+	// Then find cross reference from CWorld::Precache
 	gamelibs.HL8684: hooks.MustMakePattern("56 8B F1 57 33 FF 8B 46 10 89 3E 3B C7 89 7E 04 89 7E 08 74 0C 50 E8 ?? ?? ?? ?? 83 C4 04 89 7E 10 8B 46 0C"),
 })
-
-// var cgraphAllocNodesPattern = hooks.MakeFunctionPattern("CGraph::AllocNodes", nil, map[string]hooks.SearchPattern{
-// 	// Search for "Couldn't malloc %d nodes!"
-// 	gamelibs.HL8684: hooks.MustMakePattern("68 00 04 00 00 6A 58 E8 ?? ?? ?? ?? 83 C4 08 A3 ?? ?? ?? ?? 85 C0 75 19 A1 ?? ?? ?? ?? 50 68 ?? ?? ?? ?? 6A 02"),
-// })
 
 // HookedPMInit PM_Init
 //export HookedPMInit
@@ -121,6 +126,7 @@ func InitHLDLL(base string) (err error) {
 		&csoundEntActiveListPattern:           nil,
 		&csoundEntSoundPointerForIndexPattern: nil,
 		&cbaseMonsterChangeSchedulePattern:    nil,
+		&cbaseMonsterRouteNewPattern:          nil,
 		&worldGraphPattern:                    nil,
 		&cgraphInitGraphPattern:               C.C_HookedCGraphInitGraph,
 	}
@@ -145,6 +151,12 @@ func InitHLDLL(base string) (err error) {
 
 	if worldGraphPattern.Address() != nil {
 		engine.WorldGraph.SetPointer(worldGraphPattern.Address())
+	}
+
+	switch cbaseMonsterRouteNewPattern.PatternKey() {
+	case gamelibs.HL8684:
+		engine.MonsterOffsets.Route = *(*uintptr)(unsafe.Pointer(uintptr(cbaseMonsterRouteNewPattern.Address()) + 0x4)) - 0xc
+		engine.MonsterOffsets.RouteIndex = *(*uintptr)(unsafe.Pointer(uintptr(cbaseMonsterRouteNewPattern.Address()) + 0xa))
 	}
 
 	return

@@ -29,37 +29,37 @@ func MakeEntVars(pointer unsafe.Pointer) EntVars {
 }
 
 // Pointer returns the pointer to this entvars_t object
-func (entvars *EntVars) Pointer() unsafe.Pointer {
+func (entvars EntVars) Pointer() unsafe.Pointer {
 	return entvars.ptr
 }
 
 // Origin returns entvars_t::origin
-func (entvars *EntVars) Origin() [3]float32 {
+func (entvars EntVars) Origin() [3]float32 {
 	return *(*[3]float32)(unsafe.Pointer(uintptr(entvars.ptr) + 0x8))
 }
 
 // Angles returns entvars_t::angles
-func (entvars *EntVars) Angles() [3]float32 {
+func (entvars EntVars) Angles() [3]float32 {
 	return *(*[3]float32)(unsafe.Pointer(uintptr(entvars.ptr) + 0x50))
 }
 
-func (entvars *EntVars) Classname() uint32 {
+func (entvars EntVars) Classname() uint32 {
 	return *(*uint32)(unsafe.Pointer(uintptr(entvars.ptr) + 0x0))
 }
 
-func (entvars *EntVars) Mins() [3]float32 {
+func (entvars EntVars) Mins() [3]float32 {
 	return *(*[3]float32)(unsafe.Pointer(uintptr(entvars.ptr) + 0xdc))
 }
 
-func (entvars *EntVars) Maxs() [3]float32 {
+func (entvars EntVars) Maxs() [3]float32 {
 	return *(*[3]float32)(unsafe.Pointer(uintptr(entvars.ptr) + 0xe8))
 }
 
-func (entvars *EntVars) AbsMin() [3]float32 {
+func (entvars EntVars) AbsMin() [3]float32 {
 	return *(*[3]float32)(unsafe.Pointer(uintptr(entvars.ptr) + 0xc4))
 }
 
-func (entvars *EntVars) AbsMax() [3]float32 {
+func (entvars EntVars) AbsMax() [3]float32 {
 	return *(*[3]float32)(unsafe.Pointer(uintptr(entvars.ptr) + 0xd0))
 }
 
@@ -84,8 +84,8 @@ func (edict *Edict) EntVars() *EntVars {
 }
 
 // PrivateData returns edict_t::pvPrivateData
-func (edict *Edict) PrivateData() uintptr {
-	return *(*uintptr)(unsafe.Pointer(edict.address + 0x7c))
+func (edict *Edict) PrivateData() unsafe.Pointer {
+	return *(*unsafe.Pointer)(unsafe.Pointer(edict.address + 0x7c))
 }
 
 // SV represents the type of server_t

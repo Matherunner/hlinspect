@@ -13,15 +13,15 @@ type entityOffsets struct {
 
 // Entity represents CBaseEntity
 type Entity struct {
-	address uintptr
+	ptr unsafe.Pointer
 }
 
 // MakeEntity creates an instance of Entity
-func MakeEntity(address uintptr) Entity {
-	return Entity{address: address}
+func MakeEntity(pointer unsafe.Pointer) Entity {
+	return Entity{ptr: pointer}
 }
 
 // EntVars returns CBaseEntity::pev
 func (entity Entity) EntVars() EntVars {
-	return MakeEntVars(unsafe.Pointer(entity.address + EntityOffsets.PEV))
+	return MakeEntVars(unsafe.Pointer(uintptr(entity.ptr) + EntityOffsets.PEV))
 }

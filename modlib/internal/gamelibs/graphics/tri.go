@@ -12,6 +12,7 @@ func DrawTriangles() {
 	drawNodeLinks()
 	drawScriptedSequences()
 	drawScriptedSequencesPossessions()
+	drawMonsterRoutes()
 	drawBoundingBoxes()
 }
 
@@ -95,17 +96,21 @@ func drawScriptedSequencesPossessions() {
 
 		className := engine.Engine.GlobalVariables.String(edict.EntVars().Classname())
 		if className == "monster_human_torch_ally" || className == "monster_scientist" {
-			cineAddr := engine.MakeMonster(edict.PrivateData()).CineAddr()
-			if cineAddr == 0 {
+			cine := engine.MakeMonster(edict.PrivateData()).Cine()
+			if cine.Pointer() == nil {
 				continue
 			}
 
-			entVars := engine.MakeEntity(cineAddr).EntVars()
-			cineOrigin := entVars.Origin()
+			entity := engine.MakeEntity(cine.Pointer())
+			cineOrigin := entity.EntVars().Origin()
 			monsterOrigin := edict.EntVars().Origin()
 			drawLines([][3]float32{cineOrigin, monsterOrigin})
 		}
 	}
+}
+
+func drawMonsterRoutes() {
+
 }
 
 func drawBoundingBoxes() {
