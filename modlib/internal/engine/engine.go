@@ -7,15 +7,15 @@ import "C"
 var Engine State
 
 type GlobalVariables struct {
-	address uintptr
+	ptr unsafe.Pointer
 }
 
-func (globals *GlobalVariables) StringBase() uintptr {
-	return *(*uintptr)(unsafe.Pointer(globals.address + 0x98))
+func (globals GlobalVariables) StringBase() unsafe.Pointer {
+	return *(*unsafe.Pointer)(unsafe.Pointer(uintptr(globals.ptr) + 0x98))
 }
 
-func (globals *GlobalVariables) String(offset uint32) string {
-	return C.GoString((*C.char)(unsafe.Pointer(globals.StringBase() + uintptr(offset))))
+func (globals GlobalVariables) String(offset uint32) string {
+	return C.GoString((*C.char)(unsafe.Pointer(uintptr(globals.StringBase()) + uintptr(offset))))
 }
 
 // EntVars represents entvars_t
@@ -43,72 +43,82 @@ func (entvars EntVars) Angles() [3]float32 {
 	return *(*[3]float32)(unsafe.Pointer(uintptr(entvars.ptr) + 0x50))
 }
 
+// Classname returns entvars_t::classname
 func (entvars EntVars) Classname() uint32 {
 	return *(*uint32)(unsafe.Pointer(uintptr(entvars.ptr) + 0x0))
 }
 
+// Mins returns entvars_t::mins
 func (entvars EntVars) Mins() [3]float32 {
 	return *(*[3]float32)(unsafe.Pointer(uintptr(entvars.ptr) + 0xdc))
 }
 
+// Maxs returns entvars_t::maxs
 func (entvars EntVars) Maxs() [3]float32 {
 	return *(*[3]float32)(unsafe.Pointer(uintptr(entvars.ptr) + 0xe8))
 }
 
+// AbsMin returns entvars_t::absmin
 func (entvars EntVars) AbsMin() [3]float32 {
 	return *(*[3]float32)(unsafe.Pointer(uintptr(entvars.ptr) + 0xc4))
 }
 
+// AbsMax returns entvars_t::absmax
 func (entvars EntVars) AbsMax() [3]float32 {
 	return *(*[3]float32)(unsafe.Pointer(uintptr(entvars.ptr) + 0xd0))
 }
 
+// Edict represents edict_t
 type Edict struct {
-	address uintptr
+	ptr unsafe.Pointer
 }
 
-func (edict *Edict) Pointer() unsafe.Pointer {
-	return unsafe.Pointer(edict.address)
+// MakeEdict creates a new instance of Edict
+func MakeEdict(pointer unsafe.Pointer) Edict {
+	return Edict{ptr: pointer}
+}
+
+// Pointer returns the pointer to the underlying edict_t
+func (edict Edict) Pointer() unsafe.Pointer {
+	return edict.ptr
 }
 
 // Free returns free != 0
-func (edict *Edict) Free() bool {
-	return *(*int)(unsafe.Pointer(edict.address)) != 0
+func (edict Edict) Free() bool {
+	return *(*int)(edict.ptr) != 0
 }
 
 // EntVars returns edict_t::v
-func (edict *Edict) EntVars() *EntVars {
-	address := uintptr(unsafe.Pointer(edict.address + 0x80))
-	entVars := MakeEntVars(unsafe.Pointer(address))
-	return &entVars
+func (edict Edict) EntVars() EntVars {
+	return MakeEntVars(unsafe.Pointer(uintptr(edict.ptr) + 0x80))
 }
 
 // PrivateData returns edict_t::pvPrivateData
-func (edict *Edict) PrivateData() unsafe.Pointer {
-	return *(*unsafe.Pointer)(unsafe.Pointer(edict.address + 0x7c))
+func (edict Edict) PrivateData() unsafe.Pointer {
+	return *(*unsafe.Pointer)(unsafe.Pointer(uintptr(edict.ptr) + 0x7c))
 }
 
 // SV represents the type of server_t
 type SV struct {
-	address uintptr
+	ptr unsafe.Pointer
 }
 
 // EntOffset returns the address offset of edict from sv.edicts
 func (sv SV) EntOffset(edict uintptr) uintptr {
-	edicts := *(*uintptr)(unsafe.Pointer(sv.address + 0x3bc60))
+	edicts := *(*uintptr)(unsafe.Pointer(uintptr(sv.ptr) + 0x3bc60))
 	return edict - edicts
 }
 
 // NumEdicts returns the number of edicts, sv.num_edicts
 func (sv SV) NumEdicts() int {
-	return *(*int)(unsafe.Pointer(sv.address + 0x3bc58))
+	return *(*int)(unsafe.Pointer(uintptr(sv.ptr) + 0x3bc58))
 }
 
 // Edict returns sv.edicts[index]
-func (sv SV) Edict(index int) *Edict {
-	base := *(*uintptr)(unsafe.Pointer(sv.address + 0x3bc60))
+func (sv SV) Edict(index int) Edict {
+	base := *(*uintptr)(unsafe.Pointer(uintptr(sv.ptr) + 0x3bc60))
 	// 804 is sizeof(edict_t)
-	return &Edict{address: base + uintptr(index*804)}
+	return MakeEdict(unsafe.Pointer(base + uintptr(index*804)))
 }
 
 // State interface to the game engine
@@ -118,18 +128,18 @@ type State struct {
 	ppmove          uintptr
 }
 
-func (eng *State) SetGlobalVariables(address uintptr) {
-	eng.GlobalVariables.address = address
+func (eng *State) SetGlobalVariables(pointer unsafe.Pointer) {
+	eng.GlobalVariables.ptr = pointer
 }
 
 // SetSV sets the address of sv
-func (eng *State) SetSV(address uintptr) {
-	eng.SV.address = address
+func (eng *State) SetSV(pointer unsafe.Pointer) {
+	eng.SV.ptr = pointer
 }
 
 // SetPPMove sets the address of ppmove
-func (eng *State) SetPPMove(address uintptr) {
-	eng.ppmove = address
+func (eng *State) SetPPMove(pointer unsafe.Pointer) {
+	eng.ppmove = uintptr(pointer)
 }
 
 // PMoveVelocity returns pmove->velocity

@@ -60,7 +60,7 @@ var cgraphInitGraphPattern = hooks.MakeFunctionPattern("CGraph::InitGraph", nil,
 //export HookedPMInit
 func HookedPMInit(ppm uintptr) {
 	hooks.CallFuncInts1(pmInitPattern.Address(), ppm)
-	engine.Engine.SetPPMove(ppm)
+	engine.Engine.SetPPMove(unsafe.Pointer(ppm))
 	logs.DLLLog.Debugf("Set PPMOVE with address = %x", ppm)
 }
 

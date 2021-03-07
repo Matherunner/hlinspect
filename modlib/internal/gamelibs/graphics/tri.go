@@ -97,7 +97,8 @@ func drawScriptedSequencesPossessions() {
 
 		className := engine.Engine.GlobalVariables.String(edict.EntVars().Classname())
 		if className == "monster_human_torch_ally" || className == "monster_scientist" {
-			cine := engine.MakeMonster(edict.PrivateData()).Cine()
+			monster := engine.MakeMonster(edict.PrivateData())
+			cine := monster.Cine()
 			if cine.Pointer() == nil {
 				continue
 			}

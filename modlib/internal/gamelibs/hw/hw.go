@@ -280,17 +280,17 @@ func InitHWDLL(base string) (err error) {
 
 	switch hostAutoSaveFPattern.PatternKey() {
 	case gamelibs.HL8684:
-		address := *(*uintptr)(unsafe.Pointer(uintptr(hostAutoSaveFPattern.Address()) + 19))
-		engine.Engine.SetSV(address)
-		logs.DLLLog.Debugf("Set SV address: %x", address)
+		ptr := *(*unsafe.Pointer)(unsafe.Pointer(uintptr(hostAutoSaveFPattern.Address()) + 19))
+		engine.Engine.SetSV(ptr)
+		logs.DLLLog.Debugf("Set SV address: %x", ptr)
 	}
 
 	switch hostNoclipFPattern.PatternKey() {
 	case gamelibs.HL8684:
-		address := *(*uintptr)(unsafe.Pointer(uintptr(hostNoclipFPattern.Address()) + 31))
-		address -= 0x14
-		engine.Engine.SetGlobalVariables(address)
-		logs.DLLLog.Debugf("Set GlobalVariables address: %x", address)
+		ptr := *(*unsafe.Pointer)(unsafe.Pointer(uintptr(hostNoclipFPattern.Address()) + 31))
+		ptr = unsafe.Pointer(uintptr(ptr) - 0x14)
+		engine.Engine.SetGlobalVariables(ptr)
+		logs.DLLLog.Debugf("Set GlobalVariables address: %x", ptr)
 	}
 
 	return
