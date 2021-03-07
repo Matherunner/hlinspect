@@ -1,6 +1,7 @@
 package graphics
 
 import (
+	"hlinspect/internal/cvar"
 	"hlinspect/internal/engine"
 	"hlinspect/internal/gamelibs/hw"
 	"hlinspect/internal/gl"
@@ -18,6 +19,10 @@ func DrawTriangles() {
 }
 
 func drawNodeGraph() {
+	if cvar.Nodes.Float32() == 0 {
+		return
+	}
+
 	hw.TriGLColor4f(1, 0, 1, 0.2)
 	hw.TriGLCullFace(hw.TriNone)
 	hw.TriGLRenderMode(hw.KRenderTransAdd)
@@ -31,6 +36,10 @@ func drawNodeGraph() {
 }
 
 func drawNodeLinks() {
+	if cvar.Nodes.Float32() == 0 || cvar.NodeLinks.Float32() == 0 {
+		return
+	}
+
 	hw.TriGLColor4f(1, 0, 1, 0.2)
 	hw.TriGLCullFace(hw.TriNone)
 	hw.TriGLRenderMode(hw.KRenderTransAdd)
