@@ -4,6 +4,7 @@ import (
 	"hlinspect/internal/engine"
 	"hlinspect/internal/gamelibs/hw"
 	"hlinspect/internal/gl"
+	"strings"
 )
 
 // DrawTriangles draw OpenGL triangles
@@ -110,7 +111,42 @@ func drawScriptedSequencesPossessions() {
 }
 
 func drawMonsterRoutes() {
+	gl.LineWidth(4)
+	hw.TriGLColor4f(0, 1, 0, 1)
+	hw.TriGLCullFace(hw.TriNone)
+	hw.TriGLRenderMode(hw.KRenderTransAdd)
 
+	numEdicts := engine.Engine.SV.NumEdicts()
+	for i := 0; i < numEdicts; i++ {
+		edict := engine.Engine.SV.Edict(i)
+		if edict.Free() {
+			continue
+		}
+
+		className := engine.Engine.GlobalVariables.String(edict.EntVars().Classname())
+		if strings.HasPrefix(className, "monster_") {
+			if edict.PrivateData() == nil {
+				continue
+			}
+
+			monster := engine.MakeMonster(edict.PrivateData())
+			routes := monster.Routes()
+			routeIndex := monster.RouteIndex()
+			monsterOrigin := edict.EntVars().Origin()
+			lines := [][3]float32{monsterOrigin}
+			for i := routeIndex; i < len(routes); i++ {
+				route := routes[i]
+				if route.Type() == 0 {
+					break
+				}
+				lines = append(lines, route.Location())
+				if route.Type()&engine.RouteMFIsGoal != 0 {
+					break
+				}
+			}
+			drawLines(lines)
+		}
+	}
 }
 
 func drawBoundingBoxes() {

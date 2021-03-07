@@ -127,8 +127,9 @@ func drawPyramid(origin [3]float32, width, height float32) {
 
 func drawLines(positions [][3]float32) {
 	hw.TriGLBegin(hw.TriLines)
-	for _, pos := range positions {
-		hw.TriGLVertex3fv(pos)
+	for i := 0; i < len(positions)-1; i++ {
+		hw.TriGLVertex3fv(positions[i])
+		hw.TriGLVertex3fv(positions[i+1])
 	}
 	hw.TriGLEnd()
 }
