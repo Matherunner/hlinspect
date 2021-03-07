@@ -9,6 +9,7 @@ import (
 // DrawTriangles draw OpenGL triangles
 func DrawTriangles() {
 	drawNodeGraph()
+	drawNodeLinks()
 	drawScriptedSequences()
 	drawScriptedSequencesPossessions()
 	drawBoundingBoxes()
@@ -24,6 +25,33 @@ func drawNodeGraph() {
 		node := engine.WorldGraph.Node(i)
 		origin := node.Origin()
 		drawPyramid(origin, 10, 20)
+	}
+}
+
+func drawNodeLinks() {
+	hw.TriGLColor4f(1, 0, 1, 0.2)
+	hw.TriGLCullFace(hw.TriNone)
+	hw.TriGLRenderMode(hw.KRenderTransAdd)
+
+	numLinks := engine.WorldGraph.NumLinks()
+	for i := 0; i < numLinks; i++ {
+		link := engine.WorldGraph.Link(i)
+		src := link.Source().Origin()
+		dest := link.Destination().Origin()
+		drawLines([][3]float32{src, dest})
+
+		entvars := link.LinkEnt()
+		if entvars.Pointer() != nil {
+			origin := entvars.Origin()
+			mins := entvars.Mins()
+			maxs := entvars.Maxs()
+			for i := 0; i < 3; i++ {
+				mins[i] += origin[i]
+				maxs[i] += origin[i]
+			}
+			// TODO: maybe tone down the brightness for this
+			drawAACuboid(mins, maxs)
+		}
 	}
 }
 

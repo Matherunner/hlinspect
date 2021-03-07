@@ -20,42 +20,47 @@ func (globals *GlobalVariables) String(offset uint32) string {
 
 // EntVars represents entvars_t
 type EntVars struct {
-	address uintptr
+	ptr unsafe.Pointer
 }
 
 // MakeEntVars creates an instance of EntVars
-func MakeEntVars(address uintptr) EntVars {
-	return EntVars{address: address}
+func MakeEntVars(pointer unsafe.Pointer) EntVars {
+	return EntVars{ptr: pointer}
+}
+
+// Pointer returns the pointer to this entvars_t object
+func (entvars *EntVars) Pointer() unsafe.Pointer {
+	return entvars.ptr
 }
 
 // Origin returns entvars_t::origin
 func (entvars *EntVars) Origin() [3]float32 {
-	return *(*[3]float32)(unsafe.Pointer(entvars.address + 0x8))
+	return *(*[3]float32)(unsafe.Pointer(uintptr(entvars.ptr) + 0x8))
 }
 
 // Angles returns entvars_t::angles
 func (entvars *EntVars) Angles() [3]float32 {
-	return *(*[3]float32)(unsafe.Pointer(entvars.address + 0x50))
+	return *(*[3]float32)(unsafe.Pointer(uintptr(entvars.ptr) + 0x50))
 }
 
 func (entvars *EntVars) Classname() uint32 {
-	return *(*uint32)(unsafe.Pointer(entvars.address))
+	return *(*uint32)(unsafe.Pointer(uintptr(entvars.ptr) + 0x0))
 }
 
 func (entvars *EntVars) Mins() [3]float32 {
-	return *(*[3]float32)(unsafe.Pointer(entvars.address + 0xdc))
+	return *(*[3]float32)(unsafe.Pointer(uintptr(entvars.ptr) + 0xdc))
 }
 
 func (entvars *EntVars) Maxs() [3]float32 {
-	return *(*[3]float32)(unsafe.Pointer(entvars.address + 0xe8))
+	return *(*[3]float32)(unsafe.Pointer(uintptr(entvars.ptr) + 0xe8))
 }
 
 func (entvars *EntVars) AbsMin() [3]float32 {
-	return *(*[3]float32)(unsafe.Pointer(entvars.address + 0xc4))
+	return *(*[3]float32)(unsafe.Pointer(uintptr(entvars.ptr) + 0xc4))
 }
 
 func (entvars *EntVars) AbsMax() [3]float32 {
-	return *(*[3]float32)(unsafe.Pointer(entvars.address + 0xd0))
+	return *(*[3]float32)(unsafe.Pointer(uintptr(entvars.ptr) + 0xd0))
 }
 
 type Edict struct {
@@ -74,7 +79,8 @@ func (edict *Edict) Free() bool {
 // EntVars returns edict_t::v
 func (edict *Edict) EntVars() *EntVars {
 	address := uintptr(unsafe.Pointer(edict.address + 0x80))
-	return &EntVars{address: address}
+	entVars := MakeEntVars(unsafe.Pointer(address))
+	return &entVars
 }
 
 // PrivateData returns edict_t::pvPrivateData

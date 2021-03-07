@@ -6,7 +6,39 @@ import (
 )
 
 func drawAACuboid(corner1, corner2 [3]float32) {
+	hw.TriGLBegin(hw.TriQuads)
 
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner1[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner2[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner2[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner1[1], corner1[2]})
+
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner1[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner1[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner2[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner2[1], corner1[2]})
+
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner1[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner1[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner1[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner1[1], corner2[2]})
+
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner2[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner2[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner1[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner1[1], corner2[2]})
+
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner2[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner1[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner1[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner2[1], corner1[2]})
+
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner2[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner2[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner2[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner2[1], corner2[2]})
+
+	hw.TriGLEnd()
 }
 
 func drawAACuboidWireframe(corner1, corner2 [3]float32) {

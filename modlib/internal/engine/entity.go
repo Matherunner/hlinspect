@@ -23,5 +23,5 @@ func MakeEntity(address uintptr) Entity {
 
 // EntVars returns CBaseEntity::pev
 func (entity Entity) EntVars() EntVars {
-	return MakeEntVars(*(*uintptr)(unsafe.Pointer(entity.address + EntityOffsets.PEV)))
+	return MakeEntVars(unsafe.Pointer(entity.address + EntityOffsets.PEV))
 }
