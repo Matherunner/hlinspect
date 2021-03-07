@@ -8,9 +8,23 @@ import (
 
 // DrawTriangles draw OpenGL triangles
 func DrawTriangles() {
+	drawNodeGraph()
 	drawScriptedSequences()
 	drawScriptedSequencesPossessions()
 	drawBoundingBoxes()
+}
+
+func drawNodeGraph() {
+	hw.TriGLColor4f(1, 0, 1, 0.2)
+	hw.TriGLCullFace(hw.TriNone)
+	hw.TriGLRenderMode(hw.KRenderTransAdd)
+
+	numNodes := engine.WorldGraph.NumNodes()
+	for i := 0; i < numNodes; i++ {
+		node := engine.WorldGraph.Node(i)
+		origin := node.Origin()
+		drawPyramid(origin, 10, 20)
+	}
 }
 
 func drawScriptedSequences() {

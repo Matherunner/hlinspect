@@ -184,7 +184,7 @@ func HookedRDrawSequentialPoly(surf uintptr, free int) {
 	gl.Enable(gl.Blend)
 	gl.DepthMask(false)
 	gl.BlendFunc(gl.SrcAlpha, gl.OneMinusSrcAlpha)
-	gl.Color4f(1, 1, 1, 0.3)
+	gl.Color4f(1, 1, 1, cvar.WallhackAlpha.Float32())
 
 	hooks.CallFuncInts2(rDrawSequentialPolyPattern.Address(), surf, uintptr(free))
 

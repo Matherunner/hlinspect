@@ -39,6 +39,11 @@ static inline int call_func_floats_4(void *fp, float a, float b, float c, float 
 {
 	return ((int (*)(float, float, float, float))fp)(a, b, c, d);
 }
+
+static inline int __thiscall call_func_this_ints_0(void *fp, uintptr_t this)
+{
+	return ((int (__thiscall *)())fp)(this);
+}
 */
 import "C"
 
@@ -68,4 +73,8 @@ func CallFuncFloatInt(address unsafe.Pointer, a float32, b uintptr) int {
 
 func CallFuncFloats4(address unsafe.Pointer, a, b, c, d float32) int {
 	return int(C.call_func_floats_4(address, C.float(a), C.float(b), C.float(c), C.float(d)))
+}
+
+func CallFuncThisInts0(address unsafe.Pointer, this uintptr) int {
+	return int(C.call_func_this_ints_0(address, C.uint(this)))
 }

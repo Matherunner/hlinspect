@@ -38,6 +38,18 @@ var cbaseMonsterChangeSchedulePattern = hooks.MakeFunctionPattern("CBaseMonster:
 	gamelibs.HL8684: hooks.MustMakePattern("8B 44 24 04 33 D2 89 81 78 01 00 00 89 91 7C 01 00 00 89 91 74 01 00 00 89 91 F0 00 00 00 89 91 68 02 00 00"),
 	gamelibs.OF8684: hooks.MustMakePattern("8B 81 84 01 00 00 33 D2 3B C2 56 74 55 8B 00 3B C2 74 4F 8B B1 88 01 00 00 57 8B 3C F0"),
 })
+var worldGraphPattern = hooks.MakeFunctionPattern("WorldGraph", map[string]string{
+	// Not actually a function
+	gamelibs.WindowsHLDLL: "WorldGraph",
+}, nil)
+var cgraphInitGraphPattern = hooks.MakeFunctionPattern("CGraph::InitGraph", nil, map[string]hooks.SearchPattern{
+	gamelibs.HL8684: hooks.MustMakePattern("56 8B F1 57 33 FF 8B 46 10 89 3E 3B C7 89 7E 04 89 7E 08 74 0C 50 E8 ?? ?? ?? ?? 83 C4 04 89 7E 10 8B 46 0C"),
+})
+
+// var cgraphAllocNodesPattern = hooks.MakeFunctionPattern("CGraph::AllocNodes", nil, map[string]hooks.SearchPattern{
+// 	// Search for "Couldn't malloc %d nodes!"
+// 	gamelibs.HL8684: hooks.MustMakePattern("68 00 04 00 00 6A 58 E8 ?? ?? ?? ?? 83 C4 08 A3 ?? ?? ?? ?? 85 C0 75 19 A1 ?? ?? ?? ?? 50 68 ?? ?? ?? ?? 6A 02"),
+// })
 
 // HookedPMInit PM_Init
 //export HookedPMInit
@@ -85,6 +97,13 @@ func CSoundEntSoundPointerForIndex(index int32) uintptr {
 	return uintptr(hooks.CallFuncInts1(csoundEntSoundPointerForIndexPattern.Address(), uintptr(index)))
 }
 
+// HookedCGraphInitGraph hooks CGraph::InitGraph
+//export HookedCGraphInitGraph
+func HookedCGraphInitGraph(this uintptr) {
+	hooks.CallFuncThisInts0(cgraphInitGraphPattern.Address(), this)
+	engine.WorldGraph.SetPointer(unsafe.Pointer(this))
+}
+
 // InitHLDLL initialise hl.dll or the corresponding mod DLL
 func InitHLDLL(base string) (err error) {
 	if hlDLL != nil {
@@ -102,6 +121,8 @@ func InitHLDLL(base string) (err error) {
 		&csoundEntActiveListPattern:           nil,
 		&csoundEntSoundPointerForIndexPattern: nil,
 		&cbaseMonsterChangeSchedulePattern:    nil,
+		&worldGraphPattern:                    nil,
+		&cgraphInitGraphPattern:               C.C_HookedCGraphInitGraph,
 	}
 
 	errors := hooks.BatchFind(hlDLL, items)
@@ -120,6 +141,10 @@ func InitHLDLL(base string) (err error) {
 	case gamelibs.WindowsHLDLL:
 		engine.CineOffsets.Radius = 0x2a8
 		engine.CineOffsets.Interruptible = 0x2c4
+	}
+
+	if worldGraphPattern.Address() != nil {
+		engine.WorldGraph.SetPointer(worldGraphPattern.Address())
 	}
 
 	return
