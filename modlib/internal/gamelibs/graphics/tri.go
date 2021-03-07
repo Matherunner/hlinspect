@@ -10,6 +10,7 @@ import (
 func DrawTriangles() {
 	drawScriptedSequences()
 	drawScriptedSequencesPossessions()
+	drawBoundingBoxes()
 }
 
 func drawScriptedSequences() {
@@ -61,6 +62,35 @@ func drawScriptedSequencesPossessions() {
 			cineOrigin := entVars.Origin()
 			monsterOrigin := edict.EntVars().Origin()
 			drawLines([][3]float32{cineOrigin, monsterOrigin})
+		}
+	}
+}
+
+func drawBoundingBoxes() {
+	gl.LineWidth(1)
+	hw.TriGLColor4f(0, 1, 0, 1)
+	hw.TriGLCullFace(hw.TriNone)
+	hw.TriGLRenderMode(hw.KRenderTransAdd)
+
+	numEdicts := engine.Engine.SV.NumEdicts()
+	for i := 0; i < numEdicts; i++ {
+		edict := engine.Engine.SV.Edict(i)
+		if edict.Free() {
+			continue
+		}
+
+		// Mins and Maxs are more accurate than AbsMin and AbsMax, see alien grunt's bbox
+		entVars := edict.EntVars()
+		className := engine.Engine.GlobalVariables.String(entVars.Classname())
+		if className == "monster_alien_grunt" {
+			origin := entVars.Origin()
+			mins := entVars.Mins()
+			maxs := entVars.Maxs()
+			for i := 0; i < 3; i++ {
+				mins[i] += origin[i]
+				maxs[i] += origin[i]
+			}
+			drawAACuboidWireframe(mins, maxs)
 		}
 	}
 }

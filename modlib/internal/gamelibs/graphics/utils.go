@@ -9,6 +9,66 @@ func drawAACuboid(corner1, corner2 [3]float32) {
 
 }
 
+func drawAACuboidWireframe(corner1, corner2 [3]float32) {
+	hw.TriGLBegin(hw.TriLines)
+
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner1[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner2[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner2[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner2[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner2[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner1[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner1[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner1[1], corner1[2]})
+
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner1[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner1[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner1[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner2[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner2[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner2[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner2[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner1[1], corner1[2]})
+
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner1[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner1[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner1[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner1[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner1[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner1[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner1[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner1[1], corner1[2]})
+
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner2[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner2[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner2[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner1[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner1[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner1[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner1[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner2[1], corner2[2]})
+
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner2[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner1[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner1[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner1[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner1[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner2[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner2[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner2[1], corner2[2]})
+
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner2[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner2[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner2[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner2[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner2[1], corner1[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner2[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner1[0], corner2[1], corner2[2]})
+	hw.TriGLVertex3fv([3]float32{corner2[0], corner2[1], corner2[2]})
+
+	hw.TriGLEnd()
+}
+
 func drawPyramid(origin [3]float32, width, height float32) {
 	halfWidth := width * 0.5
 	offsets := [5][3]float32{

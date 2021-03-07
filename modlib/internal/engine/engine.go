@@ -42,6 +42,22 @@ func (entvars *EntVars) Classname() uint32 {
 	return *(*uint32)(unsafe.Pointer(entvars.address))
 }
 
+func (entvars *EntVars) Mins() [3]float32 {
+	return *(*[3]float32)(unsafe.Pointer(entvars.address + 0xdc))
+}
+
+func (entvars *EntVars) Maxs() [3]float32 {
+	return *(*[3]float32)(unsafe.Pointer(entvars.address + 0xe8))
+}
+
+func (entvars *EntVars) AbsMin() [3]float32 {
+	return *(*[3]float32)(unsafe.Pointer(entvars.address + 0xc4))
+}
+
+func (entvars *EntVars) AbsMax() [3]float32 {
+	return *(*[3]float32)(unsafe.Pointer(entvars.address + 0xd0))
+}
+
 type Edict struct {
 	address uintptr
 }
