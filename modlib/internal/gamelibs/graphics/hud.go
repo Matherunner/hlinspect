@@ -40,36 +40,38 @@ func drawEntitiesOverlay() {
 			continue
 		}
 
-		className := engine.Engine.GlobalVariables.String(edict.EntVars().Classname())
-		if className == "monster_scientist" || className == "monster_barney" || className == "monster_bigmomma" || className == "monster_human_torch_ally" {
-			monster := engine.MakeMonster(edict.PrivateData())
-			schedule := monster.Schedule()
-			if schedule != nil {
-				origin := edict.EntVars().Origin()
-				screen, clipped := worldToHUDScreen(origin, int(screenInfo.Width), int(screenInfo.Height))
-				if !clipped {
-					hw.DrawString(screen[0], screen[1], schedule.Name())
-					task := schedule.Task(monster.ScheduleIndex())
-					hw.DrawString(screen[0], screen[1]+int(screenInfo.CharHeight), fmt.Sprintf("%v (%v)", task.Name(), task.Data))
-					angles := edict.EntVars().Angles()
-					hw.DrawString(screen[0], screen[1]+2*int(screenInfo.CharHeight), fmt.Sprintf("%v %v", angles[0], angles[1]))
-					hw.DrawString(screen[0], screen[1]+3*int(screenInfo.CharHeight), fmt.Sprintf("%v %v %v", origin[0], origin[1], origin[2]))
+		tracked := hw.TrackedNPC[edict.PrivateData()]
+		if !tracked {
+			continue
+		}
 
-					cine := engine.MakeMonster(edict.PrivateData()).Cine()
-					if cine.Pointer() != nil {
-						if cine.Interruptible() {
-							hw.DrawString(screen[0], screen[1]+4*int(screenInfo.CharHeight), "I")
-						} else {
-							hw.DrawString(screen[0], screen[1]+4*int(screenInfo.CharHeight), "UI")
-						}
-					}
+		monster := engine.MakeMonster(edict.PrivateData())
+		schedule := monster.Schedule()
+		if schedule != nil {
+			origin := edict.EntVars().Origin()
+			screen, clipped := worldToHUDScreen(origin, int(screenInfo.Width), int(screenInfo.Height))
+			if !clipped {
+				hw.DrawString(screen[0], screen[1], schedule.Name())
+				task := schedule.Task(monster.ScheduleIndex())
+				hw.DrawString(screen[0], screen[1]+int(screenInfo.CharHeight), fmt.Sprintf("%v (%v)", task.Name(), task.Data))
+				angles := edict.EntVars().Angles()
+				hw.DrawString(screen[0], screen[1]+2*int(screenInfo.CharHeight), fmt.Sprintf("%v %v", angles[0], angles[1]))
+				hw.DrawString(screen[0], screen[1]+3*int(screenInfo.CharHeight), fmt.Sprintf("%v %v %v", origin[0], origin[1], origin[2]))
 
-					e := hw.PFCheckClientI(edict.Pointer())
-					if e != 0 && engine.Engine.SV.EntOffset(e) != 0 {
-						hw.DrawString(screen[0], screen[1]+5*int(screenInfo.CharHeight), "V")
+				cine := engine.MakeMonster(edict.PrivateData()).Cine()
+				if cine.Pointer() != nil {
+					if cine.Interruptible() {
+						hw.DrawString(screen[0], screen[1]+4*int(screenInfo.CharHeight), "I")
 					} else {
-						hw.DrawString(screen[0], screen[1]+5*int(screenInfo.CharHeight), "IV")
+						hw.DrawString(screen[0], screen[1]+4*int(screenInfo.CharHeight), "UI")
 					}
+				}
+
+				e := hw.PFCheckClientI(edict.Pointer())
+				if e != 0 && engine.Engine.SV.EntOffset(e) != 0 {
+					hw.DrawString(screen[0], screen[1]+5*int(screenInfo.CharHeight), "V")
+				} else {
+					hw.DrawString(screen[0], screen[1]+5*int(screenInfo.CharHeight), "IV")
 				}
 			}
 		}

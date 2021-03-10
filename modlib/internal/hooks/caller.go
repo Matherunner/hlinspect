@@ -30,6 +30,11 @@ static inline int call_func_ints_4(void *fp, uintptr_t a, uintptr_t b, uintptr_t
 	return ((int (*)(uintptr_t, uintptr_t, uintptr_t, uintptr_t))fp)(a, b, c, d);
 }
 
+static inline int call_func_ints_5(void *fp, uintptr_t a, uintptr_t b, uintptr_t c, uintptr_t d, uintptr_t e)
+{
+	return ((int (*)(uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t))fp)(a, b, c, d, e);
+}
+
 static inline int call_func_float_int(void *fp, float a, uintptr_t b)
 {
 	return ((int (*)(float, uintptr_t))fp)(a, b);
@@ -65,6 +70,10 @@ func CallFuncInts3(address unsafe.Pointer, a, b, c uintptr) int {
 
 func CallFuncInts4(address unsafe.Pointer, a, b, c, d uintptr) int {
 	return int(C.call_func_ints_4(address, C.uint(a), C.uint(b), C.uint(c), C.uint(d)))
+}
+
+func CallFuncInts5(address unsafe.Pointer, a, b, c, d, e uintptr) int {
+	return int(C.call_func_ints_5(address, C.uint(a), C.uint(b), C.uint(c), C.uint(d), C.uint(e)))
 }
 
 func CallFuncFloatInt(address unsafe.Pointer, a float32, b uintptr) int {

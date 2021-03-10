@@ -1,5 +1,7 @@
 package hw
 
+import "unsafe"
+
 type rawCVar struct {
 	Name   uintptr
 	String uintptr
@@ -16,4 +18,24 @@ type ScreenInfo struct {
 	Flags      int32
 	CharHeight int32
 	CharWidths [256]int16
+}
+
+const (
+	TraceDontIgnoreMonsters = iota
+	TraceIgnoreMonsters
+	TraceMissile
+)
+
+// TraceResult represents TraceResult
+type TraceResult struct {
+	AllSolid    int32
+	StartSolid  int32
+	InOpen      int32
+	InWater     int32
+	Fraction    float32
+	EndPos      [3]float32
+	PlaneDist   float32
+	PlaneNormal [3]float32
+	Hit         unsafe.Pointer
+	HitGroup    int32
 }
