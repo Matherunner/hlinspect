@@ -80,8 +80,14 @@ func drawScriptedSequences() {
 
 		className := engine.Engine.GlobalVariables.String(edict.EntVars().Classname())
 		if className == "scripted_sequence" {
+			cine := engine.MakeCine(edict.PrivateData())
+			interruptible := cine.Interruptible()
 			origin := edict.EntVars().Origin()
-			drawPyramid(origin, 10, 20)
+			if interruptible {
+				drawInvertedPyramid(origin, 10, 20)
+			} else {
+				drawPyramid(origin, 10, 20)
+			}
 
 			// TODO: re-enable this?
 			// cine := engine.MakeCine(edict.PrivateData())

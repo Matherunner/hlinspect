@@ -27,6 +27,7 @@ func (cine Cine) Pointer() unsafe.Pointer {
 	return cine.ptr
 }
 
+// Radius returns CCineMonster::m_flRadius
 func (cine Cine) Radius() float32 {
 	return *(*float32)(unsafe.Pointer(uintptr(cine.ptr) + CineOffsets.Radius))
 }
