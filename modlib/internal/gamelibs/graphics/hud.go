@@ -5,6 +5,7 @@ import (
 	"hlinspect/internal/engine"
 	"hlinspect/internal/gamelibs/hl"
 	"hlinspect/internal/gamelibs/hw"
+	"strings"
 )
 
 var screenInfo *hw.ScreenInfo
@@ -45,16 +46,21 @@ func drawEntitiesOverlay() {
 			continue
 		}
 
+		entVars := edict.EntVars()
+		if !strings.HasPrefix(engine.Engine.GlobalVariables.String(entVars.Classname()), "monster_") {
+			continue
+		}
+
 		monster := engine.MakeMonster(edict.PrivateData())
 		schedule := monster.Schedule()
 		if schedule != nil {
-			origin := edict.EntVars().Origin()
+			origin := entVars.Origin()
 			screen, clipped := worldToHUDScreen(origin, int(screenInfo.Width), int(screenInfo.Height))
 			if !clipped {
 				hw.DrawString(screen[0], screen[1], schedule.Name())
 				task := schedule.Task(monster.ScheduleIndex())
 				hw.DrawString(screen[0], screen[1]+int(screenInfo.CharHeight), fmt.Sprintf("%v (%v)", task.Name(), task.Data))
-				angles := edict.EntVars().Angles()
+				angles := entVars.Angles()
 				hw.DrawString(screen[0], screen[1]+2*int(screenInfo.CharHeight), fmt.Sprintf("%v %v", angles[0], angles[1]))
 				hw.DrawString(screen[0], screen[1]+3*int(screenInfo.CharHeight), fmt.Sprintf("%v %v %v", origin[0], origin[1], origin[2]))
 
