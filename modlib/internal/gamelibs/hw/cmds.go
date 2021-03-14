@@ -34,10 +34,11 @@ var commandHandlerByName = map[string]func(){
 	},
 
 	"hli_npc_track_del": func() {
-
+		// TODO: check for * and param, delete all for now
+		TrackedNPC = map[unsafe.Pointer]bool{}
 	},
 
 	"hli_npc_track_list": func() {
-
+		// TODO: maybe print out the class names
 	},
 }

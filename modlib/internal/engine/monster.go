@@ -16,8 +16,46 @@ const (
 	RouteMFDontSimplify = 1 << 8
 )
 
+const (
+	MonsterStateNone = iota
+	MonsterStateIdle
+	MonsterStateCombat
+	MonsterStateAlert
+	MonsterStateHunt
+	MonsterStateProne
+	MonsterStateScript
+	MonsterStatePlaydead
+	MonsterStateDead
+)
+
+// MonsterStateToString convert monster state to a human readable name
+func MonsterStateToString(state int) string {
+	switch state {
+	case MonsterStateNone:
+		return "None"
+	case MonsterStateIdle:
+		return "Idle"
+	case MonsterStateCombat:
+		return "Combat"
+	case MonsterStateAlert:
+		return "Alert"
+	case MonsterStateHunt:
+		return "Hunt"
+	case MonsterStateProne:
+		return "Prone"
+	case MonsterStateScript:
+		return "Script"
+	case MonsterStatePlaydead:
+		return "Playdead"
+	case MonsterStateDead:
+		return "Dead"
+	}
+	return ""
+}
+
 // MonsterOffsets store offsets to class members
 var MonsterOffsets monsterOffsets = monsterOffsets{
+	MonsterState:  0x16c,
 	Schedule:      0x178,
 	ScheduleIndex: 0x17c,
 	Cine:          0x290,
@@ -27,6 +65,7 @@ var MonsterOffsets monsterOffsets = monsterOffsets{
 }
 
 type monsterOffsets struct {
+	MonsterState uintptr
 	// Look inside CBaseMonster::ChangeSchedule.
 	Schedule      uintptr
 	ScheduleIndex uintptr
@@ -101,4 +140,9 @@ func (monster Monster) Routes() [8]Waypoint {
 // RouteIndex returns CBaseMontser::m_iRouteIndex
 func (monster Monster) RouteIndex() int {
 	return *(*int)(unsafe.Pointer(uintptr(monster.ptr) + MonsterOffsets.RouteIndex))
+}
+
+// MonsterState returns CBaseMontser::m_MonsterState
+func (monster Monster) MonsterState() int {
+	return *(*int)(unsafe.Pointer(uintptr(monster.ptr) + MonsterOffsets.MonsterState))
 }
