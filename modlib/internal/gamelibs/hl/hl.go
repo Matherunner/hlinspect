@@ -136,6 +136,7 @@ func InitHLDLL(base string) (err error) {
 
 	switch cbaseMonsterChangeSchedulePattern.PatternKey() {
 	case gamelibs.OF8684:
+		engine.MonsterOffsets.MonsterState = 0x178
 		engine.MonsterOffsets.Schedule = 0x184
 		engine.MonsterOffsets.ScheduleIndex = 0x188
 		engine.MonsterOffsets.Cine = 0x29c
