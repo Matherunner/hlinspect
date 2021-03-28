@@ -19,6 +19,7 @@ func DrawTriangles() {
 	drawMonsterRoutes()
 	drawBoundingBoxes()
 	drawSoundLinks()
+	drawInfoBigMomma()
 }
 
 func drawNodeGraph() {
@@ -240,5 +241,26 @@ func drawSoundLinks() {
 			drawLines([][3]float32{origin, soundOrigin})
 		}
 
+	}
+}
+
+func drawInfoBigMomma() {
+	hw.TriGLColor4f(0.8, 0.4, 0.7, 1)
+	hw.TriGLCullFace(hw.TriNone)
+	hw.TriGLRenderMode(hw.KRenderTransAdd)
+
+	numEdicts := engine.Engine.SV.NumEdicts()
+	for i := 0; i < numEdicts; i++ {
+		edict := engine.Engine.SV.Edict(i)
+		if edict.Free() {
+			continue
+		}
+
+		entVars := edict.EntVars()
+		className := engine.Engine.GlobalVariables.String(entVars.Classname())
+		if strings.HasPrefix(className, "info_bigmomma") {
+			origin := entVars.Origin()
+			drawPyramid(origin, 50, 100)
+		}
 	}
 }
