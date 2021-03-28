@@ -89,10 +89,10 @@ func drawScriptedSequences() {
 				drawPyramid(origin, 10, 20)
 			}
 
-			// TODO: re-enable this?
-			// cine := engine.MakeCine(edict.PrivateData())
-			// radius := cine.Radius()
-			// drawSphere(origin, radius, 10, 10)
+			if hw.ShowRadiusCine[edict.PrivateData()] {
+				radius := cine.Radius()
+				drawSphere(origin, radius, 50, 50)
+			}
 		}
 	}
 }

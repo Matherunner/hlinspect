@@ -2,10 +2,12 @@ package hw
 
 import (
 	"hlinspect/internal/engine"
+	"math"
 	"unsafe"
 )
 
 var TrackedNPC = map[unsafe.Pointer]bool{}
+var ShowRadiusCine = map[unsafe.Pointer]bool{}
 
 var commandHandlerByName = map[string]func(){
 	"hli_npc_track_add": func() {
@@ -32,13 +34,46 @@ var commandHandlerByName = map[string]func(){
 
 		TrackedNPC[edict.PrivateData()] = true
 	},
-
 	"hli_npc_track_del": func() {
 		// TODO: check for * and param, delete all for now
 		TrackedNPC = map[unsafe.Pointer]bool{}
 	},
-
 	"hli_npc_track_list": func() {
 		// TODO: maybe print out the class names
+	},
+	"hli_cine_radius_all": func() {
+
+	},
+	"hli_cine_radius_nearest_add": func() {
+		position := engine.Engine.PMovePosition()
+		minDistance := math.MaxFloat64
+		var minEnt unsafe.Pointer
+		numEdicts := engine.Engine.SV.NumEdicts()
+		for i := 0; i < numEdicts; i++ {
+			edict := engine.Engine.SV.Edict(i)
+			if edict.Free() {
+				continue
+			}
+
+			entVars := edict.EntVars()
+			className := engine.Engine.GlobalVariables.String(entVars.Classname())
+			if className != "scripted_sequence" {
+				continue
+			}
+
+			entOrigin := entVars.Origin()
+			distance := math.Hypot(float64(entOrigin[0]-position[0]), float64(entOrigin[1]-position[1]))
+			if distance < minDistance {
+				minDistance = distance
+				minEnt = edict.PrivateData()
+			}
+		}
+		ShowRadiusCine[minEnt] = true
+	},
+	"hli_cine_radius_nearest_del": func() {
+
+	},
+	"hli_cine_radius_clear": func() {
+		ShowRadiusCine = map[unsafe.Pointer]bool{}
 	},
 }
