@@ -20,8 +20,7 @@ func DrawHUD(time float32, intermission int32) {
 	hw.VGUI2DrawSetTextColorAlpha(255, 180, 30, 255)
 
 	drawEntitiesOverlay()
-	// TODO: temporary
-	// drawSounds()
+	drawSounds()
 }
 
 func drawSounds() {
@@ -53,6 +52,17 @@ func drawEntitiesOverlay() {
 		}
 
 		monster := engine.MakeMonster(edict.PrivateData())
+
+		// TODO: commented out sound
+		// {
+		// 	origin := entVars.Origin()
+		// 	screen, clipped := worldToHUDScreen(origin, int(screenInfo.Width), int(screenInfo.Height))
+		// 	if !clipped {
+		// 		nextAudible := monster.NextAudible()
+		// 		hw.DrawString(screen[0], screen[1]-int(screenInfo.CharHeight), fmt.Sprintf("Audible: %v", nextAudible))
+		// 	}
+		// }
+
 		schedule := monster.Schedule()
 		if schedule != nil {
 			origin := entVars.Origin()

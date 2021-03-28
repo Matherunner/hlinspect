@@ -62,6 +62,7 @@ var MonsterOffsets monsterOffsets = monsterOffsets{
 	Route:         0x180,
 	RouteIndex:    0x204,
 	WaypointSize:  0x10,
+	AudibleList:   0x21C,
 }
 
 type monsterOffsets struct {
@@ -75,6 +76,7 @@ type monsterOffsets struct {
 	Route        uintptr
 	RouteIndex   uintptr
 	WaypointSize uintptr
+	AudibleList  uintptr
 }
 
 // Waypoint represents Waypoint_t
@@ -105,6 +107,10 @@ type Monster struct {
 // MakeMonster creates a new instance of Monster
 func MakeMonster(pointer unsafe.Pointer) Monster {
 	return Monster{ptr: pointer}
+}
+
+func (monster Monster) Pointer() unsafe.Pointer {
+	return monster.ptr
 }
 
 // Schedule returns CBaseMonster::m_pSchedule
@@ -145,4 +151,9 @@ func (monster Monster) RouteIndex() int {
 // MonsterState returns CBaseMontser::m_MonsterState
 func (monster Monster) MonsterState() int {
 	return *(*int)(unsafe.Pointer(uintptr(monster.ptr) + MonsterOffsets.MonsterState))
+}
+
+// AudibleList returns CBaseMonster::m_iAudibleList
+func (monster Monster) AudibleList() int {
+	return *(*int)(unsafe.Pointer(uintptr(monster.ptr) + MonsterOffsets.AudibleList))
 }

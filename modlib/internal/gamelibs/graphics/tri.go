@@ -3,9 +3,11 @@ package graphics
 import (
 	"hlinspect/internal/cvar"
 	"hlinspect/internal/engine"
+	"hlinspect/internal/gamelibs/hl"
 	"hlinspect/internal/gamelibs/hw"
 	"hlinspect/internal/gl"
 	"strings"
+	"unsafe"
 )
 
 // DrawTriangles draw OpenGL triangles
@@ -16,6 +18,7 @@ func DrawTriangles() {
 	drawScriptedSequencesPossessions()
 	drawMonsterRoutes()
 	drawBoundingBoxes()
+	drawSoundLinks()
 }
 
 func drawNodeGraph() {
@@ -191,5 +194,51 @@ func drawBoundingBoxes() {
 			}
 			drawAACuboidWireframe(mins, maxs)
 		}
+	}
+}
+
+func drawSoundLinks() {
+	gl.LineWidth(3)
+	hw.TriGLColor4f(0.5, 0.8, 1, 1)
+	hw.TriGLCullFace(hw.TriNone)
+	hw.TriGLRenderMode(hw.KRenderTransAdd)
+
+	numEdicts := engine.Engine.SV.NumEdicts()
+	for i := 0; i < numEdicts; i++ {
+		edict := engine.Engine.SV.Edict(i)
+		if edict.Free() {
+			continue
+		}
+
+		entVars := edict.EntVars()
+		className := engine.Engine.GlobalVariables.String(entVars.Classname())
+		if strings.HasPrefix(className, "monster_") {
+			origin := entVars.Origin()
+			monster := engine.MakeMonster(edict.PrivateData())
+			if monster.MonsterState() == engine.MonsterStateDead || monster.MonsterState() == engine.MonsterStateNone || monster.MonsterState() == engine.MonsterStateProne {
+				continue
+			}
+
+			e := hw.PFCheckClientI(edict.Pointer())
+			if e == 0 || engine.Engine.SV.EntOffset(e) == 0 {
+				// Not in PVS
+				if monster.MonsterState() != engine.MonsterStateCombat {
+					// If this condition is true, then Listen is not called in the game
+					// If we don't do this check, there will be a ton of false positives because m_iAudibleList is initialised to 0
+					// which happens to be the player's sound.
+					continue
+				}
+			}
+
+			audibleList := monster.AudibleList()
+			if audibleList == -1 {
+				continue
+			}
+
+			sound := engine.MakeSound(unsafe.Pointer(hl.CSoundEntSoundPointerForIndex(int32(audibleList))))
+			soundOrigin := sound.Origin()
+			drawLines([][3]float32{origin, soundOrigin})
+		}
+
 	}
 }

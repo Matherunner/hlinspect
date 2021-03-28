@@ -1,6 +1,9 @@
 package hl
 
-import "hlinspect/internal/engine"
+import (
+	"hlinspect/internal/engine"
+	"unsafe"
+)
 
 // SoundItem is an internal representation of a sound
 type SoundItem struct {
@@ -19,7 +22,7 @@ func GetSoundList() []SoundItem {
 		if address == 0 {
 			break
 		}
-		sound := engine.MakeSound(address)
+		sound := engine.MakeSound(unsafe.Pointer(address))
 		items = append(items, SoundItem{
 			Origin:     sound.Origin(),
 			Type:       sound.Type(),

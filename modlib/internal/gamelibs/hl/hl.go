@@ -46,11 +46,19 @@ var cbaseMonsterRouteNewPattern = hooks.MakeFunctionPattern("CBaseMonster::Route
 	// This pattern includes the initial part of CBaseMonster::FRouteClear, and mask out the offsets
 	gamelibs.HL8684: hooks.MustMakePattern("33 C0 89 81 ?? ?? ?? ?? 89 81 ?? ?? ?? ?? C3 90 8B 81 ?? ?? ?? ?? C1 E0 04"),
 })
+var cbaseMonsterPBestSoundPattern = hooks.MakeFunctionPattern("CBaseMonster::PBestSound", map[string]string{
+	gamelibs.WindowsHLDLL: "CBaseMonster::PBestSound",
+}, map[string]hooks.SearchPattern{
+	// Search for "ERROR! monster %s has no audible sounds!"
+	gamelibs.HL8684: hooks.MustMakePattern("83 EC 10 53 8B D9 55 57 8B BB 1C 02 00 00 83 CD FF 83 FF FF C7 44 24 0C 00 00 00 46 75 2D"),
+})
 var worldGraphPattern = hooks.MakeFunctionPattern("WorldGraph", map[string]string{
 	// Not actually a function
 	gamelibs.WindowsHLDLL: "WorldGraph",
 }, nil)
-var cgraphInitGraphPattern = hooks.MakeFunctionPattern("CGraph::InitGraph", nil, map[string]hooks.SearchPattern{
+var cgraphInitGraphPattern = hooks.MakeFunctionPattern("CGraph::InitGraph", map[string]string{
+	gamelibs.WindowsHLDLL: "CGraph::InitGraph",
+}, map[string]hooks.SearchPattern{
 	// Search for "Couldn't malloc %d nodes!" to find CGraph::AllocNodes
 	// Then find cross reference from CWorld::Precache
 	gamelibs.HL8684: hooks.MustMakePattern("56 8B F1 57 33 FF 8B 46 10 89 3E 3B C7 89 7E 04 89 7E 08 74 0C 50 E8 ?? ?? ?? ?? 83 C4 04 89 7E 10 8B 46 0C"),
@@ -102,6 +110,11 @@ func CSoundEntSoundPointerForIndex(index int32) uintptr {
 	return uintptr(hooks.CallFuncInts1(csoundEntSoundPointerForIndexPattern.Address(), uintptr(index)))
 }
 
+// CBaseMonsterPBestSound calls CBaseMonster::PBestSound
+func CBaseMonsterPBestSound(this unsafe.Pointer) unsafe.Pointer {
+	return unsafe.Pointer(uintptr(hooks.CallFuncThisInts0(cbaseMonsterPBestSoundPattern.Address(), uintptr(this))))
+}
+
 // HookedCGraphInitGraph hooks CGraph::InitGraph
 //export HookedCGraphInitGraph
 func HookedCGraphInitGraph(this uintptr) {
@@ -129,6 +142,7 @@ func InitHLDLL(base string) (err error) {
 		&cbaseMonsterRouteNewPattern:          nil,
 		&worldGraphPattern:                    nil,
 		&cgraphInitGraphPattern:               C.C_HookedCGraphInitGraph,
+		&cbaseMonsterPBestSoundPattern:        nil,
 	}
 
 	errors := hooks.BatchFind(hlDLL, items)
@@ -140,6 +154,7 @@ func InitHLDLL(base string) (err error) {
 		engine.MonsterOffsets.Schedule = 0x184
 		engine.MonsterOffsets.ScheduleIndex = 0x188
 		engine.MonsterOffsets.Cine = 0x29c
+		engine.MonsterOffsets.AudibleList = 0x228
 		engine.CineOffsets.Radius = 0x2dc
 		engine.CineOffsets.Interruptible = 0x2f8
 	}
