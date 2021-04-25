@@ -63,6 +63,7 @@ var MonsterOffsets monsterOffsets = monsterOffsets{
 	RouteIndex:    0x204,
 	WaypointSize:  0x10,
 	AudibleList:   0x21C,
+	WaitFinished:  0x158,
 }
 
 type monsterOffsets struct {
@@ -77,6 +78,7 @@ type monsterOffsets struct {
 	RouteIndex   uintptr
 	WaypointSize uintptr
 	AudibleList  uintptr
+	WaitFinished uintptr
 }
 
 // Waypoint represents Waypoint_t
@@ -156,4 +158,9 @@ func (monster Monster) MonsterState() int {
 // AudibleList returns CBaseMonster::m_iAudibleList
 func (monster Monster) AudibleList() int {
 	return *(*int)(unsafe.Pointer(uintptr(monster.ptr) + MonsterOffsets.AudibleList))
+}
+
+// WaitFinished returns CBaseMonster::m_flWaitFinished
+func (monster Monster) WaitFinished() float32 {
+	return *(*float32)(unsafe.Pointer(uintptr(monster.ptr) + MonsterOffsets.WaitFinished))
 }

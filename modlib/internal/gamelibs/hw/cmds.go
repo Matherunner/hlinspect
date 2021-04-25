@@ -9,6 +9,8 @@ import (
 var TrackedNPC = map[unsafe.Pointer]bool{}
 var ShowRadiusCine = map[unsafe.Pointer]bool{}
 
+// To add a new command, simply specify the name and the function here. We don't need
+// to edit anywhere else.
 var commandHandlerByName = map[string]func(){
 	"hli_npc_track_add": func() {
 		position := engine.Engine.PMovePosition()

@@ -10,6 +10,11 @@ type GlobalVariables struct {
 	ptr unsafe.Pointer
 }
 
+// Time returns globalvars_t::time
+func (globals GlobalVariables) Time() float32 {
+	return *(*float32)(globals.ptr)
+}
+
 func (globals GlobalVariables) StringBase() unsafe.Pointer {
 	return *(*unsafe.Pointer)(unsafe.Pointer(uintptr(globals.ptr) + 0x98))
 }
@@ -46,6 +51,11 @@ func (entvars EntVars) Angles() [3]float32 {
 // Classname returns entvars_t::classname
 func (entvars EntVars) Classname() uint32 {
 	return *(*uint32)(unsafe.Pointer(uintptr(entvars.ptr) + 0x0))
+}
+
+// Targetname returns entvars_t::targetname
+func (entvars EntVars) Targetname() uint32 {
+	return *(*uint32)(unsafe.Pointer(uintptr(entvars.ptr) + 0x1cc))
 }
 
 // Mins returns entvars_t::mins
