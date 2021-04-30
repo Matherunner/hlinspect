@@ -35,6 +35,7 @@ func HookedHUDDrawTransparentTriangles() {
 	gl.Disable(gl.Texture2D)
 	graphics.DrawTriangles()
 	gl.Enable(gl.Texture2D)
+	hw.TriGLRenderMode(hw.KRenderNormal)
 }
 
 // HookedHUDVidInit HUD_VidInit
