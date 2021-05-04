@@ -1,0 +1,58 @@
+name: Go
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: modlib
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.15
+        
+    - name: Set up MinGW
+      uses: egor-tensin/setup-mingw@v2
+      with:
+        platform: x86
+        
+    - name: Set up protoc
+      uses: arduino/setup-protoc@v1
+      with:
+        version: '3.x'
+        
+    - name: Install protoc-gen-go
+      run: |
+        go install google.golang.org/protobuf/cmd/protoc-gen-go
+        echo 1 $GITHUB_PATH
+        echo 2 $(go env GOPATH)
+        echo 3 $(go env GOBIN)
+        ls $(go env GOPATH)
+        ls -R $(go env GOPATH)/bin
+      
+    - name: Put GOBIN in PATH
+      run: printf "$(go env GOPATH)/bin\n" >> $GITHUB_PATH
+      
+    - name: Generate protobuf defs
+      run: go generate ./...
+
+    - name: Build hlinspect.dll
+      run: make
+      env:
+        CC: i686-w64-mingw32-gcc
+        CGO_ENABLED: 1
+        GOOS: windows
+        GOARCH: 386
+
