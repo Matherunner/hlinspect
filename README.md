@@ -16,9 +16,31 @@ Half-Life mod to faciliate Half-Life physics and NPC AI research.
 
 ## Building
 
-Install a relatively new version of Go. Run this in WSL on Windows.
+### Setup
 
-Relies heavily on CGO. Suggested environmental variables in WSL:
+Set up WSL in Windows or use a Linux system.
+
+Install a relatively new version of Go.
+
+Install `gcc-mingw-w64` to get `i686-w64-mingw32-gcc` or similar.
+
+Install `protobuf-compiler` or similar to get `protoc`.
+
+Run the following to get `protoc-gen-go`:
+
+```bash
+go install google.golang.org/protobuf/cmd/protoc-gen-go
+```
+
+Make sure `protoc-gen-go` can be found in `PATH`, which is needed by `protoc`. If not, set
+
+```bash
+export PATH="$PATH:"$(go env GOPATH)/bin
+```
+
+### Build
+
+Suggested environmental variables in WSL:
 
 ```bash
 export CC=i686-w64-mingw32-gcc
