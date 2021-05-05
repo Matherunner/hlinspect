@@ -15,6 +15,7 @@ var Nodes = makeCVar("hli_nodes", "0")
 var NodeLinks = makeCVar("hli_node_links", "1")
 var Cine = makeCVar("hli_cine", "0")
 var CinePossess = makeCVar("hli_cine_possess", "1")
+var CollisionHullShow = makeCVar("hli_collision_hull_show", "0")
 
 func makeCVar(name, value string) engine.CVar {
 	floatVal, _ := strconv.ParseFloat(value, 32)

@@ -13,6 +13,7 @@ import (
 /*
 #include <stdlib.h>
 #include "defs.h"
+#include "draw_hulls.h"
 */
 import "C"
 
@@ -153,6 +154,15 @@ var angleVectorsPattern = hooks.MakeFunctionPattern("AngleVectors", nil, map[str
 	gamelibs.HL8684: hooks.MustMakePattern("55 8B EC 83 EC 1C 8D 45 14 8D 4D 10 50 8D 55 0C 51 8D 45 08 52 50 FF 15 ?? ?? ?? ?? 8B 4D 08 83 C4 08"),
 	gamelibs.HL4554: hooks.MustMakePattern("55 8B EC 83 E4 F8 83 EC 20 56 8D 45 14 57 8D 4D 10 50 8D 55 0C 51 8D 45 08 52 50 FF 15 ?? ?? ?? ?? 8B 4D 08 D9 41 04"),
 	gamelibs.HLNGHL: hooks.MustMakePattern("55 8B EC 83 E4 F8 83 EC 20 8D 45 14 8D 4D 10 50 8D 55 0C 51 8D 45 08 52 50 FF 15 ?? ?? ?? ?? 8B 4D 08 83 C4 08"),
+})
+var rDrawWorldPattern = hooks.MakeFunctionPattern("R_DrawWorld", nil, map[string]hooks.SearchPattern{
+	gamelibs.HL8684: hooks.MustMakePattern("55 8B EC 81 EC B8 0B 00 00 68 B8 0B 00 00 8D 85 48 F4 FF FF 6A 00 50 E8 ?? ?? ?? ?? 8B 0D ?? ?? ?? ?? 8B 15"),
+})
+var modFindNamePattern = hooks.MakeFunctionPattern("Mod_FindName", nil, map[string]hooks.SearchPattern{
+	gamelibs.HL8684: hooks.MustMakePattern("55 8B EC 8B 45 0C 53 56 57 8A 08 33 FF 84 C9 75 0D 68 ?? ?? ?? ?? E8 ?? ?? ?? ?? 83 C4 04 A1 ?? ?? ?? ?? 33 DB 85 C0"),
+})
+var modLoadBrushModelPattern = hooks.MakeFunctionPattern("Mod_LoadBrushModel", nil, map[string]hooks.SearchPattern{
+	gamelibs.HL8684: hooks.MustMakePattern("55 8B EC 83 EC 0C A1 ?? ?? ?? ?? 53 56 8B 75 0C 57 33 DB 8B 0E 89 58 44 51 FF 15 ?? ?? ?? ?? 83 C4 04 83 F8 1D 74 33"),
 })
 
 // GetScreenInfo proxies hudGetScreenInfo
@@ -311,6 +321,27 @@ func AngleVectors(viewangles [3]float32) (forward, side, up [3]float32) {
 	return
 }
 
+// HookedRDrawWorld hooks R_DrawWorld
+//export HookedRDrawWorld
+func HookedRDrawWorld() {
+	hooks.CallFuncInts0(rDrawWorldPattern.Address())
+
+	if cvar.CollisionHullShow.Float32() != 0 {
+		C.hullLazyInit(C.Mod_FindNameFunc(modFindNamePattern.Address()), C.int(cvar.CollisionHullShow.Float32()))
+		C.hullDrawWorldHull(0.4)
+	} else {
+		C.hullClean()
+	}
+}
+
+// HookedModLoadBrushModel hooks Mod_LoadBrushModel
+//export HookedModLoadBrushModel
+func HookedModLoadBrushModel(model, buffer uintptr) {
+	hooks.CallFuncInts2(modLoadBrushModelPattern.Address(), model, buffer)
+
+	C.hullResetWorldModel((*C.struct_model_s)(unsafe.Pointer(model)))
+}
+
 // InitHWDLL initialise hw.dll hooks and symbol search
 func InitHWDLL(base string) (err error) {
 	if hwDLL != nil {
@@ -347,6 +378,9 @@ func InitHWDLL(base string) (err error) {
 		&memoryInitPattern:                 C.HookedMemoryInit,
 		&pfCheckClientIPattern:             nil,
 		&angleVectorsPattern:               nil,
+		&rDrawWorldPattern:                 C.HookedRDrawWorld,
+		&modFindNamePattern:                nil,
+		&modLoadBrushModelPattern:          C.HookedModLoadBrushModel,
 	}
 
 	errors := hooks.BatchFind(hwDLL, items)

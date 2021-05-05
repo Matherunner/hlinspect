@@ -12,4 +12,5 @@ func registerCVars() {
 	CvarRegisterVariable(uintptr(cvar.NodeLinks.Pointer()))
 	CvarRegisterVariable(uintptr(cvar.Cine.Pointer()))
 	CvarRegisterVariable(uintptr(cvar.CinePossess.Pointer()))
+	CvarRegisterVariable(uintptr(cvar.CollisionHullShow.Pointer()))
 }
