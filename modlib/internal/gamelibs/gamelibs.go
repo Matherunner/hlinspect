@@ -15,6 +15,7 @@ const (
 	TWHLTower2 = "TWHL-Tower-2"
 	OF8684     = "OpFor-8684"
 	OFWON      = "OpFor-WON"
+	CSCZDS     = "CSCZDS"
 
 	WindowsHLDLL = "Windows-HL-DLL"
 )
