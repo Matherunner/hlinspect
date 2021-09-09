@@ -43,7 +43,7 @@ var cbaseMonsterChangeSchedulePattern = hooks.MakeFunctionPattern("CBaseMonster:
 	gamelibs.HLWON:  hooks.MustMakePattern("8B 44 24 04 33 D2 89 81 44 01 00 00 89 91 48 01 00 00 89 91 40 01 00 00 89 91 BC 00 00 00 89 91 34 02 00 00"),
 	gamelibs.OFWON:  hooks.MustMakePattern("8B 81 48 01 00 00 33 D2 3B C2 56 74 55 8B 00 3B C2 74 4F 8B B1 4C 01 00 00 57 8B 3C F0"),
 	gamelibs.CSCZDS: hooks.MustMakePattern("8B 44 24 04 33 D2 89 81 74 01 00 00 89 91 78 01 00 00 89 91 70 01 00 00 89 91 7C 01 00 00 89 91 88 02 00 00"),
-
+	gamelibs.Gunman: hooks.MustMakePattern("8B 44 24 04 53 57 8B F9 33 DB 89 87 4C 01 00 00 89 9F 50 01 00 00 89 9F 48 01 00 00 89 9F BC 00 00 00 89 9F 3C 02 00 00"),
 })
 var cbaseMonsterRouteNewPattern = hooks.MakeFunctionPattern("CBaseMonster::RouteNew", map[string]string{
 	gamelibs.WindowsHLDLL: "CBaseMonster::RouteNew",
@@ -53,6 +53,7 @@ var cbaseMonsterRouteNewPattern = hooks.MakeFunctionPattern("CBaseMonster::Route
 	// This pattern includes the initial part of CBaseMonster::FRouteClear, and mask out the offsets
 	gamelibs.HL8684: hooks.MustMakePattern("33 C0 89 81 ?? ?? ?? ?? 89 81 ?? ?? ?? ?? C3 90 8B 81 ?? ?? ?? ?? C1 E0 04"),
 	gamelibs.CSCZDS: hooks.MustMakePattern("33 C0 89 81 ?? ?? ?? ?? 89 81 ?? ?? ?? ?? C3 90 8B 81 ?? ?? ?? ?? 83 C0 14"),
+	gamelibs.Gunman: hooks.MustMakePattern("33 C0 89 81 ?? ?? ?? ?? 89 81 ?? ?? ?? ?? C3 90 8B 81 ?? ?? ?? ?? 83 C0 16"),
 })
 var cbaseMonsterPBestSoundPattern = hooks.MakeFunctionPattern("CBaseMonster::PBestSound", map[string]string{
 	gamelibs.WindowsHLDLL: "CBaseMonster::PBestSound",
@@ -63,6 +64,7 @@ var cbaseMonsterPBestSoundPattern = hooks.MakeFunctionPattern("CBaseMonster::PBe
 	gamelibs.HLWON:  hooks.MustMakePattern("83 EC 10 53 8B D9 55 57 8B BB E8 01 00 00 83 CD FF 83 FF FF C7 44 24 0C 00 00 00 46 75 2D"),
 	gamelibs.OFWON:  hooks.MustMakePattern("83 EC 10 53 8B D9 55 57 8B BB EC 01 00 00 83 CD FF 83 FF FF C7 44 24 0C 00 00 00 46 75 2D"),
 	gamelibs.CSCZDS: hooks.MustMakePattern("83 EC 10 53 8B D9 55 57 8B BB 3C 02 00 00 83 CD FF 83 FF FF C7 44 24 0C 00 00 00 46 75 2D"),
+	gamelibs.Gunman: hooks.MustMakePattern("83 EC 10 53 8B D9 55 57 8B BB F0 01 00 00 83 CD FF 83 FF FF C7 44 24 0C 00 00 00 46 75 2D"),
 })
 var worldGraphPattern = hooks.MakeFunctionPattern("WorldGraph", map[string]string{
 	// Not actually a function
@@ -196,7 +198,16 @@ func InitHLDLL(base string) (err error) {
 		engine.MonsterOffsets.AudibleList = 0x23c
 		engine.MonsterOffsets.WaitFinished = 0x150
 		engine.CineOffsets.Radius = 0x350
-		engine.CineOffsets.Interruptible = 0x36C
+		engine.CineOffsets.Interruptible = 0x36c
+	case gamelibs.Gunman:
+		engine.MonsterOffsets.MonsterState = 0x140
+		engine.MonsterOffsets.Schedule = 0x14c
+		engine.MonsterOffsets.ScheduleIndex = 0x150
+		engine.MonsterOffsets.Cine = 0x264
+		engine.MonsterOffsets.AudibleList = 0x1f0
+		engine.MonsterOffsets.WaitFinished = 0x128
+		engine.CineOffsets.Radius = 0x284
+		engine.CineOffsets.Interruptible = 0x2a4
 	}
 
 	switch cbaseMonsterChangeSchedulePattern.SymbolKey() {
@@ -210,7 +221,7 @@ func InitHLDLL(base string) (err error) {
 	}
 
 	switch cbaseMonsterRouteNewPattern.PatternKey() {
-	case gamelibs.HL8684, gamelibs.CSCZDS:
+	case gamelibs.HL8684, gamelibs.CSCZDS, gamelibs.Gunman:
 		engine.MonsterOffsets.Route = *(*uintptr)(unsafe.Pointer(uintptr(cbaseMonsterRouteNewPattern.Address()) + 0x4)) - 0xc
 		engine.MonsterOffsets.RouteIndex = *(*uintptr)(unsafe.Pointer(uintptr(cbaseMonsterRouteNewPattern.Address()) + 0xa))
 	}

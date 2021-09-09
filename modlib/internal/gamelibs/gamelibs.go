@@ -16,6 +16,7 @@ const (
 	OF8684     = "OpFor-8684"
 	OFWON      = "OpFor-WON"
 	CSCZDS     = "CSCZDS"
+	Gunman     = "Gunman"
 
 	WindowsHLDLL = "Windows-HL-DLL"
 )
