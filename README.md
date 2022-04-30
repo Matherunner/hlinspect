@@ -16,6 +16,8 @@ Half-Life mod to faciliate Half-Life physics and NPC AI research.
 
 ## Building
 
+Currently, this is the easiest to build on Linux using cross compilation.
+
 ### Setup
 
 Set up WSL in Windows or use a Linux system.
@@ -52,7 +54,7 @@ export GOARCH=386
 Run the following to build:
 
 ```bash
-cd hlinspect
+cd hlinspect/modlib
 go generate ./...
 make
 ```
