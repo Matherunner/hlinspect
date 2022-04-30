@@ -14,6 +14,10 @@ Half-Life mod to faciliate Half-Life physics and NPC AI research.
 - Only supports Windows
 - Speedrunning features
 
+## Usage
+
+Currently, hlinspect doesn't come with an injector. You can use any general DLL injector to inject and start Half-Life. There are plenty of open source DLL injectors on Github, and choose wisely.
+
 ## Building
 
 Currently, this is the easiest to build on Linux using cross compilation.
