@@ -26,13 +26,13 @@ const (
 	KRenderTransAdd
 )
 
-type rawCVar struct {
-	Name   uintptr
-	String uintptr
-	Flags  int32
-	Value  float32
-	Next   uintptr
-}
+// type rawCVar struct {
+// 	Name   uintptr
+// 	String uintptr
+// 	Flags  int32
+// 	Value  float32
+// 	Next   uintptr
+// }
 
 // ScreenInfo represents SCREENINFO
 type ScreenInfo struct {

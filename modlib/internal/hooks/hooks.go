@@ -128,7 +128,7 @@ func (pat *FunctionPattern) Find(module *Module) (foundName string, address unsa
 		if err == nil {
 			offset := uint(uintptr(address) - uintptr(module.base))
 			newSize := module.size - offset
-			_, newErr := findSubstringPattern(pattern, unsafe.Pointer(uintptr(address)+1), newSize)
+			_, newErr := findSubstringPattern(pattern, unsafe.Add(address, 1), newSize)
 			if newErr == nil {
 				// Found a second instance of the pattern, must be an error
 				err = ErrNonUniquePattern

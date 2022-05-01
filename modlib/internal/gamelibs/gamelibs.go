@@ -144,8 +144,8 @@ func (api *API) CmdAddCommand(name string) {
 }
 
 func (api *API) CmdArgv(arg int) string {
-	result := hooks.CallFuncInts1(api.r.CmdArgv.Address(), uintptr(arg))
-	return C.GoString((*C.char)(unsafe.Pointer(uintptr(result))))
+	result := hooks.CallFuncInts1RetPtr(api.r.CmdArgv.Address(), uintptr(arg))
+	return C.GoString((*C.char)(result))
 }
 
 func (api *API) RegisterCVar(cvar *engine.CVar) {
