@@ -1,4 +1,4 @@
-# hlinspect
+# HLInspect
 
 Half-Life mod to facilitate Half-Life physics and NPC AI research.
 
@@ -16,7 +16,7 @@ Half-Life mod to facilitate Half-Life physics and NPC AI research.
 
 ## Usage
 
-Currently, hlinspect doesn't come with an injector. You can use any general DLL injector to inject and start Half-Life, or even write your own. There are plenty of open source DLL injectors on Github, and do choose wisely. In the future, a custom injector may be included.
+Currently, HLInspect doesn't come with an injector. You can use any general DLL injector to inject and start Half-Life, or even write your own. There are plenty of open source DLL injectors on Github, and do choose wisely. In the future, a custom injector may be included.
 
 ## Building
 
@@ -62,3 +62,7 @@ cd hlinspect/modlib
 go generate ./...
 make
 ```
+
+## Development
+
+See [ARCHITECTURE](ARCHITECTURE.md).
