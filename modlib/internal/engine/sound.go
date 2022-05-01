@@ -15,7 +15,6 @@ const (
 
 // SoundEnt represents CSoundEnt
 type SoundEnt struct {
-	address uintptr
 }
 
 // Sound represents CSound
