@@ -2,16 +2,18 @@ package graphics
 
 import (
 	"fmt"
+	"hlinspect/internal/cmd"
 	"hlinspect/internal/engine"
+	"hlinspect/internal/gamelibs"
 	"hlinspect/internal/gamelibs/hl"
 	"hlinspect/internal/gamelibs/hw"
 	"strings"
 )
 
-var screenInfo *hw.ScreenInfo
+var screenInfo *gamelibs.ScreenInfo
 
 // SetScreenInfo sets the current screen info
-func SetScreenInfo(si *hw.ScreenInfo) {
+func SetScreenInfo(si *gamelibs.ScreenInfo) {
 	screenInfo = si
 }
 
@@ -41,7 +43,8 @@ func drawEntitiesOverlay() {
 			continue
 		}
 
-		tracked := hw.TrackedNPC[edict.PrivateData()]
+		// TODO: uncomment
+		tracked := cmd.TrackedNPC[edict.PrivateData()]
 		if !tracked {
 			continue
 		}

@@ -4,7 +4,10 @@ import (
 	"context"
 	"hlinspect/internal/engine"
 	"hlinspect/internal/hooks"
+	"unsafe"
 )
+
+import "C"
 
 var Model = &GamelibModel{
 	api: &API{
@@ -15,14 +18,21 @@ var Model = &GamelibModel{
 // APIRegistry holds the addresses to game DLL functions.
 type APIRegistry struct {
 	// HW
-	CvarRegisterVariable hooks.FunctionPattern
-	MemoryInit           hooks.FunctionPattern
+	CmdAddCommandWithFlags hooks.FunctionPattern
+	CvarRegisterVariable   hooks.FunctionPattern
+	MemoryInit             hooks.FunctionPattern
+	CmdArgv                hooks.FunctionPattern
+	AngleVectors           hooks.FunctionPattern
+	PFTracelineDLL         hooks.FunctionPattern
 
 	// CL
-	HUDRedrawPattern                   hooks.FunctionPattern
-	HUDDrawTransparentTrianglesPattern hooks.FunctionPattern
-	HUDVidInitPattern                  hooks.FunctionPattern
-	HUDResetPattern                    hooks.FunctionPattern
+	HUDRedraw                   hooks.FunctionPattern
+	HUDDrawTransparentTriangles hooks.FunctionPattern
+	HUDVidInit                  hooks.FunctionPattern
+	HUDReset                    hooks.FunctionPattern
+
+	// Misc
+	CCmdHandler unsafe.Pointer
 }
 
 // API is a thin interface over the raw game DLL functions. Code that needs to call into
@@ -30,6 +40,18 @@ type APIRegistry struct {
 // nor should they return values in C types.
 type API struct {
 	r *APIRegistry
+}
+
+func (g *API) CmdAddCommand(name string, callback func()) {
+	// This implementation is slightly tricky. Here we are taking CCmdHandler set by the gamelib layer.
+	// When a command is issued, this is what happens:
+	//   hw.dll -> CCmdHandler (C) -> CmdHandler (Go) -> EventHandler.OnCommand
+	hooks.CallFuncInts3(g.r.CmdAddCommandWithFlags.Address(), uintptr(unsafe.Pointer(C.CString(name))), uintptr(g.r.CCmdHandler), 2)
+}
+
+func (g *API) CmdArgv(arg int) string {
+	result := hooks.CallFuncInts1(g.r.CmdArgv.Address(), uintptr(arg))
+	return C.GoString((*C.char)(unsafe.Pointer(uintptr(result))))
 }
 
 func (g *API) RegisterCVar(cvar *engine.CVar) {
@@ -41,19 +63,35 @@ func (g *API) MemoryInit(buf uintptr, size int) {
 }
 
 func (g *API) HUDRedraw(time float32, intermission int) {
-	hooks.CallFuncFloatInt(g.r.HUDRedrawPattern.Address(), time, uintptr(intermission))
+	hooks.CallFuncFloatInt(g.r.HUDRedraw.Address(), time, uintptr(intermission))
 }
 
 func (g *API) HUDDrawTransparentTriangle() {
-	hooks.CallFuncInts0(g.r.HUDDrawTransparentTrianglesPattern.Address())
+	hooks.CallFuncInts0(g.r.HUDDrawTransparentTriangles.Address())
 }
 
 func (g *API) HUDVidInit() int {
-	return hooks.CallFuncInts0(g.r.HUDVidInitPattern.Address())
+	return hooks.CallFuncInts0(g.r.HUDVidInit.Address())
 }
 
 func (g *API) HUDReset() {
-	hooks.CallFuncInts0(g.r.HUDResetPattern.Address())
+	hooks.CallFuncInts0(g.r.HUDReset.Address())
+}
+
+func (g *API) AngleVectors(viewangles [3]float32) (forward, side, up [3]float32) {
+	hooks.CallFuncInts4(g.r.AngleVectors.Address(), uintptr(unsafe.Pointer(&viewangles[0])),
+		uintptr(unsafe.Pointer(&forward[0])), uintptr(unsafe.Pointer(&side[0])), uintptr(unsafe.Pointer(&up[0])))
+	return
+}
+
+// TraceLine traces a line and return the hit results
+func (g *API) TraceLine(start, end [3]float32, noMonsters int, entToSkip unsafe.Pointer) TraceResult {
+	traceResult := TraceResult{}
+	hooks.CallFuncInts5(
+		g.r.PFTracelineDLL.Address(), uintptr(unsafe.Pointer(&start[0])),
+		uintptr(unsafe.Pointer(&end[0])), uintptr(noMonsters),
+		uintptr(entToSkip), uintptr(unsafe.Pointer(&traceResult)))
+	return traceResult
 }
 
 type Handler interface {
@@ -65,6 +103,9 @@ type Handler interface {
 	HUDDrawTransparentTriangle()
 	HUDVidInit() int
 	HUDReset()
+
+	// Misc
+	OnCommand()
 }
 
 type GamelibModel struct {

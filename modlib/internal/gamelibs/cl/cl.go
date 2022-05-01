@@ -39,10 +39,10 @@ func HookedHUDReset() {
 }
 
 func initAPIRegistry(reg *gamelibs.APIRegistry) {
-	reg.HUDRedrawPattern = hooks.MakeFunctionPattern("HUD_Redraw", map[string]string{"Windows": "HUD_Redraw"}, nil)
-	reg.HUDDrawTransparentTrianglesPattern = hooks.MakeFunctionPattern("HUD_DrawTransparentTriangles", map[string]string{"Windows": "HUD_DrawTransparentTriangles"}, nil)
-	reg.HUDVidInitPattern = hooks.MakeFunctionPattern("HUD_VidInit", map[string]string{"Windows": "HUD_VidInit"}, nil)
-	reg.HUDResetPattern = hooks.MakeFunctionPattern("HUD_Reset", map[string]string{"Windows": "HUD_Reset"}, nil)
+	reg.HUDRedraw = hooks.MakeFunctionPattern("HUD_Redraw", map[string]string{"Windows": "HUD_Redraw"}, nil)
+	reg.HUDDrawTransparentTriangles = hooks.MakeFunctionPattern("HUD_DrawTransparentTriangles", map[string]string{"Windows": "HUD_DrawTransparentTriangles"}, nil)
+	reg.HUDVidInit = hooks.MakeFunctionPattern("HUD_VidInit", map[string]string{"Windows": "HUD_VidInit"}, nil)
+	reg.HUDReset = hooks.MakeFunctionPattern("HUD_Reset", map[string]string{"Windows": "HUD_Reset"}, nil)
 }
 
 // InitClientDLL initialise client.dll
@@ -61,10 +61,10 @@ func InitClientDLL(base string) (err error) {
 	initAPIRegistry(reg)
 
 	items := map[*hooks.FunctionPattern]unsafe.Pointer{
-		&reg.HUDRedrawPattern:                   C.HookedHUDRedraw,
-		&reg.HUDDrawTransparentTrianglesPattern: C.HookedHUDDrawTransparentTriangles,
-		&reg.HUDVidInitPattern:                  C.HookedHUDVidInit,
-		&reg.HUDResetPattern:                    C.HookedHUDReset,
+		&reg.HUDRedraw:                   C.HookedHUDRedraw,
+		&reg.HUDDrawTransparentTriangles: C.HookedHUDDrawTransparentTriangles,
+		&reg.HUDVidInit:                  C.HookedHUDVidInit,
+		&reg.HUDReset:                    C.HookedHUDReset,
 	}
 
 	errors := hooks.BatchFind(clientDLL, items)

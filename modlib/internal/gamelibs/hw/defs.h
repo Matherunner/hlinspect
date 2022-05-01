@@ -2,8 +2,8 @@
 
 #include <stdint.h>
 
-void CCmdHandler();
 void CmdHandler();
+void CCmdHandler();
 
 int HookedVFadeAlpha();
 void HookedRDrawSequentialPoly(uintptr_t surf, int face);

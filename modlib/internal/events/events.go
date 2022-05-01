@@ -2,6 +2,7 @@ package events
 
 import (
 	"context"
+	"hlinspect/internal/cmd"
 	"hlinspect/internal/cvar"
 	"hlinspect/internal/gamelibs"
 	"hlinspect/internal/gamelibs/graphics"
@@ -28,7 +29,16 @@ func (h *handler) MemoryInit(ctx context.Context, buf uintptr, size int) {
 	gamelibs.Model.API().RegisterCVar(&cvar.Cine)
 	gamelibs.Model.API().RegisterCVar(&cvar.CinePossess)
 
-	// TODO: register commands
+	for name, handler := range cmd.CommandHandlerByName {
+		gamelibs.Model.API().CmdAddCommand(name, handler)
+	}
+}
+
+func (h *handler) OnCommand() {
+	name := gamelibs.Model.API().CmdArgv(0)
+	if handler, ok := cmd.CommandHandlerByName[name]; ok {
+		handler()
+	}
 }
 
 func (h *handler) HUDRedraw(time float32, intermission int) {

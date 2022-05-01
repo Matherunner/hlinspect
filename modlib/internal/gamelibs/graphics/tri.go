@@ -1,6 +1,7 @@
 package graphics
 
 import (
+	"hlinspect/internal/cmd"
 	"hlinspect/internal/cvar"
 	"hlinspect/internal/engine"
 	"hlinspect/internal/gamelibs/hl"
@@ -93,7 +94,7 @@ func drawScriptedSequences() {
 				drawPyramid(origin, 10, 20)
 			}
 
-			if hw.ShowRadiusCine[edict.PrivateData()] {
+			if cmd.ShowRadiusCine[edict.PrivateData()] {
 				radius := cine.Radius()
 				drawSphere(origin, radius, 50, 50)
 			}

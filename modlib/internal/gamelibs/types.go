@@ -1,4 +1,4 @@
-package hw
+package gamelibs
 
 import "unsafe"
 

@@ -49,17 +49,6 @@ var buildNumberPattern = hooks.MakeFunctionPattern("build_number", nil, map[stri
 	common.HL4554: hooks.MustMakePattern("A1 ?? ?? ?? ?? 83 EC 08 57 33 FF 85 C0 0F 85 A5 00 00 00 53 56 33 DB BE ?? ?? ?? ?? 8B 06 8B 0D"),
 	common.HLNGHL: hooks.MustMakePattern("A1 ?? ?? ?? ?? 83 EC 08 56 33 F6 85 C0 0F 85 9F 00 00 00 53 33 DB 8B 04 9D ?? ?? ?? ?? 8B 0D"),
 })
-var cmdAddCommandWithFlagsPattern = hooks.MakeFunctionPattern("Cmd_AddCommandWithFlags", nil, map[string]hooks.SearchPattern{
-	// Search for "Cmd_AddCommand: %s already defined as a var"
-	common.HL8684: hooks.MustMakePattern("55 8B EC 56 57 8B 7D 08 57 E8 ?? ?? ?? ?? 8A 08 83 C4 04 84 C9 74 12 57 68 ?? ?? ?? ?? E8 ?? ?? ?? ?? 83 C4 08 5F 5E 5D C3 8B 35"),
-	common.HLNGHL: hooks.MustMakePattern("56 57 8B 7C 24 0C 57 E8 ?? ?? ?? ?? 8A 08 83 C4 04 84 C9 74 11 57 68 ?? ?? ?? ?? E8 ?? ?? ?? ?? 83 C4 08 5F 5E C3 8B 35"),
-})
-var cmdArgvPattern = hooks.MakeFunctionPattern("Cmd_Argv", nil, map[string]hooks.SearchPattern{
-	// Search for "MISSING VALUE" to find Host_FullInfo_f
-	// The first function called is Cmd_Argc, while the second function with one argument should be Cmd_Argv
-	common.HL8684: hooks.MustMakePattern("55 8B EC 8D 45 08 50 FF 15 ?? ?? ?? ?? 8B 45 08 8B 0D ?? ?? ?? ?? 83 C4 04 3B C1 72 07 A1 ?? ?? ?? ?? 5D"),
-	common.HL4554: hooks.MustMakePattern("8D 44 24 04 50 FF 15 ?? ?? ?? ?? 8B 44 24 08 8B 0D ?? ?? ?? ?? 83 C4 04 3B C1 72 06 A1 ?? ?? ?? ?? C3"),
-})
 var vFadeAlphaPattern = hooks.MakeFunctionPattern("V_FadeAlpha", nil, map[string]hooks.SearchPattern{
 	common.HL8684: hooks.MustMakePattern("55 8B EC 83 EC 08 D9 05 ?? ?? ?? ?? DC 1D ?? ?? ?? ?? 8A 0D ?? ?? ?? ?? DF E0 F6 C4 05 7A 1C D9 05 ?? ?? ?? ?? DC 1D"),
 	common.HL4554: hooks.MustMakePattern("D9 05 ?? ?? ?? ?? DC 1D ?? ?? ?? ?? 8A 0D ?? ?? ?? ?? 83 EC 08 DF E0 F6 C4"),
@@ -82,10 +71,6 @@ var hostNoclipFPattern = hooks.MakeFunctionPattern("Host_Noclip_f", nil, map[str
 	common.HL8684: hooks.MustMakePattern("55 8B EC 83 EC 24 A1 ?? ?? ?? ?? BA 01 00 00 00 3B C2 75 09 E8 ?? ?? ?? ?? 8B E5 5D C3 D9 05 ?? ?? ?? ?? D8 1D"),
 	common.HL4554: hooks.MustMakePattern("A1 ?? ?? ?? ?? BA 01 00 00 00 83 EC 24 3B C2 75 09 E8 ?? ?? ?? ?? 83 C4 24 C3 D9 05 ?? ?? ?? ?? D8 1D"),
 	common.HLNGHL: hooks.MustMakePattern("A1 ?? ?? ?? ?? BA 01 00 00 00 83 EC 24 3B C2 75 08 83 C4 24 E9 ?? ?? ?? ?? D9 05 ?? ?? ?? ?? D8 1D"),
-})
-var pfTracelineDLLPattern = hooks.MakeFunctionPattern("PF_traceline_DLL", nil, map[string]hooks.SearchPattern{
-	common.HL8684: hooks.MustMakePattern("55 8B EC 8B 45 14 85 C0 75 05 A1 ?? ?? ?? ?? 8B 4D 0C 8B 55 08 56 50 8B 45 10 50 51 52 E8 ?? ?? ?? ?? D9 05"),
-	common.HL4554: hooks.MustMakePattern("8B 44 24 10 85 C0 75 05 A1 ?? ?? ?? ?? 8B 4C 24 08 8B 54 24 04 56 50 8B 44 24 14 50 51 52 E8 ?? ?? ?? ?? D9 05"),
 })
 var triGLRenderModePattern = hooks.MakeFunctionPattern("tri_GL_RenderMode", nil, map[string]hooks.SearchPattern{
 	common.HL8684: hooks.MustMakePattern("55 8B EC 56 8B 75 08 83 FE 05 0F 87 ?? ?? ?? ?? FF 24 B5 ?? ?? ?? ?? 68 ?? ?? ?? ?? FF 15 ?? ?? ?? ?? 6A 01"),
@@ -143,28 +128,13 @@ var pfCheckClientIPattern = hooks.MakeFunctionPattern("PF_checkclient_I", nil, m
 	common.HL4554: hooks.MustMakePattern("DD 05 ?? ?? ?? ?? DC 25 ?? ?? ?? ?? 83 EC 0C DC 1D ?? ?? ?? ?? DF E0 F6 C4 01 A1 ?? ?? ?? ?? 75 26"),
 	common.HLNGHL: hooks.MustMakePattern("DD 05 ?? ?? ?? ?? DC 25 ?? ?? ?? ?? 83 EC 0C DC 1D ?? ?? ?? ?? DF E0 25 00 01 00 00 A1 ?? ?? ?? ?? 75 26"),
 })
-var angleVectorsPattern = hooks.MakeFunctionPattern("AngleVectors", nil, map[string]hooks.SearchPattern{
-	common.HL8684: hooks.MustMakePattern("55 8B EC 83 EC 1C 8D 45 14 8D 4D 10 50 8D 55 0C 51 8D 45 08 52 50 FF 15 ?? ?? ?? ?? 8B 4D 08 83 C4 08"),
-	common.HL4554: hooks.MustMakePattern("55 8B EC 83 E4 F8 83 EC 20 56 8D 45 14 57 8D 4D 10 50 8D 55 0C 51 8D 45 08 52 50 FF 15 ?? ?? ?? ?? 8B 4D 08 D9 41 04"),
-	common.HLNGHL: hooks.MustMakePattern("55 8B EC 83 E4 F8 83 EC 20 8D 45 14 8D 4D 10 50 8D 55 0C 51 8D 45 08 52 50 FF 15 ?? ?? ?? ?? 8B 4D 08 83 C4 08"),
-})
 
 // GetScreenInfo proxies hudGetScreenInfo
-func GetScreenInfo() ScreenInfo {
-	screenInfo := ScreenInfo{}
+func GetScreenInfo() gamelibs.ScreenInfo {
+	screenInfo := gamelibs.ScreenInfo{}
 	screenInfo.Size = int32(unsafe.Sizeof(screenInfo))
 	hooks.CallFuncInts1(hudGetScreenInfoPattern.Address(), uintptr(unsafe.Pointer(&screenInfo)))
 	return screenInfo
-}
-
-// TraceLine traces a line and return the hit results
-func TraceLine(start, end [3]float32, noMonsters int, entToSkip unsafe.Pointer) TraceResult {
-	traceResult := TraceResult{}
-	hooks.CallFuncInts5(
-		pfTracelineDLLPattern.Address(), uintptr(unsafe.Pointer(&start[0])),
-		uintptr(unsafe.Pointer(&end[0])), uintptr(noMonsters),
-		uintptr(entToSkip), uintptr(unsafe.Pointer(&traceResult)))
-	return traceResult
 }
 
 // BuildNumber build_number
@@ -172,24 +142,10 @@ func BuildNumber() int {
 	return hooks.CallFuncInts0(buildNumberPattern.Address())
 }
 
-// CmdHandler called by C code
+// CmdHandler called by C code. This is needed because passing Go function directly to CmdAddCommand doesn't seem to work.
 //export CmdHandler
 func CmdHandler() {
-	name := CmdArgv(0)
-	if handler, ok := commandHandlerByName[name]; ok {
-		handler()
-	}
-}
-
-// CmdAddCommand calls Cmd_AddCommandWithFlags
-func CmdAddCommand(name string, callback func()) {
-	hooks.CallFuncInts3(cmdAddCommandWithFlagsPattern.Address(), uintptr(unsafe.Pointer(C.CString(name))), uintptr(C.CCmdHandler), 2)
-}
-
-// CmdArgv calls Cmd_Argv
-func CmdArgv(arg int) string {
-	result := hooks.CallFuncInts1(cmdArgvPattern.Address(), uintptr(arg))
-	return C.GoString((*C.char)(unsafe.Pointer(uintptr(result))))
+	gamelibs.Model.EventHandler().OnCommand()
 }
 
 // DrawString Draw_String
@@ -246,12 +202,6 @@ func HookedRDrawSequentialPoly(surf uintptr, free int) {
 //export HookedMemoryInit
 func HookedMemoryInit(buf uintptr, size int) {
 	gamelibs.Model.EventHandler().MemoryInit(context.TODO(), buf, size)
-
-	// hooks.CallFuncInts2(memoryInitPattern.Address(), buf, uintptr(size))
-	// registerCVars()
-	// for name, handler := range commandHandlerByName {
-	// 	CmdAddCommand(name, handler)
-	// }
 }
 
 // TriGLRenderMode tri_GL_RenderMode
@@ -295,13 +245,6 @@ func PFCheckClientI(edict unsafe.Pointer) uintptr {
 	return uintptr(hooks.CallFuncInts1(pfCheckClientIPattern.Address(), uintptr(edict)))
 }
 
-// AngleVectors calls AngleVectors
-func AngleVectors(viewangles [3]float32) (forward, side, up [3]float32) {
-	hooks.CallFuncInts4(angleVectorsPattern.Address(), uintptr(unsafe.Pointer(&viewangles[0])),
-		uintptr(unsafe.Pointer(&forward[0])), uintptr(unsafe.Pointer(&side[0])), uintptr(unsafe.Pointer(&up[0])))
-	return
-}
-
 func initAPIRegistry(reg *gamelibs.APIRegistry) {
 	reg.CvarRegisterVariable = hooks.MakeFunctionPattern("Cvar_RegisterVariable", nil, map[string]hooks.SearchPattern{
 		common.HL8684: hooks.MustMakePattern("55 8B EC 83 EC 14 53 56 8B 75 08 57 8B 06 50 E8 ?? ?? ?? ?? 83 C4 04 85 C0 74 17 8B 0E 51 68"),
@@ -311,6 +254,28 @@ func initAPIRegistry(reg *gamelibs.APIRegistry) {
 		common.HL8684: hooks.MustMakePattern("55 8B EC 8B 45 08 8B 4D 0C 56 BE 00 00 20 00 A3 ?? ?? ?? ?? 89 ?? ?? ?? ?? ?? C7 ?? ?? ?? ?? ?? ?? ?? ?? ?? C7 ?? ?? ?? ?? ?? ?? ?? ?? ?? E8 ?? ?? ?? ?? 68 ?? ?? ?? ?? E8"),
 		common.HL4554: hooks.MustMakePattern("8B 44 24 04 8B 4C 24 08 56 BE 00 00 20 00 A3 ?? ?? ?? ?? 89 ?? ?? ?? ?? ?? C7 ?? ?? ?? ?? ?? ?? ?? ?? ?? C7 ?? ?? ?? ?? ?? ?? ?? ?? ?? E8 ?? ?? ?? ?? 68 ?? ?? ?? ?? E8"),
 	})
+	reg.CmdAddCommandWithFlags = hooks.MakeFunctionPattern("Cmd_AddCommandWithFlags", nil, map[string]hooks.SearchPattern{
+		// Search for "Cmd_AddCommand: %s already defined as a var"
+		common.HL8684: hooks.MustMakePattern("55 8B EC 56 57 8B 7D 08 57 E8 ?? ?? ?? ?? 8A 08 83 C4 04 84 C9 74 12 57 68 ?? ?? ?? ?? E8 ?? ?? ?? ?? 83 C4 08 5F 5E 5D C3 8B 35"),
+		common.HLNGHL: hooks.MustMakePattern("56 57 8B 7C 24 0C 57 E8 ?? ?? ?? ?? 8A 08 83 C4 04 84 C9 74 11 57 68 ?? ?? ?? ?? E8 ?? ?? ?? ?? 83 C4 08 5F 5E C3 8B 35"),
+	})
+	reg.CmdArgv = hooks.MakeFunctionPattern("Cmd_Argv", nil, map[string]hooks.SearchPattern{
+		// Search for "MISSING VALUE" to find Host_FullInfo_f
+		// The first function called is Cmd_Argc, while the second function with one argument should be Cmd_Argv
+		common.HL8684: hooks.MustMakePattern("55 8B EC 8D 45 08 50 FF 15 ?? ?? ?? ?? 8B 45 08 8B 0D ?? ?? ?? ?? 83 C4 04 3B C1 72 07 A1 ?? ?? ?? ?? 5D"),
+		common.HL4554: hooks.MustMakePattern("8D 44 24 04 50 FF 15 ?? ?? ?? ?? 8B 44 24 08 8B 0D ?? ?? ?? ?? 83 C4 04 3B C1 72 06 A1 ?? ?? ?? ?? C3"),
+	})
+	reg.AngleVectors = hooks.MakeFunctionPattern("AngleVectors", nil, map[string]hooks.SearchPattern{
+		common.HL8684: hooks.MustMakePattern("55 8B EC 83 EC 1C 8D 45 14 8D 4D 10 50 8D 55 0C 51 8D 45 08 52 50 FF 15 ?? ?? ?? ?? 8B 4D 08 83 C4 08"),
+		common.HL4554: hooks.MustMakePattern("55 8B EC 83 E4 F8 83 EC 20 56 8D 45 14 57 8D 4D 10 50 8D 55 0C 51 8D 45 08 52 50 FF 15 ?? ?? ?? ?? 8B 4D 08 D9 41 04"),
+		common.HLNGHL: hooks.MustMakePattern("55 8B EC 83 E4 F8 83 EC 20 8D 45 14 8D 4D 10 50 8D 55 0C 51 8D 45 08 52 50 FF 15 ?? ?? ?? ?? 8B 4D 08 83 C4 08"),
+	})
+	reg.PFTracelineDLL = hooks.MakeFunctionPattern("PF_traceline_DLL", nil, map[string]hooks.SearchPattern{
+		common.HL8684: hooks.MustMakePattern("55 8B EC 8B 45 14 85 C0 75 05 A1 ?? ?? ?? ?? 8B 4D 0C 8B 55 08 56 50 8B 45 10 50 51 52 E8 ?? ?? ?? ?? D9 05"),
+		common.HL4554: hooks.MustMakePattern("8B 44 24 10 85 C0 75 05 A1 ?? ?? ?? ?? 8B 4C 24 08 8B 54 24 04 56 50 8B 44 24 14 50 51 52 E8 ?? ?? ?? ?? D9 05"),
+	})
+
+	reg.CCmdHandler = C.CCmdHandler
 }
 
 // InitHWDLL initialise hw.dll hooks and symbol search with idempotency.
@@ -331,14 +296,14 @@ func InitHWDLL(base string) (err error) {
 	items := map[*hooks.FunctionPattern]unsafe.Pointer{
 		&buildNumberPattern:                nil,
 		&reg.CvarRegisterVariable:          nil,
-		&cmdAddCommandWithFlagsPattern:     nil,
-		&cmdArgvPattern:                    nil,
+		&reg.CmdAddCommandWithFlags:        nil,
+		&reg.CmdArgv:                       nil,
 		&vFadeAlphaPattern:                 C.HookedVFadeAlpha,
 		&drawStringPattern:                 nil,
 		&vgui2DrawSetTextColorAlphaPattern: nil,
 		&hostAutoSaveFPattern:              nil,
 		&hostNoclipFPattern:                nil,
-		&pfTracelineDLLPattern:             nil,
+		&reg.PFTracelineDLL:                nil,
 		&triGLRenderModePattern:            nil,
 		&triGLBeginPattern:                 nil,
 		&triGLEndPattern:                   nil,
@@ -352,7 +317,7 @@ func InitHWDLL(base string) (err error) {
 		&rDrawSequentialPolyPattern:        C.HookedRDrawSequentialPoly,
 		&reg.MemoryInit:                    C.HookedMemoryInit,
 		&pfCheckClientIPattern:             nil,
-		&angleVectorsPattern:               nil,
+		&reg.AngleVectors:                  nil,
 	}
 
 	errors := hooks.BatchFind(hwDLL, items)
