@@ -1,55 +1,17 @@
-package hw
+package gamelibs
 
 import (
-	"context"
 	"hlinspect/internal/engine"
-	"hlinspect/internal/gamelibs"
+	"hlinspect/internal/gamelibs/cdefs"
 	"hlinspect/internal/gamelibs/common"
 	"hlinspect/internal/hooks"
 	"hlinspect/internal/logs"
 	"unsafe"
 )
 
-/*
-#include "defs.h"
-*/
-import "C"
-
 var hwDLL *hooks.Module
 
-// CmdHandler called by C code. This is needed because passing Go function directly to CmdAddCommand doesn't seem to work.
-//export CmdHandler
-func CmdHandler() {
-	gamelibs.Model.EventHandler().OnCommand()
-}
-
-// HookedVFadeAlpha V_FadeAlpha
-//export HookedVFadeAlpha
-func HookedVFadeAlpha() int {
-	return gamelibs.Model.EventHandler().VFadeAlpha()
-}
-
-// HookedRClear R_Clear
-//export HookedRClear
-func HookedRClear() {
-	gamelibs.Model.EventHandler().RClear()
-}
-
-// HookedRDrawSequentialPoly R_DrawSequentialPoly
-//export HookedRDrawSequentialPoly
-func HookedRDrawSequentialPoly(surf uintptr, free int) {
-	gamelibs.Model.EventHandler().RDrawSequentialPoly(surf, free)
-}
-
-// HookedMemoryInit Memory_Init
-//export HookedMemoryInit
-func HookedMemoryInit(buf uintptr, size int) {
-	gamelibs.Model.EventHandler().MemoryInit(context.TODO(), buf, size)
-}
-
-// TODO: maybe should read a TOML file instead of writing here, to discourage people from adding more logic
-
-func initAPIRegistry(reg *gamelibs.APIRegistry) {
+func initHWRegistry(reg *APIRegistry) {
 	reg.CvarRegisterVariable = hooks.MakeFunctionPattern("Cvar_RegisterVariable", nil, map[string]hooks.SearchPattern{
 		common.HL8684: hooks.MustMakePattern("55 8B EC 83 EC 14 53 56 8B 75 08 57 8B 06 50 E8 ?? ?? ?? ?? 83 C4 04 85 C0 74 17 8B 0E 51 68"),
 		common.HLNGHL: hooks.MustMakePattern("83 EC 14 53 56 8B 74 24 20 57 8B 06 50 E8 ?? ?? ?? ?? 83 C4 04 85 C0 74 17 8B 0E 51 68 ?? ?? ?? ?? E8 ?? ?? ?? ?? 83 C4 08 5F 5E 5B 83 C4 14 C3 8B 16 52 E8"),
@@ -163,11 +125,10 @@ func initAPIRegistry(reg *gamelibs.APIRegistry) {
 		common.HLNGHL: hooks.MustMakePattern("DD 05 ?? ?? ?? ?? DC 25 ?? ?? ?? ?? 83 EC 0C DC 1D ?? ?? ?? ?? DF E0 25 00 01 00 00 A1 ?? ?? ?? ?? 75 26"),
 	})
 
-	reg.CCmdHandler = C.CCmdHandler
+	reg.CCmdHandler = cdefs.CDefs.CCmdHandler
 }
 
-// InitHWDLL initialise hw.dll hooks and symbol search with idempotency.
-func InitHWDLL(base string) (err error) {
+func initHWDLL(base string) (err error) {
 	if hwDLL != nil {
 		return
 	}
@@ -177,16 +138,16 @@ func InitHWDLL(base string) (err error) {
 		return
 	}
 
-	reg := gamelibs.Model.Registry()
+	reg := Model.Registry()
 
-	initAPIRegistry(reg)
+	initHWRegistry(reg)
 
 	items := map[*hooks.FunctionPattern]unsafe.Pointer{
 		&reg.BuildNumber:                nil,
 		&reg.CvarRegisterVariable:       nil,
 		&reg.CmdAddCommandWithFlags:     nil,
 		&reg.CmdArgv:                    nil,
-		&reg.VFadeAlpha:                 C.HookedVFadeAlpha,
+		&reg.VFadeAlpha:                 cdefs.CDefs.HookedVFadeAlpha,
 		&reg.DrawString:                 nil,
 		&reg.VGUI2DrawSetTextColorAlpha: nil,
 		&reg.HostAutoSaveF:              nil,
@@ -201,9 +162,9 @@ func InitHWDLL(base string) (err error) {
 		&reg.ScreenTransform:            nil,
 		&reg.WorldTransform:             nil,
 		&reg.HudGetScreenInfo:           nil,
-		&reg.RClear:                     C.HookedRClear,
-		&reg.RDrawSequentialPoly:        C.HookedRDrawSequentialPoly,
-		&reg.MemoryInit:                 C.HookedMemoryInit,
+		&reg.RClear:                     cdefs.CDefs.HookedRClear,
+		&reg.RDrawSequentialPoly:        cdefs.CDefs.HookedRDrawSequentialPoly,
+		&reg.MemoryInit:                 cdefs.CDefs.HookedMemoryInit,
 		&reg.PFCheckClientI:             nil,
 		&reg.AngleVectors:               nil,
 	}

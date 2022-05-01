@@ -4,9 +4,7 @@ import (
 	"hlinspect/internal/events"
 	"hlinspect/internal/feed"
 	"hlinspect/internal/gamelibs"
-	"hlinspect/internal/gamelibs/cl"
 	"hlinspect/internal/gamelibs/hl"
-	"hlinspect/internal/gamelibs/hw"
 	"hlinspect/internal/hooks"
 	"hlinspect/internal/logs"
 	"path/filepath"
@@ -25,8 +23,8 @@ var kernelDLL *hooks.Module
 var libraryInitializers = map[string]func(base string) error{
 	"hl.dll":     hl.InitHLDLL,
 	"opfor.dll":  hl.InitHLDLL,
-	"hw.dll":     hw.InitHWDLL,
-	"client.dll": cl.InitClientDLL,
+	"hw.dll":     gamelibs.Model.InitHWDLL,
+	"client.dll": gamelibs.Model.InitCLDLL,
 }
 
 var loadLibraryAPattern = hooks.MakeFunctionPattern("LoadLibraryA", map[string]string{"Windows": "LoadLibraryA"}, nil)
@@ -86,8 +84,6 @@ func initLoadLibraryHooks() {
 	if err != nil {
 		logs.DLLLog.Panicf("Unable to hook LoadLibraryW: %v", err)
 	}
-
-	gamelibs.Model.RegisterEventHandler(events.NewHandler())
 }
 
 // OnProcessAttach called from DllMain on process attach
@@ -105,6 +101,8 @@ func OnProcessAttach() {
 	}
 
 	initLoadLibraryHooks()
+
+	gamelibs.Model.RegisterEventHandler(events.NewHandler())
 
 	for base, initializer := range libraryInitializers {
 		logs.DLLLog.Debugf("Initialising %v", base)
