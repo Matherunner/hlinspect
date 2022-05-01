@@ -2,9 +2,7 @@ package cl
 
 import (
 	"hlinspect/internal/gamelibs"
-	"hlinspect/internal/gamelibs/graphics"
-	"hlinspect/internal/gamelibs/hw"
-	"hlinspect/internal/gl"
+	"hlinspect/internal/gamelibs/common"
 	"hlinspect/internal/hooks"
 	"unsafe"
 )
@@ -16,43 +14,35 @@ import "C"
 
 var clientDLL *hooks.Module
 
-var hudRedrawPattern = hooks.MakeFunctionPattern("HUD_Redraw", map[string]string{"Windows": "HUD_Redraw"}, nil)
-var hudDrawTransparentTrianglesPattern = hooks.MakeFunctionPattern("HUD_DrawTransparentTriangles", map[string]string{"Windows": "HUD_DrawTransparentTriangles"}, nil)
-var hudVidInitPattern = hooks.MakeFunctionPattern("HUD_VidInit", map[string]string{"Windows": "HUD_VidInit"}, nil)
-var hudResetPattern = hooks.MakeFunctionPattern("HUD_Reset", map[string]string{"Windows": "HUD_Reset"}, nil)
-
 // HookedHUDRedraw hooked HUD_Redraw
 //export HookedHUDRedraw
 func HookedHUDRedraw(time float32, intermission int32) {
-	hooks.CallFuncFloatInt(hudRedrawPattern.Address(), time, uintptr(intermission))
-	graphics.DrawHUD(time, intermission)
+	gamelibs.Model.EventHandler().HUDRedraw(time, int(intermission))
 }
 
 // HookedHUDDrawTransparentTriangles HUD_DrawTransparentTriangles
 //export HookedHUDDrawTransparentTriangles
 func HookedHUDDrawTransparentTriangles() {
-	hooks.CallFuncInts0(hudDrawTransparentTrianglesPattern.Address())
-	gl.Disable(gl.Texture2D)
-	graphics.DrawTriangles()
-	gl.Enable(gl.Texture2D)
-	hw.TriGLRenderMode(hw.KRenderNormal)
+	gamelibs.Model.EventHandler().HUDDrawTransparentTriangle()
 }
 
 // HookedHUDVidInit HUD_VidInit
 //export HookedHUDVidInit
 func HookedHUDVidInit() int {
-	ret := hooks.CallFuncInts0(hudVidInitPattern.Address())
-	screenInfo := hw.GetScreenInfo()
-	graphics.SetScreenInfo(&screenInfo)
-	return ret
+	return gamelibs.Model.EventHandler().HUDVidInit()
 }
 
 // HookedHUDReset HUD_Reset
 //export HookedHUDReset
 func HookedHUDReset() {
-	hooks.CallFuncInts0(hudResetPattern.Address())
-	screenInfo := hw.GetScreenInfo()
-	graphics.SetScreenInfo(&screenInfo)
+	gamelibs.Model.EventHandler().HUDReset()
+}
+
+func initAPIRegistry(reg *gamelibs.APIRegistry) {
+	reg.HUDRedrawPattern = hooks.MakeFunctionPattern("HUD_Redraw", map[string]string{"Windows": "HUD_Redraw"}, nil)
+	reg.HUDDrawTransparentTrianglesPattern = hooks.MakeFunctionPattern("HUD_DrawTransparentTriangles", map[string]string{"Windows": "HUD_DrawTransparentTriangles"}, nil)
+	reg.HUDVidInitPattern = hooks.MakeFunctionPattern("HUD_VidInit", map[string]string{"Windows": "HUD_VidInit"}, nil)
+	reg.HUDResetPattern = hooks.MakeFunctionPattern("HUD_Reset", map[string]string{"Windows": "HUD_Reset"}, nil)
 }
 
 // InitClientDLL initialise client.dll
@@ -66,15 +56,19 @@ func InitClientDLL(base string) (err error) {
 		return
 	}
 
+	reg := gamelibs.Model.Registry()
+
+	initAPIRegistry(reg)
+
 	items := map[*hooks.FunctionPattern]unsafe.Pointer{
-		&hudRedrawPattern:                   C.HookedHUDRedraw,
-		&hudDrawTransparentTrianglesPattern: C.HookedHUDDrawTransparentTriangles,
-		&hudVidInitPattern:                  C.HookedHUDVidInit,
-		&hudResetPattern:                    C.HookedHUDReset,
+		&reg.HUDRedrawPattern:                   C.HookedHUDRedraw,
+		&reg.HUDDrawTransparentTrianglesPattern: C.HookedHUDDrawTransparentTriangles,
+		&reg.HUDVidInitPattern:                  C.HookedHUDVidInit,
+		&reg.HUDResetPattern:                    C.HookedHUDReset,
 	}
 
 	errors := hooks.BatchFind(clientDLL, items)
-	gamelibs.PrintBatchFindErrors(errors)
+	common.PrintBatchFindErrors(errors)
 
 	return
 }

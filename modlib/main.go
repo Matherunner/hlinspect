@@ -1,7 +1,9 @@
 package main
 
 import (
+	"hlinspect/internal/events"
 	"hlinspect/internal/feed"
+	"hlinspect/internal/gamelibs"
 	"hlinspect/internal/gamelibs/cl"
 	"hlinspect/internal/gamelibs/hl"
 	"hlinspect/internal/gamelibs/hw"
@@ -84,6 +86,8 @@ func initLoadLibraryHooks() {
 	if err != nil {
 		logs.DLLLog.Panicf("Unable to hook LoadLibraryW: %v", err)
 	}
+
+	gamelibs.Model.RegisterEventHandler(events.NewHandler())
 }
 
 // OnProcessAttach called from DllMain on process attach

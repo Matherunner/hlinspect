@@ -16,7 +16,7 @@ func SetScreenInfo(si *hw.ScreenInfo) {
 }
 
 // DrawHUD draws HUD
-func DrawHUD(time float32, intermission int32) {
+func DrawHUD(time float32, intermission int) {
 	hw.VGUI2DrawSetTextColorAlpha(255, 180, 30, 255)
 
 	drawEntitiesOverlay()

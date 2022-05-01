@@ -104,11 +104,11 @@ func drawAACuboidWireframe(corner1, corner2 [3]float32) {
 func drawPyramid(origin [3]float32, width, height float32) {
 	halfWidth := width * 0.5
 	offsets := [5][2]float32{
-		[2]float32{halfWidth, halfWidth},
-		[2]float32{halfWidth, -halfWidth},
-		[2]float32{-halfWidth, -halfWidth},
-		[2]float32{-halfWidth, halfWidth},
-		[2]float32{halfWidth, halfWidth},
+		{halfWidth, halfWidth},
+		{halfWidth, -halfWidth},
+		{-halfWidth, -halfWidth},
+		{-halfWidth, halfWidth},
+		{halfWidth, halfWidth},
 	}
 
 	hw.TriGLBegin(hw.TriQuads)
@@ -128,11 +128,11 @@ func drawPyramid(origin [3]float32, width, height float32) {
 func drawInvertedPyramid(origin [3]float32, width, height float32) {
 	halfWidth := width * 0.5
 	offsets := [5][2]float32{
-		[2]float32{halfWidth, halfWidth},
-		[2]float32{halfWidth, -halfWidth},
-		[2]float32{-halfWidth, -halfWidth},
-		[2]float32{-halfWidth, halfWidth},
-		[2]float32{halfWidth, halfWidth},
+		{halfWidth, halfWidth},
+		{halfWidth, -halfWidth},
+		{-halfWidth, -halfWidth},
+		{-halfWidth, halfWidth},
+		{halfWidth, halfWidth},
 	}
 
 	hw.TriGLBegin(hw.TriQuads)

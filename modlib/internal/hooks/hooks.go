@@ -17,6 +17,17 @@ import (
 */
 import "C"
 
+var (
+	ErrPatternNotFound  = errors.New("pattern not found")
+	ErrNonUniquePattern = errors.New("non-unique pattern")
+	ErrCreateHookFailed = errors.New("failed to create hook")
+	ErrEnableHookFailed = errors.New("failed to enable hook")
+)
+
+type PatternMap map[string]SearchPattern
+
+type SymbolNameMap map[string]string
+
 type Module struct {
 	name   string
 	base   unsafe.Pointer
@@ -75,15 +86,15 @@ type SearchPattern struct {
 
 type FunctionPattern struct {
 	functionName string
-	symbolNames  map[string]string
-	patterns     map[string]SearchPattern
+	symbolNames  SymbolNameMap
+	patterns     PatternMap
 	symbolKey    string
 	patternKey   string
 	addrPointer  unsafe.Pointer
 	replaceAddr  unsafe.Pointer
 }
 
-func MakeFunctionPattern(functionName string, symbols map[string]string, patterns map[string]SearchPattern) FunctionPattern {
+func MakeFunctionPattern(functionName string, symbols SymbolNameMap, patterns PatternMap) FunctionPattern {
 	return FunctionPattern{functionName: functionName, symbolNames: symbols, patterns: patterns}
 }
 
@@ -115,10 +126,12 @@ func (pat *FunctionPattern) Find(module *Module) (foundName string, address unsa
 	for patternName, pattern := range pat.patterns {
 		address, err = findSubstringPattern(pattern, module.base, module.size)
 		if err == nil {
-			_, newErr := findSubstringPattern(pattern, module.base, module.size)
-			if newErr != nil {
+			offset := uint(uintptr(address) - uintptr(module.base))
+			newSize := module.size - offset
+			_, newErr := findSubstringPattern(pattern, unsafe.Pointer(uintptr(address)+1), newSize)
+			if newErr == nil {
 				// Found a second instance of the pattern, must be an error
-				err = fmt.Errorf("Pattern is non-unique")
+				err = ErrNonUniquePattern
 			} else {
 				foundName = patternName
 				pat.addrPointer = address
@@ -143,12 +156,12 @@ func (pat *FunctionPattern) Hook(module *Module, fn unsafe.Pointer) (foundName s
 
 	var origFunc uintptr
 	if ret := C.MH_CreateHook(C.LPVOID(address), C.LPVOID(fn), (*C.LPVOID)(unsafe.Pointer(&origFunc))); ret != C.MH_OK {
-		err = fmt.Errorf("Unable to create hook: %v", ret)
+		err = fmt.Errorf("%w: %v", ErrCreateHookFailed, ret)
 		return
 	}
 
 	if ret := C.MH_EnableHook(C.LPVOID(address)); ret != C.MH_OK {
-		err = fmt.Errorf("Unable to enable hook: %v", ret)
+		err = fmt.Errorf("%w: %v", ErrEnableHookFailed, ret)
 		return
 	}
 
@@ -210,7 +223,7 @@ func findSubstringPattern(pattern SearchPattern, base unsafe.Pointer, size uint)
 			return
 		}
 	}
-	err = fmt.Errorf("Failed to find pattern")
+	err = ErrPatternNotFound
 	return
 }
 
