@@ -5,7 +5,6 @@ import (
 	"hlinspect/internal/cvar"
 	"hlinspect/internal/engine"
 	"hlinspect/internal/gamelibs"
-	"hlinspect/internal/gamelibs/hl"
 	"hlinspect/internal/gl"
 	"strings"
 	"unsafe"
@@ -237,7 +236,7 @@ func drawSoundLinks() {
 				continue
 			}
 
-			sound := engine.MakeSound(unsafe.Pointer(hl.CSoundEntSoundPointerForIndex(int32(audibleList))))
+			sound := engine.MakeSound(unsafe.Pointer(gamelibs.Model.API().CSoundEntSoundPointerForIndex(int32(audibleList))))
 			soundOrigin := sound.Origin()
 			drawLines([][3]float32{origin, soundOrigin})
 		}

@@ -30,6 +30,10 @@ func (m *GamelibModel) InitCLDLL(base string) error {
 	return initCLDLL(base)
 }
 
+func (m *GamelibModel) InitHLDLL(base string) error {
+	return initHLDLL(base)
+}
+
 // API returns the gamelib API.
 func (m *GamelibModel) API() *API {
 	return m.api

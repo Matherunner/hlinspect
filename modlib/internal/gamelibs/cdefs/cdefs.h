@@ -14,3 +14,8 @@ void HookedHUDRedraw(float time, int intermission);
 void HookedHUDDrawTransparentTriangles();
 int HookedHUDVidInit();
 void HookedHUDReset();
+
+void HookedPMInit(uintptr_t ppm);
+void HookedPMPlayerMove(int server);
+void __thiscall CHookedCGraphInitGraph(void *this);
+void HookedCGraphInitGraph(uintptr_t this);

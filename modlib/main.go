@@ -4,7 +4,6 @@ import (
 	"hlinspect/internal/events"
 	"hlinspect/internal/feed"
 	"hlinspect/internal/gamelibs"
-	"hlinspect/internal/gamelibs/hl"
 	"hlinspect/internal/hooks"
 	"hlinspect/internal/logs"
 	"path/filepath"
@@ -21,8 +20,8 @@ import "C"
 var kernelDLL *hooks.Module
 
 var libraryInitializers = map[string]func(base string) error{
-	"hl.dll":     hl.InitHLDLL,
-	"opfor.dll":  hl.InitHLDLL,
+	"hl.dll":     gamelibs.Model.InitHLDLL,
+	"opfor.dll":  gamelibs.Model.InitHLDLL,
 	"hw.dll":     gamelibs.Model.InitHWDLL,
 	"client.dll": gamelibs.Model.InitCLDLL,
 }

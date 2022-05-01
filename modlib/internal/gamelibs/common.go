@@ -1,4 +1,4 @@
-package common
+package gamelibs
 
 import (
 	"fmt"
@@ -19,8 +19,7 @@ const (
 	WindowsHLDLL = "Windows-HL-DLL"
 )
 
-// PrintBatchFindErrors prints standardised logs
-func PrintBatchFindErrors(errors map[*hooks.FunctionPattern]error) {
+func printBatchFindErrors(errors map[*hooks.FunctionPattern]error) {
 	for pat, err := range errors {
 		if err == nil {
 			useType := ""

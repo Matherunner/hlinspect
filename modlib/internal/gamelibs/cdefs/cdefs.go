@@ -20,6 +20,9 @@ var CDefs = struct {
 	HookedRClear                      unsafe.Pointer
 	HookedRDrawSequentialPoly         unsafe.Pointer
 	HookedVFadeAlpha                  unsafe.Pointer
+	HookedPMInit                      unsafe.Pointer
+	HookedPMPlayerMove                unsafe.Pointer
+	CHookedCGraphInitGraph            unsafe.Pointer
 }{
 	CCmdHandler:                       C.CCmdHandler,
 	HookedHUDDrawTransparentTriangles: C.HookedHUDDrawTransparentTriangles,
@@ -30,8 +33,15 @@ var CDefs = struct {
 	HookedRClear:                      C.HookedRClear,
 	HookedRDrawSequentialPoly:         C.HookedRDrawSequentialPoly,
 	HookedVFadeAlpha:                  C.HookedVFadeAlpha,
+	HookedPMInit:                      C.HookedPMInit,
+	HookedPMPlayerMove:                C.HookedPMPlayerMove,
+	CHookedCGraphInitGraph:            C.CHookedCGraphInitGraph,
 }
 
+// Handler defines the interface of an event handler that will receive synchronous "events"
+// when the hooked functions are called by the game.
+//
+// This is defined here because the hooked functions define the shape of the handler they want to call.
 type Handler interface {
 	HUDDrawTransparentTriangle()
 	HUDRedraw(time float32, intermission int)
@@ -42,6 +52,9 @@ type Handler interface {
 	RClear()
 	RDrawSequentialPoly(surf uintptr, free int)
 	VFadeAlpha() int
+	PMInit(ppm uintptr)
+	PMPlayerMove(server int)
+	CGraphInitGraph(this uintptr)
 }
 
 var eventHandler Handler
@@ -102,4 +115,22 @@ func HookedHUDVidInit() int {
 //export HookedHUDReset
 func HookedHUDReset() {
 	eventHandler.HUDReset()
+}
+
+// HookedPMInit PM_Init
+//export HookedPMInit
+func HookedPMInit(ppm uintptr) {
+	eventHandler.PMInit(ppm)
+}
+
+// HookedCGraphInitGraph hooks CGraph::InitGraph
+//export HookedCGraphInitGraph
+func HookedCGraphInitGraph(this uintptr) {
+	eventHandler.CGraphInitGraph(this)
+}
+
+// HookedPMPlayerMove PM_PlayerMove
+//export HookedPMPlayerMove
+func HookedPMPlayerMove(server int) {
+	eventHandler.PMPlayerMove(server)
 }

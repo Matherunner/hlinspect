@@ -2,7 +2,6 @@ package gamelibs
 
 import (
 	"hlinspect/internal/gamelibs/cdefs"
-	"hlinspect/internal/gamelibs/common"
 	"hlinspect/internal/hooks"
 	"unsafe"
 )
@@ -38,7 +37,7 @@ func initCLDLL(base string) (err error) {
 	}
 
 	errors := hooks.BatchFind(clientDLL, items)
-	common.PrintBatchFindErrors(errors)
+	printBatchFindErrors(errors)
 
 	return
 }

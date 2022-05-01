@@ -5,7 +5,7 @@ Half-Life mod to facilitate Half-Life physics and NPC AI research.
 ## Features
 
 - Easy and fast set up. No CMake or bespoke toolchains to mess with.
-- Ability to hook custom compiled `hl.dll` and `client.dll` using debug information in PDB files and allow Visual Studio debugger to attach. Custom compiled libraries tend to break standard hooking mods due to the reliance on function signatures and symbol names.
+- Ability to hook custom `hl.dll` and `client.dll` **compiled yourself** in Debug mode, by reading debug information in PDB files and allow Visual Studio debugger to attach. This tends to break standard hooking based mods built for speedrunning purposes.
 - Writing features in the higher level and simpler language of Go.
 - Ability to write logs to debug output viewable with Microsoft's [DebugView](https://docs.microsoft.com/en-us/sysinternals/downloads/debugview). No installation of custom or bespoke viewing tools.
 

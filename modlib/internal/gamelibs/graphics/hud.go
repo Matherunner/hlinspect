@@ -5,7 +5,6 @@ import (
 	"hlinspect/internal/cmd"
 	"hlinspect/internal/engine"
 	"hlinspect/internal/gamelibs"
-	"hlinspect/internal/gamelibs/hl"
 	"strings"
 )
 
@@ -25,7 +24,7 @@ func DrawHUD(time float32, intermission int) {
 }
 
 func drawSounds() {
-	sounds := hl.GetSoundList()
+	sounds := gamelibs.GetSoundList()
 	for _, sound := range sounds {
 		screen, clipped := worldToHUDScreen(sound.Origin, int(screenInfo.Width), int(screenInfo.Height))
 		if !clipped {
@@ -42,7 +41,6 @@ func drawEntitiesOverlay() {
 			continue
 		}
 
-		// TODO: uncomment
 		tracked := cmd.TrackedNPC[edict.PrivateData()]
 		if !tracked {
 			continue

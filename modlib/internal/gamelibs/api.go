@@ -40,12 +40,21 @@ type APIRegistry struct {
 	WorldTransform             hooks.FunctionPattern
 
 	// CL
-	HUDRedraw                   hooks.FunctionPattern
 	HUDDrawTransparentTriangles hooks.FunctionPattern
-	HUDVidInit                  hooks.FunctionPattern
+	HUDRedraw                   hooks.FunctionPattern
 	HUDReset                    hooks.FunctionPattern
+	HUDVidInit                  hooks.FunctionPattern
 
 	// HL
+	CBaseMonsterChangeSchedule    hooks.FunctionPattern
+	CBaseMonsterPBestSound        hooks.FunctionPattern
+	CBaseMonsterRouteNew          hooks.FunctionPattern
+	CGraphInitGraph               hooks.FunctionPattern
+	CSoundEntActiveList           hooks.FunctionPattern
+	CSoundEntSoundPointerForIndex hooks.FunctionPattern
+	PMInit                        hooks.FunctionPattern
+	PMPlayerMove                  hooks.FunctionPattern
+	WorldGraph                    hooks.FunctionPattern
 
 	// Misc
 	CCmdHandler unsafe.Pointer
@@ -171,12 +180,34 @@ func (api *API) AngleVectors(viewangles [3]float32) (forward, side, up [3]float3
 	return
 }
 
-// TraceLine traces a line and return the hit results
-func (api *API) TraceLine(start, end [3]float32, noMonsters int, entToSkip unsafe.Pointer) TraceResult {
-	traceResult := TraceResult{}
+func (api *API) TraceLine(start, end [3]float32, noMonsters int, entToSkip unsafe.Pointer) (result TraceResult) {
 	hooks.CallFuncInts5(
 		api.r.PFTracelineDLL.Address(), uintptr(unsafe.Pointer(&start[0])),
 		uintptr(unsafe.Pointer(&end[0])), uintptr(noMonsters),
-		uintptr(entToSkip), uintptr(unsafe.Pointer(&traceResult)))
-	return traceResult
+		uintptr(entToSkip), uintptr(unsafe.Pointer(&result)))
+	return
+}
+
+func (api *API) CSoundEntActiveList() int32 {
+	return int32(hooks.CallFuncInts0(api.r.CSoundEntActiveList.Address()))
+}
+
+func (api *API) CSoundEntSoundPointerForIndex(index int32) unsafe.Pointer {
+	return hooks.CallFuncInts1RetPtr(api.r.CSoundEntSoundPointerForIndex.Address(), uintptr(index))
+}
+
+func (api *API) CBaseMonsterPBestSound(this unsafe.Pointer) unsafe.Pointer {
+	return unsafe.Pointer(uintptr(hooks.CallFuncThisInts0(api.r.CBaseMonsterPBestSound.Address(), uintptr(this))))
+}
+
+func (api *API) CGraphInitGraph(this uintptr) {
+	hooks.CallFuncThisInts0(api.r.CGraphInitGraph.Address(), this)
+}
+
+func (api *API) PMInit(ppm uintptr) {
+	hooks.CallFuncInts1(api.r.PMInit.Address(), ppm)
+}
+
+func (api *API) PMPlayerMove(server int) {
+	hooks.CallFuncInts1(api.r.PMPlayerMove.Address(), uintptr(server))
 }
