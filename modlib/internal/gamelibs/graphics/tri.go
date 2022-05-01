@@ -4,8 +4,8 @@ import (
 	"hlinspect/internal/cmd"
 	"hlinspect/internal/cvar"
 	"hlinspect/internal/engine"
+	"hlinspect/internal/gamelibs"
 	"hlinspect/internal/gamelibs/hl"
-	"hlinspect/internal/gamelibs/hw"
 	"hlinspect/internal/gl"
 	"strings"
 	"unsafe"
@@ -28,9 +28,9 @@ func drawNodeGraph() {
 		return
 	}
 
-	hw.TriGLColor4f(1, 0, 1, 0.2)
-	hw.TriGLCullFace(hw.TriNone)
-	hw.TriGLRenderMode(hw.KRenderTransAdd)
+	gamelibs.Model.API().TriGLColor4f(1, 0, 1, 0.2)
+	gamelibs.Model.API().TriGLCullFace(gamelibs.TriNone)
+	gamelibs.Model.API().TriGLRenderMode(gamelibs.KRenderTransAdd)
 
 	numNodes := engine.WorldGraph.NumNodes()
 	for i := 0; i < numNodes; i++ {
@@ -45,9 +45,9 @@ func drawNodeLinks() {
 		return
 	}
 
-	hw.TriGLColor4f(1, 0, 1, 0.2)
-	hw.TriGLCullFace(hw.TriNone)
-	hw.TriGLRenderMode(hw.KRenderTransAdd)
+	gamelibs.Model.API().TriGLColor4f(1, 0, 1, 0.2)
+	gamelibs.Model.API().TriGLCullFace(gamelibs.TriNone)
+	gamelibs.Model.API().TriGLRenderMode(gamelibs.KRenderTransAdd)
 
 	numLinks := engine.WorldGraph.NumLinks()
 	for i := 0; i < numLinks; i++ {
@@ -72,9 +72,9 @@ func drawNodeLinks() {
 }
 
 func drawScriptedSequences() {
-	hw.TriGLColor4f(1, 0, 0, 0.2)
-	hw.TriGLCullFace(hw.TriNone)
-	hw.TriGLRenderMode(hw.KRenderTransAdd)
+	gamelibs.Model.API().TriGLColor4f(1, 0, 0, 0.2)
+	gamelibs.Model.API().TriGLCullFace(gamelibs.TriNone)
+	gamelibs.Model.API().TriGLRenderMode(gamelibs.KRenderTransAdd)
 
 	numEdicts := engine.Engine.SV.NumEdicts()
 	for i := 0; i < numEdicts; i++ {
@@ -104,9 +104,9 @@ func drawScriptedSequences() {
 
 func drawScriptedSequencesPossessions() {
 	gl.LineWidth(4)
-	hw.TriGLColor4f(1, 0, 0, 1)
-	hw.TriGLCullFace(hw.TriNone)
-	hw.TriGLRenderMode(hw.KRenderTransAdd)
+	gamelibs.Model.API().TriGLColor4f(1, 0, 0, 1)
+	gamelibs.Model.API().TriGLCullFace(gamelibs.TriNone)
+	gamelibs.Model.API().TriGLRenderMode(gamelibs.KRenderTransAdd)
 
 	numEdicts := engine.Engine.SV.NumEdicts()
 	for i := 0; i < numEdicts; i++ {
@@ -133,9 +133,9 @@ func drawScriptedSequencesPossessions() {
 
 func drawMonsterRoutes() {
 	gl.LineWidth(4)
-	hw.TriGLColor4f(0, 1, 0, 1)
-	hw.TriGLCullFace(hw.TriNone)
-	hw.TriGLRenderMode(hw.KRenderTransAdd)
+	gamelibs.Model.API().TriGLColor4f(0, 1, 0, 1)
+	gamelibs.Model.API().TriGLCullFace(gamelibs.TriNone)
+	gamelibs.Model.API().TriGLRenderMode(gamelibs.KRenderTransAdd)
 
 	numEdicts := engine.Engine.SV.NumEdicts()
 	for i := 0; i < numEdicts; i++ {
@@ -172,9 +172,9 @@ func drawMonsterRoutes() {
 
 func drawBoundingBoxes() {
 	gl.LineWidth(1)
-	hw.TriGLColor4f(0, 1, 0, 1)
-	hw.TriGLCullFace(hw.TriNone)
-	hw.TriGLRenderMode(hw.KRenderTransAdd)
+	gamelibs.Model.API().TriGLColor4f(0, 1, 0, 1)
+	gamelibs.Model.API().TriGLCullFace(gamelibs.TriNone)
+	gamelibs.Model.API().TriGLRenderMode(gamelibs.KRenderTransAdd)
 
 	numEdicts := engine.Engine.SV.NumEdicts()
 	for i := 0; i < numEdicts; i++ {
@@ -201,9 +201,9 @@ func drawBoundingBoxes() {
 
 func drawSoundLinks() {
 	gl.LineWidth(3)
-	hw.TriGLColor4f(0.5, 0.8, 1, 1)
-	hw.TriGLCullFace(hw.TriNone)
-	hw.TriGLRenderMode(hw.KRenderTransAdd)
+	gamelibs.Model.API().TriGLColor4f(0.5, 0.8, 1, 1)
+	gamelibs.Model.API().TriGLCullFace(gamelibs.TriNone)
+	gamelibs.Model.API().TriGLRenderMode(gamelibs.KRenderTransAdd)
 
 	numEdicts := engine.Engine.SV.NumEdicts()
 	for i := 0; i < numEdicts; i++ {
@@ -221,7 +221,7 @@ func drawSoundLinks() {
 				continue
 			}
 
-			e := hw.PFCheckClientI(edict.Pointer())
+			e := gamelibs.Model.API().PFCheckClientI(edict.Pointer())
 			if e == 0 || engine.Engine.SV.EntOffset(e) == 0 {
 				// Not in PVS
 				if monster.MonsterState() != engine.MonsterStateCombat {
@@ -246,9 +246,9 @@ func drawSoundLinks() {
 }
 
 func drawInfoBigMomma() {
-	hw.TriGLColor4f(0.8, 0.4, 0.7, 1)
-	hw.TriGLCullFace(hw.TriNone)
-	hw.TriGLRenderMode(hw.KRenderTransAdd)
+	gamelibs.Model.API().TriGLColor4f(0.8, 0.4, 0.7, 1)
+	gamelibs.Model.API().TriGLCullFace(gamelibs.TriNone)
+	gamelibs.Model.API().TriGLRenderMode(gamelibs.KRenderTransAdd)
 
 	numEdicts := engine.Engine.SV.NumEdicts()
 	for i := 0; i < numEdicts; i++ {

@@ -2,6 +2,30 @@ package gamelibs
 
 import "unsafe"
 
+const (
+	TriTriangles = iota
+	TriTriangleFan
+	TriQuads
+	TriPolygon
+	TriLines
+	TriTriangleStrip
+	TriQuadStrip
+)
+
+const (
+	TriFront = iota
+	TriNone
+)
+
+const (
+	KRenderNormal = iota
+	KRenderTransColor
+	KRenderTransTexture
+	KRenderGlow
+	KRenderTransAlpha
+	KRenderTransAdd
+)
+
 type rawCVar struct {
 	Name   uintptr
 	String uintptr

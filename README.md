@@ -1,6 +1,6 @@
 # hlinspect
 
-Half-Life mod to faciliate Half-Life physics and NPC AI research.
+Half-Life mod to facilitate Half-Life physics and NPC AI research.
 
 ## Features
 
@@ -16,7 +16,7 @@ Half-Life mod to faciliate Half-Life physics and NPC AI research.
 
 ## Usage
 
-Currently, hlinspect doesn't come with an injector. You can use any general DLL injector to inject and start Half-Life. There are plenty of open source DLL injectors on Github, and choose wisely.
+Currently, hlinspect doesn't come with an injector. You can use any general DLL injector to inject and start Half-Life, or even write your own. There are plenty of open source DLL injectors on Github, and do choose wisely. In the future, a custom injector may be included.
 
 ## Building
 
@@ -26,9 +26,9 @@ Currently, this is the easiest to build on Linux using cross compilation.
 
 Set up WSL in Windows or use a Linux system.
 
-Install a relatively new version of Go.
+Install Go 1.17 or above.
 
-Install `gcc-mingw-w64` to get `i686-w64-mingw32-gcc` or similar.
+Install `gcc-mingw-w64` to get `i686-w64-mingw32-gcc` or similar for cross compilation.
 
 Install `protobuf-compiler` or similar to get `protoc`.
 
