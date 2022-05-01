@@ -65,13 +65,12 @@ func NewModule(name string) (module *Module, err error) {
 		return
 	}
 
-	module = &Module{
+	return &Module{
 		name:   name,
 		base:   unsafe.Pointer(info.BaseOfDll),
 		size:   uint(info.SizeOfImage),
 		handle: handle,
-	}
-	return
+	}, nil
 }
 
 // Base get the base pointer of the DLL
@@ -108,7 +107,7 @@ func (pat *FunctionPattern) Find(module *Module) (foundName string, address unsa
 			pat.addrPointer = address
 			pat.symbolKey = key
 			pat.patternKey = ""
-			return
+			return foundName, address, nil
 		}
 
 		var relAddr uintptr
@@ -119,7 +118,7 @@ func (pat *FunctionPattern) Find(module *Module) (foundName string, address unsa
 			pat.addrPointer = address
 			pat.symbolKey = key
 			pat.patternKey = ""
-			return
+			return foundName, address, nil
 		}
 	}
 
@@ -141,7 +140,8 @@ func (pat *FunctionPattern) Find(module *Module) (foundName string, address unsa
 			return
 		}
 	}
-	return
+
+	return "", nil, ErrPatternNotFound
 }
 
 func (pat *FunctionPattern) Hook(module *Module, fn unsafe.Pointer) (foundName string, address unsafe.Pointer, err error) {

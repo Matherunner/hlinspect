@@ -29,7 +29,7 @@ func (cvar CVar) Pointer() unsafe.Pointer {
 
 // Name returns cvar_t::name
 func (cvar CVar) Name() string {
-	cstr := *(**C.char)(unsafe.Pointer(cvar.ptr))
+	cstr := *(**C.char)(cvar.ptr)
 	return C.GoString(cstr)
 }
 

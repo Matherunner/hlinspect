@@ -39,5 +39,5 @@ func initCLDLL(base string) (err error) {
 	errors := hooks.BatchFind(clientDLL, items)
 	printBatchFindErrors(errors)
 
-	return
+	return nil
 }

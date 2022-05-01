@@ -166,5 +166,5 @@ func initHLDLL(base string) (err error) {
 		engine.MonsterOffsets.RouteIndex = *(*uintptr)(unsafe.Pointer(uintptr(reg.CBaseMonsterRouteNew.Address()) + 0xa))
 	}
 
-	return
+	return nil
 }

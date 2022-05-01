@@ -4,7 +4,6 @@ package gamelibs
 
 import (
 	"hlinspect/internal/engine"
-	"unsafe"
 )
 
 // SoundItem is an internal representation of a sound
@@ -24,7 +23,7 @@ func GetSoundList() []SoundItem {
 		if address == nil {
 			break
 		}
-		sound := engine.MakeSound(unsafe.Pointer(address))
+		sound := engine.MakeSound(address)
 		items = append(items, SoundItem{
 			Origin:     sound.Origin(),
 			Type:       sound.Type(),

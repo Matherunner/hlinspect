@@ -196,5 +196,5 @@ func initHWDLL(base string) (err error) {
 		logs.DLLLog.Debugf("Set GlobalVariables address: %x", ptr)
 	}
 
-	return
+	return nil
 }

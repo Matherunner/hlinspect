@@ -7,7 +7,6 @@ import (
 	"hlinspect/internal/gamelibs"
 	"hlinspect/internal/gl"
 	"strings"
-	"unsafe"
 )
 
 // DrawTriangles draw OpenGL triangles
@@ -236,11 +235,10 @@ func drawSoundLinks() {
 				continue
 			}
 
-			sound := engine.MakeSound(unsafe.Pointer(gamelibs.Model.API().CSoundEntSoundPointerForIndex(int32(audibleList))))
+			sound := engine.MakeSound(gamelibs.Model.API().CSoundEntSoundPointerForIndex(int32(audibleList)))
 			soundOrigin := sound.Origin()
 			drawLines([][3]float32{origin, soundOrigin})
 		}
-
 	}
 }
 
