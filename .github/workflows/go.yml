@@ -42,6 +42,17 @@ jobs:
     - name: Generate protobuf defs
       run: go generate ./...
 
+    - name: golangci-lint
+      uses: golangci/golangci-lint-action@v3
+      with:
+        version: v1.45
+        working-directory: modlib
+      env:
+        CC: i686-w64-mingw32-gcc
+        CGO_ENABLED: 1
+        GOOS: windows
+        GOARCH: 386
+
     - name: Build
       run: make
       env:
