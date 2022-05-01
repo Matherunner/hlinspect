@@ -1,5 +1,13 @@
 #include "dllmain.h"
 
+// Defined in Go.
+extern void OnProcessAttach();
+extern void OnProcessDetach();
+extern uintptr_t GetLoadLibraryAAddr();
+extern uintptr_t GetLoadLibraryWAddr();
+extern void LoadLibraryACallback(LPCSTR);
+extern void LoadLibraryWCallback(LPCWSTR);
+
 static DWORD WINAPI OnAttachThread(LPVOID lpParam)
 {
     OnProcessAttach();

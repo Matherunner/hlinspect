@@ -1,6 +1,7 @@
 package hooks
 
 import (
+	"errors"
 	"fmt"
 	"sync"
 	"unsafe"
@@ -15,6 +16,10 @@ import (
 #include <dbghelp.h>
 */
 import "C"
+
+var (
+	ErrCannotFindSymbol = errors.New("unable to find symbol")
+)
 
 var symLock sync.Mutex
 
@@ -50,7 +55,7 @@ func findSym(name string) (relAddr uintptr, err error) {
 	lastErr := C.GetLastError()
 	symLock.Unlock()
 	if ret == 0 {
-		err = fmt.Errorf("Unable to find symbol: %v", lastErr)
+		err = fmt.Errorf("%w: %v", ErrCannotFindSymbol, lastErr)
 		return
 	}
 

@@ -22,6 +22,13 @@ import "C"
 
 var kernelDLL *hooks.Module
 
+var libraryInitializers = map[string]func(base string) error{
+	"hl.dll":     hl.InitHLDLL,
+	"opfor.dll":  hl.InitHLDLL,
+	"hw.dll":     hw.InitHWDLL,
+	"client.dll": cl.InitClientDLL,
+}
+
 var loadLibraryAPattern = hooks.MakeFunctionPattern("LoadLibraryA", map[string]string{"Windows": "LoadLibraryA"}, nil)
 var loadLibraryWPattern = hooks.MakeFunctionPattern("LoadLibraryW", map[string]string{"Windows": "LoadLibraryW"}, nil)
 
@@ -49,19 +56,12 @@ func LoadLibraryWCallback(fileName C.LPCWSTR) {
 	onLibraryLoaded(windows.UTF16PtrToString((*uint16)(unsafe.Pointer(fileName))))
 }
 
-var libraryInitializers = map[string]func(base string) error{
-	"hl.dll":     hl.InitHLDLL,
-	"opfor.dll":  hl.InitHLDLL,
-	"hw.dll":     hw.InitHWDLL,
-	"client.dll": cl.InitClientDLL,
-}
-
 func onLibraryLoaded(fileName string) {
 	hooks.RefreshModuleList()
 	base := filepath.Base(fileName)
 	if initializer, ok := libraryInitializers[base]; ok {
 		if err := initializer(base); err != nil {
-			logs.DLLLog.Warningf("Unable to hook %v when loaded: %v", base, initializer)
+			logs.DLLLog.Warningf("Unable to hook %v when loaded: %v", base, err)
 		} else {
 			logs.DLLLog.Debugf("Initialised %v", base)
 		}
