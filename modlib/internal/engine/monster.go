@@ -121,7 +121,7 @@ func (monster Monster) Schedule() *Schedule {
 	if ptr == nil {
 		return nil
 	}
-	schedule := MakeSchedule(uintptr(ptr))
+	schedule := MakeSchedule(ptr)
 	return &schedule
 }
 

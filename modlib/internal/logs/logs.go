@@ -30,15 +30,15 @@ type fileOutputWriter struct {
 	file *os.File
 }
 
-func createFileOutputWriter() fileOutputWriter {
-	file, err := os.OpenFile("hlinspect-debug.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		return fileOutputWriter{}
-	}
-	return fileOutputWriter{
-		file: file,
-	}
-}
+// func createFileOutputWriter() fileOutputWriter {
+// 	file, err := os.OpenFile("hlinspect-debug.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+// 	if err != nil {
+// 		return fileOutputWriter{}
+// 	}
+// 	return fileOutputWriter{
+// 		file: file,
+// 	}
+// }
 
 func (w fileOutputWriter) Write(p []byte) (n int, err error) {
 	if w.file != nil {

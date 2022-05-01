@@ -15,6 +15,11 @@ static inline int call_func_ints_1(void *fp, uintptr_t a)
 	return ((int (*)(uintptr_t))fp)(a);
 }
 
+static inline void *call_func_ints_1_ret_ptr(void *fp, uintptr_t a)
+{
+	return ((void *(*)(uintptr_t))fp)(a);
+}
+
 static inline int call_func_ints_2(void *fp, uintptr_t a, uintptr_t b)
 {
 	return ((int (*)(uintptr_t, uintptr_t))fp)(a, b);
@@ -49,6 +54,11 @@ static inline int __thiscall call_func_this_ints_0(void *fp, uintptr_t this)
 {
 	return ((int (__thiscall *)())fp)(this);
 }
+
+static inline void *__thiscall call_func_this_ints_0_ret_ptr(void *fp, uintptr_t this)
+{
+	return ((void *(__thiscall *)())fp)(this);
+}
 */
 import "C"
 
@@ -58,6 +68,10 @@ func CallFuncInts0(address unsafe.Pointer) int {
 
 func CallFuncInts1(address unsafe.Pointer, a uintptr) int {
 	return int(C.call_func_ints_1(address, C.uint(a)))
+}
+
+func CallFuncInts1RetPtr(address unsafe.Pointer, a uintptr) unsafe.Pointer {
+	return C.call_func_ints_1_ret_ptr(address, C.uint(a))
 }
 
 func CallFuncInts2(address unsafe.Pointer, a, b uintptr) int {
@@ -86,4 +100,8 @@ func CallFuncFloats4(address unsafe.Pointer, a, b, c, d float32) int {
 
 func CallFuncThisInts0(address unsafe.Pointer, this uintptr) int {
 	return int(C.call_func_this_ints_0(address, C.uint(this)))
+}
+
+func CallFuncThisInts0RetPtr(address unsafe.Pointer, this uintptr) unsafe.Pointer {
+	return C.call_func_this_ints_0_ret_ptr(address, C.uint(this))
 }

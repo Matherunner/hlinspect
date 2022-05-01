@@ -131,9 +131,9 @@ func (sv SV) NumEdicts() int {
 
 // Edict returns sv.edicts[index]
 func (sv SV) Edict(index int) Edict {
-	base := *(*uintptr)(unsafe.Pointer(uintptr(sv.ptr) + 0x3bc60))
+	base := *(*unsafe.Pointer)(unsafe.Add(sv.ptr, 0x3bc60))
 	// 804 is sizeof(edict_t)
-	return MakeEdict(unsafe.Pointer(base + uintptr(index*804)))
+	return MakeEdict(unsafe.Add(base, index*804))
 }
 
 // State interface to the game engine

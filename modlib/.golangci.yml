@@ -1,0 +1,30 @@
+linters:
+  enable:
+    - asciicheck
+    - bidichk
+    - dupl
+    - durationcheck
+    - errname
+    - errorlint
+    - exhaustive
+    - exportloopref
+    - forcetypeassert
+    - gochecknoinits
+    - goconst
+    - goimports
+    - goprintffuncname
+    - nakedret
+    - nilerr
+    - prealloc
+    - prealloc
+    - unconvert
+    - unparam
+    - wastedassign
+    - whitespace
+    - gosec
+
+linters-settings:
+  govet:
+    enable-all: true
+    disable:
+      - fieldalignment

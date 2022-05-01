@@ -70,5 +70,8 @@ func Broadcast(message []byte) {
 
 func Serve() {
 	http.HandleFunc("/ws", webSocketHandler)
-	http.ListenAndServe("localhost:32001", nil)
+	err := http.ListenAndServe("localhost:32001", nil)
+	if err != nil {
+		logs.DLLLog.Warningf("failed to listen: %v", err)
+	}
 }

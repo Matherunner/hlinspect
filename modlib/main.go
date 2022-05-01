@@ -1,10 +1,9 @@
 package main
 
 import (
+	"hlinspect/internal/events"
 	"hlinspect/internal/feed"
-	"hlinspect/internal/gamelibs/cl"
-	"hlinspect/internal/gamelibs/hl"
-	"hlinspect/internal/gamelibs/hw"
+	"hlinspect/internal/gamelibs"
 	"hlinspect/internal/hooks"
 	"hlinspect/internal/logs"
 	"path/filepath"
@@ -19,6 +18,16 @@ import (
 import "C"
 
 var kernelDLL *hooks.Module
+
+var libraryInitializers = map[string]func(base string) error{
+	"hl.dll":     gamelibs.Model.InitHLDLL,
+	"opfor.dll":  gamelibs.Model.InitHLDLL,
+	"cz.dll":     gamelibs.Model.InitHLDLL,
+	"gunman.dll": gamelibs.Model.InitHLDLL,
+	"wanted.dll": gamelibs.Model.InitHLDLL,
+	"hw.dll":     gamelibs.Model.InitHWDLL,
+	"client.dll": gamelibs.Model.InitCLDLL,
+}
 
 var loadLibraryAPattern = hooks.MakeFunctionPattern("LoadLibraryA", map[string]string{"Windows": "LoadLibraryA"}, nil)
 var loadLibraryWPattern = hooks.MakeFunctionPattern("LoadLibraryW", map[string]string{"Windows": "LoadLibraryW"}, nil)
@@ -47,22 +56,12 @@ func LoadLibraryWCallback(fileName C.LPCWSTR) {
 	onLibraryLoaded(windows.UTF16PtrToString((*uint16)(unsafe.Pointer(fileName))))
 }
 
-var libraryInitializers = map[string]func(base string) error{
-	"hl.dll":     hl.InitHLDLL,
-	"opfor.dll":  hl.InitHLDLL,
-	"cz.dll":     hl.InitHLDLL,
-	"gunman.dll": hl.InitHLDLL,
-	"wanted.dll": hl.InitHLDLL,
-	"hw.dll":     hw.InitHWDLL,
-	"client.dll": cl.InitClientDLL,
-}
-
 func onLibraryLoaded(fileName string) {
 	hooks.RefreshModuleList()
 	base := filepath.Base(fileName)
 	if initializer, ok := libraryInitializers[base]; ok {
 		if err := initializer(base); err != nil {
-			logs.DLLLog.Warningf("Unable to hook %v when loaded: %v", base, initializer)
+			logs.DLLLog.Warningf("Unable to hook %v when loaded: %v", base, err)
 		} else {
 			logs.DLLLog.Debugf("Initialised %v", base)
 		}
@@ -104,6 +103,8 @@ func OnProcessAttach() {
 	}
 
 	initLoadLibraryHooks()
+
+	gamelibs.Model.RegisterEventHandler(events.NewHandler())
 
 	for base, initializer := range libraryInitializers {
 		logs.DLLLog.Debugf("Initialising %v", base)

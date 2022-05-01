@@ -1,8 +1,9 @@
-package hl
+package gamelibs
+
+// TODO: should this file really be here? or on a different layer?
 
 import (
 	"hlinspect/internal/engine"
-	"unsafe"
 )
 
 // SoundItem is an internal representation of a sound
@@ -16,13 +17,13 @@ type SoundItem struct {
 // GetSoundList returns a list of sounds in the game
 func GetSoundList() []SoundItem {
 	items := make([]SoundItem, 0, 10)
-	soundIdx := CSoundEntActiveList()
+	soundIdx := Model.API().CSoundEntActiveList()
 	for soundIdx != -1 {
-		address := CSoundEntSoundPointerForIndex(soundIdx)
-		if address == 0 {
+		address := Model.API().CSoundEntSoundPointerForIndex(soundIdx)
+		if address == nil {
 			break
 		}
-		sound := engine.MakeSound(unsafe.Pointer(address))
+		sound := engine.MakeSound(address)
 		items = append(items, SoundItem{
 			Origin:     sound.Origin(),
 			Type:       sound.Type(),

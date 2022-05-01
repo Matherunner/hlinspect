@@ -1,14 +1,38 @@
-package hw
+package gamelibs
 
 import "unsafe"
 
-type rawCVar struct {
-	Name   uintptr
-	String uintptr
-	Flags  int32
-	Value  float32
-	Next   uintptr
-}
+const (
+	TriTriangles = iota
+	TriTriangleFan
+	TriQuads
+	TriPolygon
+	TriLines
+	TriTriangleStrip
+	TriQuadStrip
+)
+
+const (
+	TriFront = iota
+	TriNone
+)
+
+const (
+	KRenderNormal = iota
+	KRenderTransColor
+	KRenderTransTexture
+	KRenderGlow
+	KRenderTransAlpha
+	KRenderTransAdd
+)
+
+// type rawCVar struct {
+// 	Name   uintptr
+// 	String uintptr
+// 	Flags  int32
+// 	Value  float32
+// 	Next   uintptr
+// }
 
 // ScreenInfo represents SCREENINFO
 type ScreenInfo struct {
