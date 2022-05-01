@@ -50,6 +50,9 @@ func LoadLibraryWCallback(fileName C.LPCWSTR) {
 var libraryInitializers = map[string]func(base string) error{
 	"hl.dll":     hl.InitHLDLL,
 	"opfor.dll":  hl.InitHLDLL,
+	"cz.dll":     hl.InitHLDLL,
+	"gunman.dll": hl.InitHLDLL,
+	"wanted.dll": hl.InitHLDLL,
 	"hw.dll":     hw.InitHWDLL,
 	"client.dll": cl.InitClientDLL,
 }
