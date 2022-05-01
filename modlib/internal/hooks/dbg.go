@@ -26,11 +26,15 @@ var symLock sync.Mutex
 // RefreshModuleList calls SymRefreshModuleList, must be called on DLL load
 func RefreshModuleList() {
 	symLock.Lock()
+	defer symLock.Unlock()
+
 	C.SymRefreshModuleList(C.GetCurrentProcess())
-	symLock.Unlock()
 }
 
 func initSym() (ok bool) {
+	symLock.Lock()
+	defer symLock.Unlock()
+
 	if ret := C.SymInitialize(C.GetCurrentProcess(), nil, 1); ret == 0 {
 		return
 	}
@@ -39,6 +43,9 @@ func initSym() (ok bool) {
 }
 
 func cleanupSym() {
+	symLock.Lock()
+	defer symLock.Unlock()
+
 	C.SymCleanup(C.GetCurrentProcess())
 }
 
@@ -51,9 +58,10 @@ func findSym(name string) (relAddr uintptr, err error) {
 	info.si.MaxNameLen = C.ulong(unsafe.Sizeof(info.name))
 
 	symLock.Lock()
+	defer symLock.Unlock()
+
 	ret := C.SymFromName(C.GetCurrentProcess(), cname, (*C.SYMBOL_INFO)(unsafe.Pointer(&info)))
 	lastErr := C.GetLastError()
-	symLock.Unlock()
 	if ret == 0 {
 		err = fmt.Errorf("%w: %v", ErrCannotFindSymbol, lastErr)
 		return
