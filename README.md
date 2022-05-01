@@ -2,6 +2,8 @@
 
 Half-Life mod to facilitate Half-Life physics and NPC AI research.
 
+![c1a0 demo](./static/c1a0-demo.jpg)
+
 ## Features
 
 - Easy and fast set up. No CMake or bespoke toolchains to mess with.
