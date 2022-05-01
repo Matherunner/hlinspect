@@ -1,5 +1,7 @@
 #include "cdefs.h"
 
+extern void CmdHandler();
+
 void CCmdHandler()
 {
     CmdHandler();
@@ -7,5 +9,5 @@ void CCmdHandler()
 
 void __thiscall CHookedCGraphInitGraph(void *this)
 {
-    HookedCGraphInitGraph((uintptr_t)this);
+    HookedCGraphInitGraph(this);
 }

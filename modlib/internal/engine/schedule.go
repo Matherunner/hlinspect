@@ -208,11 +208,11 @@ func (task Task) Name() string {
 
 // Schedule represents Schedule_t
 type Schedule struct {
-	address uintptr
+	address unsafe.Pointer
 }
 
 // MakeSchedule creates Schedule from an address
-func MakeSchedule(address uintptr) Schedule {
+func MakeSchedule(address unsafe.Pointer) Schedule {
 	return Schedule{address: address}
 }
 
@@ -221,18 +221,18 @@ func (schedule Schedule) Task(index int) *Task {
 	if index < 0 || index >= schedule.TaskCount() {
 		return nil
 	}
-	base := *(*uintptr)(unsafe.Pointer(schedule.address))
+	base := *(*unsafe.Pointer)(schedule.address)
 	// sizeof(Task_t) == 8
-	elem := base + uintptr(8*index)
-	return &Task{ID: int(*(*int32)(unsafe.Pointer(elem))), Data: *(*float32)(unsafe.Pointer(elem + 4))}
+	elem := unsafe.Add(base, 8*index)
+	return &Task{ID: int(*(*int32)(elem)), Data: *(*float32)(unsafe.Add(elem, 4))}
 }
 
 // TaskCount returns Schedule_t::cTasks
 func (schedule Schedule) TaskCount() int {
-	return int(*(*int32)(unsafe.Pointer(schedule.address + 4)))
+	return int(*(*int32)(unsafe.Add(schedule.address, 4)))
 }
 
 // Name returns Schedule_t::pName
 func (schedule Schedule) Name() string {
-	return C.GoString(*(**C.char)(unsafe.Pointer(schedule.address + 16)))
+	return C.GoString(*(**C.char)(unsafe.Add(schedule.address, 16)))
 }

@@ -37,9 +37,9 @@ type Module struct {
 
 func NewModule(name string) (module *Module, err error) {
 	type moduleInfo struct {
-		BaseOfDll   uintptr
+		BaseOfDll   unsafe.Pointer
 		SizeOfImage uint32
-		EntryPoint  uintptr
+		EntryPoint  unsafe.Pointer
 	}
 
 	var cname *uint16
@@ -67,7 +67,7 @@ func NewModule(name string) (module *Module, err error) {
 
 	return &Module{
 		name:   name,
-		base:   unsafe.Pointer(info.BaseOfDll),
+		base:   info.BaseOfDll,
 		size:   uint(info.SizeOfImage),
 		handle: handle,
 	}, nil
@@ -114,7 +114,7 @@ func (pat *FunctionPattern) Find(module *Module) (foundName string, address unsa
 		relAddr, err = findSym(symbolName)
 		if err == nil {
 			foundName = key
-			address = unsafe.Pointer(uintptr(module.Base()) + relAddr)
+			address = unsafe.Add(module.Base(), relAddr)
 			pat.addrPointer = address
 			pat.symbolKey = key
 			pat.patternKey = ""
@@ -154,8 +154,7 @@ func (pat *FunctionPattern) Hook(module *Module, fn unsafe.Pointer) (foundName s
 		return
 	}
 
-	var origFunc uintptr
-	if ret := C.MH_CreateHook(C.LPVOID(address), C.LPVOID(fn), (*C.LPVOID)(unsafe.Pointer(&origFunc))); ret != C.MH_OK {
+	if ret := C.MH_CreateHook(C.LPVOID(address), C.LPVOID(fn), (*C.LPVOID)(&pat.addrPointer)); ret != C.MH_OK {
 		err = fmt.Errorf("%w: %v", ErrCreateHookFailed, ret)
 		return
 	}
@@ -165,7 +164,6 @@ func (pat *FunctionPattern) Hook(module *Module, fn unsafe.Pointer) (foundName s
 		return
 	}
 
-	pat.addrPointer = unsafe.Pointer(origFunc)
 	pat.replaceAddr = fn
 	return
 }

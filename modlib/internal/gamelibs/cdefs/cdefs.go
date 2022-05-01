@@ -52,9 +52,9 @@ type Handler interface {
 	RClear()
 	RDrawSequentialPoly(surf uintptr, free int)
 	VFadeAlpha() int
-	PMInit(ppm uintptr)
+	PMInit(ppm unsafe.Pointer)
 	PMPlayerMove(server int)
-	CGraphInitGraph(this uintptr)
+	CGraphInitGraph(this unsafe.Pointer)
 }
 
 var eventHandler Handler
@@ -119,13 +119,13 @@ func HookedHUDReset() {
 
 // HookedPMInit PM_Init
 //export HookedPMInit
-func HookedPMInit(ppm uintptr) {
+func HookedPMInit(ppm unsafe.Pointer) {
 	eventHandler.PMInit(ppm)
 }
 
 // HookedCGraphInitGraph hooks CGraph::InitGraph
 //export HookedCGraphInitGraph
-func HookedCGraphInitGraph(this uintptr) {
+func HookedCGraphInitGraph(this unsafe.Pointer) {
 	eventHandler.CGraphInitGraph(this)
 }
 

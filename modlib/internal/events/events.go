@@ -107,10 +107,10 @@ func (h *handler) HUDReset() {
 	graphics.SetScreenInfo(&screenInfo)
 }
 
-func (h *handler) PMInit(ppm uintptr) {
+func (h *handler) PMInit(ppm unsafe.Pointer) {
 	gamelibs.Model.API().PMInit(ppm)
 
-	engine.Engine.SetPPMove(unsafe.Pointer(ppm))
+	engine.Engine.SetPPMove(ppm)
 	logs.DLLLog.Debugf("Set PPMOVE with address = %x", ppm)
 }
 
@@ -140,7 +140,7 @@ func (h *handler) PMPlayerMove(server int) {
 	gamelibs.Model.API().PMPlayerMove(server)
 }
 
-func (h *handler) CGraphInitGraph(this uintptr) {
+func (h *handler) CGraphInitGraph(this unsafe.Pointer) {
 	gamelibs.Model.API().CGraphInitGraph(this)
-	engine.WorldGraph.SetPointer(unsafe.Pointer(this))
+	engine.WorldGraph.SetPointer(this)
 }

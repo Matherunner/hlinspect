@@ -197,15 +197,15 @@ func (api *API) CSoundEntSoundPointerForIndex(index int32) unsafe.Pointer {
 }
 
 func (api *API) CBaseMonsterPBestSound(this unsafe.Pointer) unsafe.Pointer {
-	return unsafe.Pointer(uintptr(hooks.CallFuncThisInts0(api.r.CBaseMonsterPBestSound.Address(), uintptr(this))))
+	return hooks.CallFuncThisInts0RetPtr(api.r.CBaseMonsterPBestSound.Address(), uintptr(this))
 }
 
-func (api *API) CGraphInitGraph(this uintptr) {
-	hooks.CallFuncThisInts0(api.r.CGraphInitGraph.Address(), this)
+func (api *API) CGraphInitGraph(this unsafe.Pointer) {
+	hooks.CallFuncThisInts0(api.r.CGraphInitGraph.Address(), uintptr(this))
 }
 
-func (api *API) PMInit(ppm uintptr) {
-	hooks.CallFuncInts1(api.r.PMInit.Address(), ppm)
+func (api *API) PMInit(ppm unsafe.Pointer) {
+	hooks.CallFuncInts1(api.r.PMInit.Address(), uintptr(ppm))
 }
 
 func (api *API) PMPlayerMove(server int) {

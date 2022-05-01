@@ -21,3 +21,10 @@ linters:
     - unparam
     - wastedassign
     - whitespace
+    - gosec
+
+linters-settings:
+  govet:
+    enable-all: true
+    disable:
+      - fieldalignment

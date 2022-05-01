@@ -81,9 +81,9 @@ func drawEntitiesOverlay() {
 				cine := engine.MakeMonster(edict.PrivateData()).Cine()
 				if cine.Pointer() != nil {
 					if cine.Interruptible() {
-						gamelibs.Model.API().DrawString(screen[0], screen[1]+5*int(screenInfo.CharHeight), "I")
+						gamelibs.Model.API().DrawString(screen[0], screen[1]+5*int(screenInfo.CharHeight), "Interruptible")
 					} else {
-						gamelibs.Model.API().DrawString(screen[0], screen[1]+5*int(screenInfo.CharHeight), "UI")
+						gamelibs.Model.API().DrawString(screen[0], screen[1]+5*int(screenInfo.CharHeight), "Uninterruptible")
 					}
 				}
 
