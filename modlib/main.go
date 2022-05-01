@@ -22,6 +22,9 @@ var kernelDLL *hooks.Module
 var libraryInitializers = map[string]func(base string) error{
 	"hl.dll":     gamelibs.Model.InitHLDLL,
 	"opfor.dll":  gamelibs.Model.InitHLDLL,
+	"cz.dll":     gamelibs.Model.InitHLDLL,
+	"gunman.dll": gamelibs.Model.InitHLDLL,
+	"wanted.dll": gamelibs.Model.InitHLDLL,
 	"hw.dll":     gamelibs.Model.InitHWDLL,
 	"client.dll": gamelibs.Model.InitCLDLL,
 }
