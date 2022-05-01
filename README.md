@@ -63,6 +63,8 @@ go generate ./...
 make
 ```
 
+If this does not work, you may be able to get some hints from the Github workflow file.
+
 ## Development
 
 See [ARCHITECTURE](ARCHITECTURE.md).
