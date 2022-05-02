@@ -28,7 +28,7 @@ Currently, this is the easiest to build on Linux using cross compilation.
 
 Set up WSL in Windows or use a Linux system.
 
-Install Go 1.17 or above.
+Install Go 1.18 or above.
 
 Install `gcc-mingw-w64` to get `i686-w64-mingw32-gcc` or similar for cross compilation.
 
