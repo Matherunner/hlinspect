@@ -1,14 +1,20 @@
 package main
 
 import (
+	"context"
 	"hlinspect/internal/events"
 	"hlinspect/internal/feed"
 	"hlinspect/internal/gamelibs"
+	"hlinspect/internal/hlrpc"
 	"hlinspect/internal/hooks"
 	"hlinspect/internal/logs"
+	"io"
+	"net"
 	"path/filepath"
 	"unsafe"
 
+	"capnproto.org/go/capnp/v3"
+	"capnproto.org/go/capnp/v3/rpc"
 	"golang.org/x/sys/windows"
 )
 
@@ -113,7 +119,76 @@ func OnProcessAttach() {
 		}
 	}
 
+	c1, c2 := net.Pipe()
+
+	go serveHLRPC(c1)
+
 	go feed.Serve()
+
+	// Client
+
+	conn := rpc.NewConn(rpc.NewStreamTransport(c2), nil)
+	defer conn.Close()
+
+	ctx := context.Background()
+
+	halflife := hlrpc.HalfLife{Client: conn.Bootstrap(ctx)}
+
+	f, free := halflife.GetFullPlayerState(ctx, nil)
+	defer free()
+
+	res, err := f.Struct()
+	if err != nil {
+		panic(err)
+	}
+
+	fullState, err := res.State()
+	if err != nil {
+		panic(err)
+	}
+
+	logs.DLLLog.Debugf("GOT RESULT = %+v", fullState)
+}
+
+type halflifeServer struct {
+}
+
+func (s *halflifeServer) GetFullPlayerState(ctx context.Context, call hlrpc.HalfLife_getFullPlayerState) error {
+	res, err := call.AllocResults()
+	if err != nil {
+		return err
+	}
+
+	_, seg, err := capnp.NewMessage(capnp.SingleSegment(nil))
+	if err != nil {
+		panic(err)
+	}
+
+	fullState, err := hlrpc.NewRootFullPlayerState(seg)
+	if err != nil {
+		panic(err)
+	}
+	fullState.SetVelocityX(320)
+	fullState.SetVelocityY(640)
+	fullState.SetWaterLevel(2)
+	fullState.SetDuckState(hlrpc.DuckState_ducked)
+
+	res.SetState(fullState)
+	return nil
+}
+
+func serveHLRPC(rwc io.ReadWriteCloser) {
+	main := hlrpc.HalfLife_ServerToClient(&halflifeServer{}, nil)
+
+	conn := rpc.NewConn(rpc.NewStreamTransport(rwc), &rpc.Options{
+		BootstrapClient: main.Client,
+	})
+	defer conn.Close()
+
+	select {
+	case <-conn.Done():
+		return
+	}
 }
 
 // OnProcessDetach called from DllMain on process detach
