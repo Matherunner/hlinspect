@@ -69,67 +69,56 @@ func CmdHandler() {
 	eventHandler.OnCommand()
 }
 
-// HookedVFadeAlpha V_FadeAlpha
 //export HookedVFadeAlpha
 func HookedVFadeAlpha() int {
 	return eventHandler.VFadeAlpha()
 }
 
-// HookedRClear R_Clear
 //export HookedRClear
 func HookedRClear() {
 	eventHandler.RClear()
 }
 
-// HookedRDrawSequentialPoly R_DrawSequentialPoly
 //export HookedRDrawSequentialPoly
 func HookedRDrawSequentialPoly(surf uintptr, free int) {
 	eventHandler.RDrawSequentialPoly(surf, free)
 }
 
-// HookedMemoryInit Memory_Init
 //export HookedMemoryInit
 func HookedMemoryInit(buf uintptr, size int) {
 	eventHandler.MemoryInit(context.TODO(), buf, size)
 }
 
-// HookedHUDRedraw hooked HUD_Redraw
 //export HookedHUDRedraw
 func HookedHUDRedraw(time float32, intermission int32) {
 	eventHandler.HUDRedraw(time, int(intermission))
 }
 
-// HookedHUDDrawTransparentTriangles HUD_DrawTransparentTriangles
 //export HookedHUDDrawTransparentTriangles
 func HookedHUDDrawTransparentTriangles() {
 	eventHandler.HUDDrawTransparentTriangle()
 }
 
-// HookedHUDVidInit HUD_VidInit
 //export HookedHUDVidInit
 func HookedHUDVidInit() int {
 	return eventHandler.HUDVidInit()
 }
 
-// HookedHUDReset HUD_Reset
 //export HookedHUDReset
 func HookedHUDReset() {
 	eventHandler.HUDReset()
 }
 
-// HookedPMInit PM_Init
 //export HookedPMInit
 func HookedPMInit(ppm unsafe.Pointer) {
 	eventHandler.PMInit(ppm)
 }
 
-// HookedCGraphInitGraph hooks CGraph::InitGraph
 //export HookedCGraphInitGraph
 func HookedCGraphInitGraph(this unsafe.Pointer) {
 	eventHandler.CGraphInitGraph(this)
 }
 
-// HookedPMPlayerMove PM_PlayerMove
 //export HookedPMPlayerMove
 func HookedPMPlayerMove(server int) {
 	eventHandler.PMPlayerMove(server)

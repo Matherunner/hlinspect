@@ -7,7 +7,6 @@ import (
 	"hlinspect/internal/engine"
 	"hlinspect/internal/feed"
 	"hlinspect/internal/gamelibs"
-	"hlinspect/internal/gamelibs/gl"
 	"hlinspect/internal/graphics"
 	"hlinspect/internal/logs"
 	"hlinspect/internal/proto"
@@ -53,8 +52,8 @@ func (h *handler) VFadeAlpha() int {
 
 func (h *handler) RClear() {
 	if cvar.Wallhack.Float32() != 0 {
-		gl.ClearColor(0, 0, 0, 1)
-		gl.Clear(gl.ColorBufferBit)
+		gamelibs.Model.GL().ClearColor(0, 0, 0, 1)
+		gamelibs.Model.GL().Clear(gamelibs.GLColorBufferBit)
 	}
 	gamelibs.Model.API().RClear()
 }
@@ -65,15 +64,15 @@ func (h *handler) RDrawSequentialPoly(surf uintptr, free int) {
 		return
 	}
 
-	gl.Enable(gl.Blend)
-	gl.DepthMask(false)
-	gl.BlendFunc(gl.SrcAlpha, gl.OneMinusSrcAlpha)
-	gl.Color4f(1, 1, 1, cvar.WallhackAlpha.Float32())
+	gamelibs.Model.GL().Enable(gamelibs.GLBlend)
+	gamelibs.Model.GL().DepthMask(false)
+	gamelibs.Model.GL().BlendFunc(gamelibs.GLSrcAlpha, gamelibs.GLOneMinusSrcAlpha)
+	gamelibs.Model.GL().Color4f(1, 1, 1, cvar.WallhackAlpha.Float32())
 
 	gamelibs.Model.API().RDrawSequentialPoly(surf, free)
 
-	gl.DepthMask(true)
-	gl.Disable(gl.Blend)
+	gamelibs.Model.GL().DepthMask(true)
+	gamelibs.Model.GL().Disable(gamelibs.GLBlend)
 }
 
 func (h *handler) HUDRedraw(time float32, intermission int) {
@@ -85,9 +84,9 @@ func (h *handler) HUDRedraw(time float32, intermission int) {
 func (h *handler) HUDDrawTransparentTriangle() {
 	gamelibs.Model.API().HUDDrawTransparentTriangle()
 
-	gl.Disable(gl.Texture2D)
+	gamelibs.Model.GL().Disable(gamelibs.GLTexture2D)
 	graphics.DrawTriangles()
-	gl.Enable(gl.Texture2D)
+	gamelibs.Model.GL().Enable(gamelibs.GLTexture2D)
 	gamelibs.Model.API().TriGLRenderMode(gamelibs.KRenderNormal)
 }
 
