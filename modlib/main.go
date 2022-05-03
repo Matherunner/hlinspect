@@ -1,20 +1,15 @@
 package main
 
 import (
-	"context"
-	"hlinspect/internal/events"
 	"hlinspect/internal/feed"
 	"hlinspect/internal/gamelibs"
+	"hlinspect/internal/handlers"
 	"hlinspect/internal/hlrpc"
 	"hlinspect/internal/hooks"
 	"hlinspect/internal/logs"
-	"io"
-	"net"
 	"path/filepath"
 	"unsafe"
 
-	"capnproto.org/go/capnp/v3"
-	"capnproto.org/go/capnp/v3/rpc"
 	"golang.org/x/sys/windows"
 )
 
@@ -108,9 +103,9 @@ func OnProcessAttach() {
 		logs.DLLLog.Panic("Unable to initialise hooks")
 	}
 
-	initLoadLibraryHooks()
+	gamelibs.Model.RegisterEventHandler(handlers.NewGameHandler())
 
-	gamelibs.Model.RegisterEventHandler(events.NewHandler())
+	initLoadLibraryHooks()
 
 	for base, initializer := range libraryInitializers {
 		logs.DLLLog.Debugf("Initialising %v", base)
@@ -119,69 +114,9 @@ func OnProcessAttach() {
 		}
 	}
 
-	go func() {
-		ln, err := net.Listen("tcp4", "0.0.0.0:32002")
-		if err != nil {
-			panic(err)
-		}
-
-		for {
-			logs.DLLLog.Debugf("waiting to accept Conn: %+v", ln.Addr())
-			conn, err := ln.Accept()
-			if err != nil {
-				panic(err)
-			}
-
-			logs.DLLLog.Debugf("accepted a new connection %+v", conn)
-
-			serveHLRPC(conn)
-		}
-	}()
+	go hlrpc.Serve(handlers.NewHLRPCHandler())
 
 	go feed.Serve()
-}
-
-type halflifeServer struct {
-}
-
-func (s *halflifeServer) GetFullPlayerState(ctx context.Context, call hlrpc.HalfLife_getFullPlayerState) error {
-	res, err := call.AllocResults()
-	if err != nil {
-		return err
-	}
-
-	_, seg, err := capnp.NewMessage(capnp.SingleSegment(nil))
-	if err != nil {
-		panic(err)
-	}
-
-	fullState, err := hlrpc.NewRootFullPlayerState(seg)
-	if err != nil {
-		panic(err)
-	}
-	fullState.SetVelocityX(320)
-	fullState.SetVelocityY(640)
-	fullState.SetWaterLevel(2)
-	fullState.SetDuckState(hlrpc.DuckState_ducked)
-
-	res.SetState(fullState)
-	return nil
-}
-
-func serveHLRPC(rwc io.ReadWriteCloser) {
-	defer rwc.Close()
-
-	main := hlrpc.HalfLife_ServerToClient(&halflifeServer{}, nil)
-
-	conn := rpc.NewConn(rpc.NewStreamTransport(rwc), &rpc.Options{
-		BootstrapClient: main.Client,
-	})
-	defer conn.Close()
-
-	select {
-	case <-conn.Done():
-		return
-	}
 }
 
 // OnProcessDetach called from DllMain on process detach

@@ -1,7 +1,7 @@
 using Go = import "/go.capnp";
 @0xb6de64c471ee8bfb;
-$Go.package("hlrpc");
-$Go.import("hlinspect/internal/hlrpc");
+$Go.package("schema");
+$Go.import("hlinspect/internal/hlrpc/schema");
 
 interface HalfLife {
     getFullPlayerState @0 () -> (state :FullPlayerState);

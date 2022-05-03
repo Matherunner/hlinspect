@@ -1,4 +1,4 @@
-package events
+package handlers
 
 import (
 	"context"
@@ -13,14 +13,14 @@ import (
 	"unsafe"
 )
 
-type handler struct {
+type gameHandler struct {
 }
 
-func NewHandler() gamelibs.Handler {
-	return &handler{}
+func NewGameHandler() *gameHandler {
+	return &gameHandler{}
 }
 
-func (h *handler) MemoryInit(ctx context.Context, buf uintptr, size int) {
+func (h *gameHandler) MemoryInit(ctx context.Context, buf uintptr, size int) {
 	gamelibs.Model.API().MemoryInit(buf, size)
 
 	gamelibs.Model.API().RegisterCVar(&cvar.Wallhack)
@@ -36,21 +36,21 @@ func (h *handler) MemoryInit(ctx context.Context, buf uintptr, size int) {
 	}
 }
 
-func (h *handler) OnCommand() {
+func (h *gameHandler) OnCommand() {
 	name := gamelibs.Model.API().CmdArgv(0)
 	if handler, ok := cmd.CommandHandlerByName[name]; ok {
 		handler()
 	}
 }
 
-func (h *handler) VFadeAlpha() int {
+func (h *gameHandler) VFadeAlpha() int {
 	if cvar.FadeRemove.Float32() != 0 {
 		return 0
 	}
 	return gamelibs.Model.API().VFadeAlpha()
 }
 
-func (h *handler) RClear() {
+func (h *gameHandler) RClear() {
 	if cvar.Wallhack.Float32() != 0 {
 		gamelibs.Model.GL().ClearColor(0, 0, 0, 1)
 		gamelibs.Model.GL().Clear(gamelibs.GLColorBufferBit)
@@ -58,7 +58,7 @@ func (h *handler) RClear() {
 	gamelibs.Model.API().RClear()
 }
 
-func (h *handler) RDrawSequentialPoly(surf uintptr, free int) {
+func (h *gameHandler) RDrawSequentialPoly(surf uintptr, free int) {
 	if cvar.Wallhack.Float32() == 0 {
 		gamelibs.Model.API().RDrawSequentialPoly(surf, free)
 		return
@@ -75,13 +75,13 @@ func (h *handler) RDrawSequentialPoly(surf uintptr, free int) {
 	gamelibs.Model.GL().Disable(gamelibs.GLBlend)
 }
 
-func (h *handler) HUDRedraw(time float32, intermission int) {
+func (h *gameHandler) HUDRedraw(time float32, intermission int) {
 	gamelibs.Model.API().HUDRedraw(time, intermission)
 
 	graphics.DrawHUD(time, intermission)
 }
 
-func (h *handler) HUDDrawTransparentTriangle() {
+func (h *gameHandler) HUDDrawTransparentTriangle() {
 	gamelibs.Model.API().HUDDrawTransparentTriangle()
 
 	gamelibs.Model.GL().Disable(gamelibs.GLTexture2D)
@@ -90,7 +90,7 @@ func (h *handler) HUDDrawTransparentTriangle() {
 	gamelibs.Model.API().TriGLRenderMode(gamelibs.KRenderNormal)
 }
 
-func (h *handler) HUDVidInit() int {
+func (h *gameHandler) HUDVidInit() int {
 	ret := gamelibs.Model.API().HUDVidInit()
 
 	screenInfo := gamelibs.Model.API().GetScreenInfo()
@@ -99,21 +99,21 @@ func (h *handler) HUDVidInit() int {
 	return ret
 }
 
-func (h *handler) HUDReset() {
+func (h *gameHandler) HUDReset() {
 	gamelibs.Model.API().HUDReset()
 
 	screenInfo := gamelibs.Model.API().GetScreenInfo()
 	graphics.SetScreenInfo(&screenInfo)
 }
 
-func (h *handler) PMInit(ppm unsafe.Pointer) {
+func (h *gameHandler) PMInit(ppm unsafe.Pointer) {
 	gamelibs.Model.API().PMInit(ppm)
 
 	engine.Engine.SetPPMove(ppm)
 	logs.DLLLog.Debugf("Set PPMOVE with address = %x", ppm)
 }
 
-func (h *handler) PMPlayerMove(server int) {
+func (h *gameHandler) PMPlayerMove(server int) {
 	binary, err := proto.Serialize(&proto.PMove{
 		Stage:        proto.PMoveStagePre,
 		Velocity:     engine.Engine.PMoveVelocity(),
@@ -139,7 +139,7 @@ func (h *handler) PMPlayerMove(server int) {
 	gamelibs.Model.API().PMPlayerMove(server)
 }
 
-func (h *handler) CGraphInitGraph(this unsafe.Pointer) {
+func (h *gameHandler) CGraphInitGraph(this unsafe.Pointer) {
 	gamelibs.Model.API().CGraphInitGraph(this)
 	engine.WorldGraph.SetPointer(this)
 }
