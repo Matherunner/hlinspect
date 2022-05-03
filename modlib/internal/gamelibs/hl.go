@@ -39,7 +39,7 @@ func initHLDLL(base string) (err error) {
 	printBatchFindErrors(errors)
 
 	switch reg.CBaseMonsterChangeSchedule.PatternKey() {
-	case registry.OF8684:
+	case registry.VersionOF8684:
 		engine.MonsterOffsets.MonsterState = 0x178
 		engine.MonsterOffsets.Schedule = 0x184
 		engine.MonsterOffsets.ScheduleIndex = 0x188
@@ -48,7 +48,7 @@ func initHLDLL(base string) (err error) {
 		engine.MonsterOffsets.WaitFinished = 0x164
 		engine.CineOffsets.Radius = 0x2dc
 		engine.CineOffsets.Interruptible = 0x2f8
-	case registry.HLWON:
+	case registry.VersionHLWON:
 		engine.MonsterOffsets.MonsterState = 0x138
 		engine.MonsterOffsets.Schedule = 0x144
 		engine.MonsterOffsets.ScheduleIndex = 0x148
@@ -57,7 +57,7 @@ func initHLDLL(base string) (err error) {
 		engine.MonsterOffsets.WaitFinished = 0x124
 		engine.CineOffsets.Radius = 0x274
 		engine.CineOffsets.Interruptible = 0x290
-	case registry.OFWON:
+	case registry.VersionOFWON:
 		engine.MonsterOffsets.MonsterState = 0x13c
 		engine.MonsterOffsets.Schedule = 0x148
 		engine.MonsterOffsets.ScheduleIndex = 0x14c
@@ -66,7 +66,7 @@ func initHLDLL(base string) (err error) {
 		engine.MonsterOffsets.WaitFinished = 0x128
 		engine.CineOffsets.Radius = 0x29c
 		engine.CineOffsets.Interruptible = 0x2b8
-	case registry.CSCZDS:
+	case registry.VersionCSCZDS:
 		engine.MonsterOffsets.MonsterState = 0x168
 		engine.MonsterOffsets.Schedule = 0x174
 		engine.MonsterOffsets.ScheduleIndex = 0x178
@@ -75,7 +75,7 @@ func initHLDLL(base string) (err error) {
 		engine.MonsterOffsets.WaitFinished = 0x150
 		engine.CineOffsets.Radius = 0x350
 		engine.CineOffsets.Interruptible = 0x36c
-	case registry.Gunman:
+	case registry.VersionGunman:
 		engine.MonsterOffsets.MonsterState = 0x140
 		engine.MonsterOffsets.Schedule = 0x14c
 		engine.MonsterOffsets.ScheduleIndex = 0x150
@@ -87,7 +87,7 @@ func initHLDLL(base string) (err error) {
 	}
 
 	switch reg.CBaseMonsterChangeSchedule.SymbolKey() {
-	case registry.WindowsHLDLL:
+	case registry.VersionWindowsHLDLL:
 		engine.CineOffsets.Radius = 0x2a8
 		engine.CineOffsets.Interruptible = 0x2c4
 	}
@@ -97,7 +97,7 @@ func initHLDLL(base string) (err error) {
 	}
 
 	switch reg.CBaseMonsterRouteNew.PatternKey() {
-	case registry.HL8684, registry.CSCZDS, registry.Gunman:
+	case registry.VersionHL8684, registry.VersionCSCZDS, registry.VersionGunman:
 		engine.MonsterOffsets.Route = *(*uintptr)(unsafe.Pointer(uintptr(reg.CBaseMonsterRouteNew.Address()) + 0x4)) - 0xc
 		engine.MonsterOffsets.RouteIndex = *(*uintptr)(unsafe.Pointer(uintptr(reg.CBaseMonsterRouteNew.Address()) + 0xa))
 	}

@@ -29,8 +29,8 @@ var libraryInitializers = map[string]func(base string) error{
 	"client.dll": gamelibs.Model.InitCLDLL,
 }
 
-var loadLibraryAPattern = hooks.MakeFunctionPattern("LoadLibraryA", map[string]string{"Windows": "LoadLibraryA"}, nil)
-var loadLibraryWPattern = hooks.MakeFunctionPattern("LoadLibraryW", map[string]string{"Windows": "LoadLibraryW"}, nil)
+var loadLibraryAPattern = hooks.NewFunctionPattern("LoadLibraryA", hooks.SymbolNameMap{"Windows": "LoadLibraryA"}, nil)
+var loadLibraryWPattern = hooks.NewFunctionPattern("LoadLibraryW", hooks.SymbolNameMap{"Windows": "LoadLibraryW"}, nil)
 
 // GetLoadLibraryAAddr called by C to get the address of the original LoadLibraryA
 //export GetLoadLibraryAAddr

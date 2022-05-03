@@ -24,9 +24,11 @@ var (
 	ErrEnableHookFailed = errors.New("failed to enable hook")
 )
 
-type PatternMap map[string]SearchPattern
+type VersionKey string
 
-type SymbolNameMap map[string]string
+type PatternMap map[VersionKey]SearchPattern
+
+type SymbolNameMap map[VersionKey]string
 
 type Module struct {
 	name   string
@@ -87,17 +89,17 @@ type FunctionPattern struct {
 	functionName string
 	symbolNames  SymbolNameMap
 	patterns     PatternMap
-	symbolKey    string
-	patternKey   string
+	symbolKey    VersionKey
+	patternKey   VersionKey
 	addrPointer  unsafe.Pointer
 	replaceAddr  unsafe.Pointer
 }
 
-func MakeFunctionPattern(functionName string, symbols SymbolNameMap, patterns PatternMap) FunctionPattern {
+func NewFunctionPattern(functionName string, symbols SymbolNameMap, patterns PatternMap) FunctionPattern {
 	return FunctionPattern{functionName: functionName, symbolNames: symbols, patterns: patterns}
 }
 
-func (pat *FunctionPattern) Find(module *Module) (foundName string, address unsafe.Pointer, err error) {
+func (pat *FunctionPattern) Find(module *Module) (foundName VersionKey, address unsafe.Pointer, err error) {
 	for key, symbolName := range pat.symbolNames {
 		var proc uintptr
 		proc, err = windows.GetProcAddress(module.handle, symbolName)
@@ -144,7 +146,7 @@ func (pat *FunctionPattern) Find(module *Module) (foundName string, address unsa
 	return "", nil, ErrPatternNotFound
 }
 
-func (pat *FunctionPattern) Hook(module *Module, fn unsafe.Pointer) (foundName string, address unsafe.Pointer, err error) {
+func (pat *FunctionPattern) Hook(module *Module, fn unsafe.Pointer) (foundName VersionKey, address unsafe.Pointer, err error) {
 	foundName, address, err = pat.Find(module)
 	if err != nil || foundName == "" {
 		return
@@ -168,11 +170,11 @@ func (pat *FunctionPattern) Hook(module *Module, fn unsafe.Pointer) (foundName s
 	return
 }
 
-func (pat *FunctionPattern) SymbolKey() string {
+func (pat *FunctionPattern) SymbolKey() VersionKey {
 	return pat.symbolKey
 }
 
-func (pat *FunctionPattern) PatternKey() string {
+func (pat *FunctionPattern) PatternKey() VersionKey {
 	return pat.patternKey
 }
 
@@ -184,8 +186,8 @@ func (pat *FunctionPattern) Address() unsafe.Pointer {
 	return pat.addrPointer
 }
 
-// MustMakePattern create a SearchPattern, panic if pattern is malformed
-func MustMakePattern(pattern string) SearchPattern {
+// MustPattern create a SearchPattern, panic if pattern is malformed
+func MustPattern(pattern string) SearchPattern {
 	patternTokens := strings.Split(pattern, " ")
 	patternBytes := make([]uint8, len(patternTokens))
 	ignoreBytes := make([]bool, len(patternTokens))
