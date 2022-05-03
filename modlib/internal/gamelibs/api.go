@@ -2,6 +2,8 @@ package gamelibs
 
 import (
 	"hlinspect/internal/engine"
+	"hlinspect/internal/gamelibs/cdefs"
+	"hlinspect/internal/gamelibs/registry"
 	"hlinspect/internal/hooks"
 	"unsafe"
 )
@@ -11,60 +13,21 @@ import (
 */
 import "C"
 
-// APIRegistry holds the addresses to game DLL functions.
-type APIRegistry struct {
-	// HW
-	AngleVectors               hooks.FunctionPattern
-	BuildNumber                hooks.FunctionPattern
-	CmdAddCommandWithFlags     hooks.FunctionPattern
-	CmdArgv                    hooks.FunctionPattern
-	CvarRegisterVariable       hooks.FunctionPattern
-	DrawString                 hooks.FunctionPattern
-	HostAutoSaveF              hooks.FunctionPattern
-	HostNoclipF                hooks.FunctionPattern
-	HudGetScreenInfo           hooks.FunctionPattern
-	MemoryInit                 hooks.FunctionPattern
-	PFCheckClientI             hooks.FunctionPattern
-	PFTracelineDLL             hooks.FunctionPattern
-	RClear                     hooks.FunctionPattern
-	RDrawSequentialPoly        hooks.FunctionPattern
-	ScreenTransform            hooks.FunctionPattern
-	TriGLBegin                 hooks.FunctionPattern
-	TriGLColor4f               hooks.FunctionPattern
-	TriGLCullFace              hooks.FunctionPattern
-	TriGLEnd                   hooks.FunctionPattern
-	TriGLRenderMode            hooks.FunctionPattern
-	TriGLVertex3fv             hooks.FunctionPattern
-	VFadeAlpha                 hooks.FunctionPattern
-	VGUI2DrawSetTextColorAlpha hooks.FunctionPattern
-	WorldTransform             hooks.FunctionPattern
-
-	// CL
-	HUDDrawTransparentTriangles hooks.FunctionPattern
-	HUDRedraw                   hooks.FunctionPattern
-	HUDReset                    hooks.FunctionPattern
-	HUDVidInit                  hooks.FunctionPattern
-
-	// HL
-	CBaseMonsterChangeSchedule    hooks.FunctionPattern
-	CBaseMonsterPBestSound        hooks.FunctionPattern
-	CBaseMonsterRouteNew          hooks.FunctionPattern
-	CGraphInitGraph               hooks.FunctionPattern
-	CSoundEntActiveList           hooks.FunctionPattern
-	CSoundEntSoundPointerForIndex hooks.FunctionPattern
-	PMInit                        hooks.FunctionPattern
-	PMPlayerMove                  hooks.FunctionPattern
-	WorldGraph                    hooks.FunctionPattern
-
-	// Misc
-	CCmdHandler unsafe.Pointer
-}
-
 // API is a thin interface over the raw game DLL functions. Code that needs to call into
 // the game DLLs should do so though this interface. The APIs here should not accept C types,
 // nor should they return values in C types.
 type API struct {
-	r *APIRegistry
+	r *registry.API
+}
+
+func NewAPI(apiRegistry *registry.API) *API {
+	return &API{
+		r: apiRegistry,
+	}
+}
+
+func (api *API) Registry() *registry.API {
+	return api.r
 }
 
 func (api *API) BuildNumber() int {
@@ -142,7 +105,7 @@ func (api *API) CmdAddCommand(name string) {
 	//   hw.dll -> CCmdHandler (C) -> CmdHandler (Go) -> EventHandler.OnCommand
 	// Then the implementation of OnCommand should distinguish which command is actually called using Cmd_Argv(0).
 	// The name does not need to be freed because the registered command is global.
-	hooks.CallFuncInts3(api.r.CmdAddCommandWithFlags.Address(), uintptr(unsafe.Pointer(C.CString(name))), uintptr(api.r.CCmdHandler), 2)
+	hooks.CallFuncInts3(api.r.CmdAddCommandWithFlags.Address(), uintptr(unsafe.Pointer(C.CString(name))), uintptr(cdefs.CDefs.CCmdHandler), 2)
 }
 
 func (api *API) CmdArgv(arg int) string {
