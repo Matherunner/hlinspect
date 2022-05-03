@@ -8,7 +8,7 @@ import (
 	"hlinspect/internal/feed"
 	"hlinspect/internal/gamelibs"
 	"hlinspect/internal/gamelibs/gl"
-	"hlinspect/internal/gamelibs/graphics"
+	"hlinspect/internal/graphics"
 	"hlinspect/internal/logs"
 	"hlinspect/internal/proto"
 	"unsafe"
