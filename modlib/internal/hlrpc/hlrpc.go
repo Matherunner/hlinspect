@@ -17,6 +17,7 @@ type Handler interface {
 
 func Serve(handler Handler) error {
 	// FIXME: make this configurable instead of accepting from all
+	// nolint:gosec
 	ln, err := net.Listen("tcp", "0.0.0.0:32002")
 	if err != nil {
 		return err
@@ -75,6 +76,5 @@ func (s *halflifeServer) GetFullPlayerState(ctx context.Context, call schema.Hal
 		return err
 	}
 
-	res.SetState(fullState)
-	return nil
+	return res.SetState(fullState)
 }

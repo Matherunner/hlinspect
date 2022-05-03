@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"hlinspect/internal/engine"
-	"hlinspect/internal/gamelibs"
+	"hlinspect/internal/game"
 	"math"
 	"unsafe"
 )
@@ -21,7 +21,7 @@ var CommandHandlerByName = map[string]func(){
 
 		viewangles := engine.Engine.PMoveViewangles()
 
-		forward, _, _ := gamelibs.Model.API().AngleVectors(viewangles)
+		forward, _, _ := game.Model.API().AngleVectors(viewangles)
 		endPos := [3]float32{}
 		for i := 0; i < 3; i++ {
 			// TODO: debug temporary
@@ -29,7 +29,7 @@ var CommandHandlerByName = map[string]func(){
 			endPos[i] = position[i] + 8192*forward[i]
 		}
 
-		result := gamelibs.Model.API().TraceLine(position, endPos, gamelibs.TraceDontIgnoreMonsters, nil)
+		result := game.Model.API().TraceLine(position, endPos, game.TraceDontIgnoreMonsters, nil)
 		edict := engine.MakeEdict(result.Hit)
 		if edict.Pointer() == nil || edict.Free() || edict.PrivateData() == nil {
 			return

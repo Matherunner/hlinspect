@@ -6,7 +6,7 @@ import (
 	"hlinspect/internal/cvar"
 	"hlinspect/internal/engine"
 	"hlinspect/internal/feed"
-	"hlinspect/internal/gamelibs"
+	"hlinspect/internal/game"
 	"hlinspect/internal/graphics"
 	"hlinspect/internal/logs"
 	"hlinspect/internal/proto"
@@ -21,23 +21,23 @@ func NewGameHandler() *gameHandler {
 }
 
 func (h *gameHandler) MemoryInit(ctx context.Context, buf uintptr, size int) {
-	gamelibs.Model.API().MemoryInit(buf, size)
+	game.Model.API().MemoryInit(buf, size)
 
-	gamelibs.Model.API().RegisterCVar(&cvar.Wallhack)
-	gamelibs.Model.API().RegisterCVar(&cvar.WallhackAlpha)
-	gamelibs.Model.API().RegisterCVar(&cvar.FadeRemove)
-	gamelibs.Model.API().RegisterCVar(&cvar.Nodes)
-	gamelibs.Model.API().RegisterCVar(&cvar.NodeLinks)
-	gamelibs.Model.API().RegisterCVar(&cvar.Cine)
-	gamelibs.Model.API().RegisterCVar(&cvar.CinePossess)
+	game.Model.API().RegisterCVar(&cvar.Wallhack)
+	game.Model.API().RegisterCVar(&cvar.WallhackAlpha)
+	game.Model.API().RegisterCVar(&cvar.FadeRemove)
+	game.Model.API().RegisterCVar(&cvar.Nodes)
+	game.Model.API().RegisterCVar(&cvar.NodeLinks)
+	game.Model.API().RegisterCVar(&cvar.Cine)
+	game.Model.API().RegisterCVar(&cvar.CinePossess)
 
 	for name := range cmd.CommandHandlerByName {
-		gamelibs.Model.API().CmdAddCommand(name)
+		game.Model.API().CmdAddCommand(name)
 	}
 }
 
 func (h *gameHandler) OnCommand() {
-	name := gamelibs.Model.API().CmdArgv(0)
+	name := game.Model.API().CmdArgv(0)
 	if handler, ok := cmd.CommandHandlerByName[name]; ok {
 		handler()
 	}
@@ -47,67 +47,67 @@ func (h *gameHandler) VFadeAlpha() int {
 	if cvar.FadeRemove.Float32() != 0 {
 		return 0
 	}
-	return gamelibs.Model.API().VFadeAlpha()
+	return game.Model.API().VFadeAlpha()
 }
 
 func (h *gameHandler) RClear() {
 	if cvar.Wallhack.Float32() != 0 {
-		gamelibs.Model.GL().ClearColor(0, 0, 0, 1)
-		gamelibs.Model.GL().Clear(gamelibs.GLColorBufferBit)
+		game.Model.GL().ClearColor(0, 0, 0, 1)
+		game.Model.GL().Clear(game.GLColorBufferBit)
 	}
-	gamelibs.Model.API().RClear()
+	game.Model.API().RClear()
 }
 
 func (h *gameHandler) RDrawSequentialPoly(surf uintptr, free int) {
 	if cvar.Wallhack.Float32() == 0 {
-		gamelibs.Model.API().RDrawSequentialPoly(surf, free)
+		game.Model.API().RDrawSequentialPoly(surf, free)
 		return
 	}
 
-	gamelibs.Model.GL().Enable(gamelibs.GLBlend)
-	gamelibs.Model.GL().DepthMask(false)
-	gamelibs.Model.GL().BlendFunc(gamelibs.GLSrcAlpha, gamelibs.GLOneMinusSrcAlpha)
-	gamelibs.Model.GL().Color4f(1, 1, 1, cvar.WallhackAlpha.Float32())
+	game.Model.GL().Enable(game.GLBlend)
+	game.Model.GL().DepthMask(false)
+	game.Model.GL().BlendFunc(game.GLSrcAlpha, game.GLOneMinusSrcAlpha)
+	game.Model.GL().Color4f(1, 1, 1, cvar.WallhackAlpha.Float32())
 
-	gamelibs.Model.API().RDrawSequentialPoly(surf, free)
+	game.Model.API().RDrawSequentialPoly(surf, free)
 
-	gamelibs.Model.GL().DepthMask(true)
-	gamelibs.Model.GL().Disable(gamelibs.GLBlend)
+	game.Model.GL().DepthMask(true)
+	game.Model.GL().Disable(game.GLBlend)
 }
 
 func (h *gameHandler) HUDRedraw(time float32, intermission int) {
-	gamelibs.Model.API().HUDRedraw(time, intermission)
+	game.Model.API().HUDRedraw(time, intermission)
 
 	graphics.DrawHUD(time, intermission)
 }
 
 func (h *gameHandler) HUDDrawTransparentTriangle() {
-	gamelibs.Model.API().HUDDrawTransparentTriangle()
+	game.Model.API().HUDDrawTransparentTriangle()
 
-	gamelibs.Model.GL().Disable(gamelibs.GLTexture2D)
+	game.Model.GL().Disable(game.GLTexture2D)
 	graphics.DrawTriangles()
-	gamelibs.Model.GL().Enable(gamelibs.GLTexture2D)
-	gamelibs.Model.API().TriGLRenderMode(gamelibs.KRenderNormal)
+	game.Model.GL().Enable(game.GLTexture2D)
+	game.Model.API().TriGLRenderMode(game.KRenderNormal)
 }
 
 func (h *gameHandler) HUDVidInit() int {
-	ret := gamelibs.Model.API().HUDVidInit()
+	ret := game.Model.API().HUDVidInit()
 
-	screenInfo := gamelibs.Model.API().GetScreenInfo()
+	screenInfo := game.Model.API().GetScreenInfo()
 	graphics.SetScreenInfo(&screenInfo)
 
 	return ret
 }
 
 func (h *gameHandler) HUDReset() {
-	gamelibs.Model.API().HUDReset()
+	game.Model.API().HUDReset()
 
-	screenInfo := gamelibs.Model.API().GetScreenInfo()
+	screenInfo := game.Model.API().GetScreenInfo()
 	graphics.SetScreenInfo(&screenInfo)
 }
 
 func (h *gameHandler) PMInit(ppm unsafe.Pointer) {
-	gamelibs.Model.API().PMInit(ppm)
+	game.Model.API().PMInit(ppm)
 
 	engine.Engine.SetPPMove(ppm)
 	logs.DLLLog.Debugf("Set PPMOVE with address = %x", ppm)
@@ -136,10 +136,10 @@ func (h *gameHandler) PMPlayerMove(server int) {
 		feed.Broadcast(binary)
 	}
 
-	gamelibs.Model.API().PMPlayerMove(server)
+	game.Model.API().PMPlayerMove(server)
 }
 
 func (h *gameHandler) CGraphInitGraph(this unsafe.Pointer) {
-	gamelibs.Model.API().CGraphInitGraph(this)
+	game.Model.API().CGraphInitGraph(this)
 	engine.WorldGraph.SetPointer(this)
 }

@@ -5,11 +5,11 @@ import "unsafe"
 
 // RawCVar represents the memory layout of cvar_t
 type RawCVar struct {
-	Name   uintptr
-	String uintptr
+	Name   unsafe.Pointer
+	String unsafe.Pointer
 	Flags  int32
 	Value  float32
-	Next   uintptr
+	Next   unsafe.Pointer
 }
 
 // CVar represents cvar_t

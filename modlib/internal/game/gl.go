@@ -1,4 +1,4 @@
-package gamelibs
+package game
 
 // Very rudimentary and adhoc Go bindings to OpenGL
 

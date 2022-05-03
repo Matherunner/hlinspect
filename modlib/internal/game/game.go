@@ -1,8 +1,8 @@
-package gamelibs
+package game
 
 import (
-	"hlinspect/internal/gamelibs/cdefs"
-	"hlinspect/internal/gamelibs/registry"
+	"hlinspect/internal/game/cdefs"
+	"hlinspect/internal/game/registry"
 	"hlinspect/internal/logs"
 )
 
@@ -28,7 +28,7 @@ func NewGamelibModel(api *API, gl *GL) GamelibModel {
 	}
 }
 
-// RegisterEventHandler registers the global handler for all events raised by the gamelibs.
+// RegisterEventHandler registers the global handler for all events raised by the game.
 // This event handler must be registered before the DLLs are initialised.
 func (m *GamelibModel) RegisterEventHandler(handler Handler) {
 	cdefs.SetEventHandler(handler)

@@ -1,4 +1,4 @@
-package gamelibs
+package game
 
 // TODO: should this file really be here? or on a different layer?
 

@@ -1,7 +1,7 @@
-package gamelibs
+package game
 
 import (
-	"hlinspect/internal/gamelibs/cdefs"
+	"hlinspect/internal/game/cdefs"
 	"hlinspect/internal/hooks"
 	"unsafe"
 )
