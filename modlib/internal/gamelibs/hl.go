@@ -92,14 +92,14 @@ func initHLDLL(base string) (err error) {
 		engine.CineOffsets.Interruptible = 0x2c4
 	}
 
-	if reg.WorldGraph.Address() != nil {
-		engine.WorldGraph.SetPointer(reg.WorldGraph.Address())
+	if reg.WorldGraph.Ptr() != nil {
+		engine.WorldGraph.SetPointer(reg.WorldGraph.Ptr())
 	}
 
 	switch reg.CBaseMonsterRouteNew.PatternKey() {
 	case registry.VersionHL8684, registry.VersionCSCZDS, registry.VersionGunman:
-		engine.MonsterOffsets.Route = *(*uintptr)(unsafe.Add(reg.CBaseMonsterRouteNew.Address(), 0x4)) - 0xc
-		engine.MonsterOffsets.RouteIndex = *(*uintptr)(unsafe.Add(reg.CBaseMonsterRouteNew.Address(), 0xa))
+		engine.MonsterOffsets.Route = *(*uintptr)(unsafe.Add(reg.CBaseMonsterRouteNew.Ptr(), 0x4)) - 0xc
+		engine.MonsterOffsets.RouteIndex = *(*uintptr)(unsafe.Add(reg.CBaseMonsterRouteNew.Ptr(), 0xa))
 	}
 
 	return nil

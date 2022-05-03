@@ -182,7 +182,7 @@ func (pat *FunctionPattern) Name() string {
 	return pat.functionName
 }
 
-func (pat *FunctionPattern) Address() unsafe.Pointer {
+func (pat *FunctionPattern) Ptr() unsafe.Pointer {
 	return pat.addrPointer
 }
 

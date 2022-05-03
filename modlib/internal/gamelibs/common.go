@@ -15,7 +15,7 @@ func printBatchFindErrors(errors map[*hooks.FunctionPattern]error) {
 			} else if pat.SymbolKey() != "" {
 				useType = fmt.Sprintf("symbol %v", pat.SymbolKey())
 			}
-			logs.DLLLog.Debugf("Found %v at %v using %v", pat.Name(), pat.Address(), useType)
+			logs.DLLLog.Debugf("Found %v at %v using %v", pat.Name(), pat.Ptr(), useType)
 		} else {
 			logs.DLLLog.Debugf("Failed to find %v: %v", pat.Name(), err)
 		}

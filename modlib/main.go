@@ -35,7 +35,7 @@ var loadLibraryWPattern = hooks.NewFunctionPattern("LoadLibraryW", hooks.SymbolN
 // GetLoadLibraryAAddr called by C to get the address of the original LoadLibraryA
 //export GetLoadLibraryAAddr
 func GetLoadLibraryAAddr() uintptr {
-	return uintptr(loadLibraryAPattern.Address())
+	return uintptr(loadLibraryAPattern.Ptr())
 }
 
 // LoadLibraryACallback called by C when the library has been loaded successfully
@@ -47,7 +47,7 @@ func LoadLibraryACallback(fileName C.LPCSTR) {
 // GetLoadLibraryWAddr called by C to get the address of the original LoadLibraryW
 //export GetLoadLibraryWAddr
 func GetLoadLibraryWAddr() uintptr {
-	return uintptr(loadLibraryWPattern.Address())
+	return uintptr(loadLibraryWPattern.Ptr())
 }
 
 // LoadLibraryWCallback called by C when the library has been loaded successfully
