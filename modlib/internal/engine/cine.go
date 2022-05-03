@@ -29,10 +29,10 @@ func (cine Cine) Pointer() unsafe.Pointer {
 
 // Radius returns CCineMonster::m_flRadius
 func (cine Cine) Radius() float32 {
-	return *(*float32)(unsafe.Pointer(uintptr(cine.ptr) + CineOffsets.Radius))
+	return *(*float32)(unsafe.Add(cine.ptr, CineOffsets.Radius))
 }
 
 // Interruptible returns CCineMonster::m_interruptable
 func (cine Cine) Interruptible() bool {
-	return *(*int32)(unsafe.Pointer(uintptr(cine.ptr) + CineOffsets.Interruptible)) != 0
+	return *(*int32)(unsafe.Add(cine.ptr, CineOffsets.Interruptible)) != 0
 }

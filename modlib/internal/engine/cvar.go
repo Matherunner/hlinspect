@@ -35,11 +35,11 @@ func (cvar CVar) Name() string {
 
 // Float32 returns cvar_t::value
 func (cvar CVar) Float32() float32 {
-	return *(*float32)(unsafe.Pointer(uintptr(cvar.ptr) + 0xc))
+	return *(*float32)(unsafe.Add(cvar.ptr, 0xc))
 }
 
 // String returns cvar_t::string
 func (cvar CVar) String() string {
-	cstr := *(**C.char)(unsafe.Pointer(uintptr(cvar.ptr) + 0x4))
+	cstr := *(**C.char)(unsafe.Add(cvar.ptr, 0x4))
 	return C.GoString(cstr)
 }

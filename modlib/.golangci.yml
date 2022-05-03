@@ -28,3 +28,8 @@ linters-settings:
     enable-all: true
     disable:
       - fieldalignment
+
+issues:
+  include:
+    # Include warning about unsafe.Pointer since we use it so heavily
+    - EXC0004

@@ -2,18 +2,23 @@ package gamelibs
 
 import (
 	"hlinspect/internal/gamelibs/cdefs"
+	"hlinspect/internal/gamelibs/registry"
 )
 
-var Model = &GamelibModel{
-	api: &API{
-		r: &APIRegistry{},
-	},
-}
+var Model = NewGamelibModel(NewAPI(registry.NewAPI()), NewGL())
 
 type Handler = cdefs.Handler
 
 type GamelibModel struct {
 	api *API
+	gl  *GL
+}
+
+func NewGamelibModel(api *API, gl *GL) GamelibModel {
+	return GamelibModel{
+		api: api,
+		gl:  gl,
+	}
 }
 
 // RegisterEventHandler registers the global handler for all events raised by the gamelibs.
@@ -39,7 +44,12 @@ func (m *GamelibModel) API() *API {
 	return m.api
 }
 
+// GL returns raw OpenGL APIs.
+func (m *GamelibModel) GL() *GL {
+	return m.gl
+}
+
 // Registry returns the API registry.
-func (m *GamelibModel) Registry() *APIRegistry {
-	return m.api.r
+func (m *GamelibModel) Registry() *registry.API {
+	return m.api.Registry()
 }

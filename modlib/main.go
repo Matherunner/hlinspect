@@ -29,13 +29,13 @@ var libraryInitializers = map[string]func(base string) error{
 	"client.dll": gamelibs.Model.InitCLDLL,
 }
 
-var loadLibraryAPattern = hooks.MakeFunctionPattern("LoadLibraryA", map[string]string{"Windows": "LoadLibraryA"}, nil)
-var loadLibraryWPattern = hooks.MakeFunctionPattern("LoadLibraryW", map[string]string{"Windows": "LoadLibraryW"}, nil)
+var loadLibraryAPattern = hooks.NewFunctionPattern("LoadLibraryA", hooks.SymbolNameMap{"Windows": "LoadLibraryA"}, nil)
+var loadLibraryWPattern = hooks.NewFunctionPattern("LoadLibraryW", hooks.SymbolNameMap{"Windows": "LoadLibraryW"}, nil)
 
 // GetLoadLibraryAAddr called by C to get the address of the original LoadLibraryA
 //export GetLoadLibraryAAddr
 func GetLoadLibraryAAddr() uintptr {
-	return uintptr(loadLibraryAPattern.Address())
+	return uintptr(loadLibraryAPattern.Ptr())
 }
 
 // LoadLibraryACallback called by C when the library has been loaded successfully
@@ -47,7 +47,7 @@ func LoadLibraryACallback(fileName C.LPCSTR) {
 // GetLoadLibraryWAddr called by C to get the address of the original LoadLibraryW
 //export GetLoadLibraryWAddr
 func GetLoadLibraryWAddr() uintptr {
-	return uintptr(loadLibraryWPattern.Address())
+	return uintptr(loadLibraryWPattern.Ptr())
 }
 
 // LoadLibraryWCallback called by C when the library has been loaded successfully

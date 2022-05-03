@@ -58,7 +58,7 @@ func MakeNode(pointer unsafe.Pointer) Node {
 
 // Origin returns CNode::m_vecOrigin
 func (node Node) Origin() [3]float32 {
-	return *(*[3]float32)(unsafe.Pointer(uintptr(node.ptr) + NodeConsts.Origin))
+	return *(*[3]float32)(unsafe.Add(node.ptr, NodeConsts.Origin))
 }
 
 // Link represents CLink
@@ -73,19 +73,19 @@ func MakeLink(pointer unsafe.Pointer) Link {
 
 // Source returns a node pointed to by CLink::m_iSrcNode
 func (link Link) Source() Node {
-	idx := *(*int)(unsafe.Pointer(uintptr(link.ptr) + LinkConsts.SrcNode))
+	idx := *(*int)(unsafe.Add(link.ptr, LinkConsts.SrcNode))
 	return WorldGraph.Node(idx)
 }
 
 // Destination returns a node pointed to by CLink::m_iDestNode
 func (link Link) Destination() Node {
-	idx := *(*int)(unsafe.Pointer(uintptr(link.ptr) + LinkConsts.DestNode))
+	idx := *(*int)(unsafe.Add(link.ptr, LinkConsts.DestNode))
 	return WorldGraph.Node(idx)
 }
 
 // LinkEnt returns CLink::m_pLinkEnt
 func (link *Link) LinkEnt() EntVars {
-	ptr := *(*unsafe.Pointer)(unsafe.Pointer(uintptr(link.ptr) + LinkConsts.LinkEnt))
+	ptr := *(*unsafe.Pointer)(unsafe.Add(link.ptr, LinkConsts.LinkEnt))
 	return MakeEntVars(ptr)
 }
 
@@ -101,22 +101,22 @@ func (graph *Graph) SetPointer(pointer unsafe.Pointer) {
 
 // NumNodes returns CGraph::m_cNodes
 func (graph Graph) NumNodes() int {
-	return *(*int)(unsafe.Pointer(uintptr(graph.ptr) + GraphConsts.CNodesOffset))
+	return *(*int)(unsafe.Add(graph.ptr, GraphConsts.CNodesOffset))
 }
 
 // Node returns CGraph::m_pNodes[index]
 func (graph Graph) Node(index int) Node {
-	base := *(*unsafe.Pointer)(unsafe.Pointer(uintptr(graph.ptr) + GraphConsts.PNodesOffset))
-	return MakeNode(unsafe.Pointer(uintptr(base) + uintptr(index)*GraphConsts.CNodeSize))
+	base := *(*unsafe.Pointer)(unsafe.Add(graph.ptr, GraphConsts.PNodesOffset))
+	return MakeNode(unsafe.Add(base, uintptr(index)*GraphConsts.CNodeSize))
 }
 
 // NumLinks returns CGraph::m_cLinks
 func (graph Graph) NumLinks() int {
-	return *(*int)(unsafe.Pointer(uintptr(graph.ptr) + GraphConsts.CLinksOffset))
+	return *(*int)(unsafe.Add(graph.ptr, GraphConsts.CLinksOffset))
 }
 
 // Link returns CGraph::m_pLinkPool[index]
 func (graph Graph) Link(index int) Link {
-	base := *(*unsafe.Pointer)(unsafe.Pointer(uintptr(graph.ptr) + GraphConsts.PLinkPoolOffset))
-	return MakeLink(unsafe.Pointer(uintptr(base) + uintptr(index)*GraphConsts.CLinkSize))
+	base := *(*unsafe.Pointer)(unsafe.Add(graph.ptr, GraphConsts.PLinkPoolOffset))
+	return MakeLink(unsafe.Add(base, uintptr(index)*GraphConsts.CLinkSize))
 }

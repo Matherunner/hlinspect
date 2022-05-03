@@ -5,7 +5,6 @@ import (
 	"hlinspect/internal/cvar"
 	"hlinspect/internal/engine"
 	"hlinspect/internal/gamelibs"
-	"hlinspect/internal/gl"
 	"strings"
 )
 
@@ -101,7 +100,7 @@ func drawScriptedSequences() {
 }
 
 func drawScriptedSequencesPossessions() {
-	gl.LineWidth(4)
+	gamelibs.Model.GL().LineWidth(4)
 	gamelibs.Model.API().TriGLColor4f(1, 0, 0, 1)
 	gamelibs.Model.API().TriGLCullFace(gamelibs.TriNone)
 	gamelibs.Model.API().TriGLRenderMode(gamelibs.KRenderTransAdd)
@@ -130,7 +129,7 @@ func drawScriptedSequencesPossessions() {
 }
 
 func drawMonsterRoutes() {
-	gl.LineWidth(4)
+	gamelibs.Model.GL().LineWidth(4)
 	gamelibs.Model.API().TriGLColor4f(0, 1, 0, 1)
 	gamelibs.Model.API().TriGLCullFace(gamelibs.TriNone)
 	gamelibs.Model.API().TriGLRenderMode(gamelibs.KRenderTransAdd)
@@ -169,7 +168,7 @@ func drawMonsterRoutes() {
 }
 
 func drawBoundingBoxes() {
-	gl.LineWidth(1)
+	gamelibs.Model.GL().LineWidth(1)
 	gamelibs.Model.API().TriGLColor4f(0, 1, 0, 1)
 	gamelibs.Model.API().TriGLCullFace(gamelibs.TriNone)
 	gamelibs.Model.API().TriGLRenderMode(gamelibs.KRenderTransAdd)
@@ -198,7 +197,7 @@ func drawBoundingBoxes() {
 }
 
 func drawSoundLinks() {
-	gl.LineWidth(3)
+	gamelibs.Model.GL().LineWidth(3)
 	gamelibs.Model.API().TriGLColor4f(0.5, 0.8, 1, 1)
 	gamelibs.Model.API().TriGLCullFace(gamelibs.TriNone)
 	gamelibs.Model.API().TriGLRenderMode(gamelibs.KRenderTransAdd)
