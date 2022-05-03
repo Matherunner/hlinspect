@@ -105,6 +105,7 @@ func (pat *FunctionPattern) Find(module *Module) (foundName VersionKey, address 
 		proc, err = windows.GetProcAddress(module.handle, symbolName)
 		if proc != 0 && err == nil {
 			foundName = key
+			//nolint:govet // The garbage collector doesn't need to worry about the proc address
 			address = unsafe.Pointer(proc)
 			pat.addrPointer = address
 			pat.symbolKey = key
