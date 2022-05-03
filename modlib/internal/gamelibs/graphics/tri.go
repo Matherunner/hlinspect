@@ -5,7 +5,7 @@ import (
 	"hlinspect/internal/cvar"
 	"hlinspect/internal/engine"
 	"hlinspect/internal/gamelibs"
-	"hlinspect/internal/gl"
+	"hlinspect/internal/gamelibs/gl"
 	"strings"
 )
 
