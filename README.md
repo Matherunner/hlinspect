@@ -46,6 +46,14 @@ Make sure `protoc-gen-go` can be found in `PATH`, which is needed by `protoc`. I
 export PATH="$PATH:"$(go env GOPATH)/bin
 ```
 
+Install Cap'n Proto compiler with the `capnproto` package or similar for HLRPC.
+
+Install Golang plugin for Cap'n Proto
+
+```bash
+go install capnproto.org/go/capnp/v3/capnpc-go@latest
+```
+
 ### Build
 
 Suggested environmental variables in WSL:
