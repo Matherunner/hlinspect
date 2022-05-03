@@ -119,35 +119,26 @@ func OnProcessAttach() {
 		}
 	}
 
-	c1, c2 := net.Pipe()
+	go func() {
+		ln, err := net.Listen("tcp4", "0.0.0.0:32002")
+		if err != nil {
+			panic(err)
+		}
 
-	go serveHLRPC(c1)
+		for {
+			logs.DLLLog.Debugf("waiting to accept Conn: %+v", ln.Addr())
+			conn, err := ln.Accept()
+			if err != nil {
+				panic(err)
+			}
+
+			logs.DLLLog.Debugf("accepted a new connection %+v", conn)
+
+			serveHLRPC(conn)
+		}
+	}()
 
 	go feed.Serve()
-
-	// Client
-
-	conn := rpc.NewConn(rpc.NewStreamTransport(c2), nil)
-	defer conn.Close()
-
-	ctx := context.Background()
-
-	halflife := hlrpc.HalfLife{Client: conn.Bootstrap(ctx)}
-
-	f, free := halflife.GetFullPlayerState(ctx, nil)
-	defer free()
-
-	res, err := f.Struct()
-	if err != nil {
-		panic(err)
-	}
-
-	fullState, err := res.State()
-	if err != nil {
-		panic(err)
-	}
-
-	logs.DLLLog.Debugf("GOT RESULT = %+v", fullState)
 }
 
 type halflifeServer struct {
@@ -178,6 +169,8 @@ func (s *halflifeServer) GetFullPlayerState(ctx context.Context, call hlrpc.Half
 }
 
 func serveHLRPC(rwc io.ReadWriteCloser) {
+	defer rwc.Close()
+
 	main := hlrpc.HalfLife_ServerToClient(&halflifeServer{}, nil)
 
 	conn := rpc.NewConn(rpc.NewStreamTransport(rwc), &rpc.Options{
