@@ -213,13 +213,13 @@ func findSubstringPattern(pattern SearchPattern, base unsafe.Pointer, size uint)
 			if pattern.Ignore[j] {
 				continue
 			}
-			if *(*uint8)(unsafe.Pointer(uintptr(base) + uintptr(i+j))) != pattern.Bytes[j] {
+			if *(*uint8)(unsafe.Add(base, i+j)) != pattern.Bytes[j] {
 				found = false
 				break
 			}
 		}
 		if found {
-			addr = unsafe.Pointer(uintptr(base) + uintptr(i))
+			addr = unsafe.Add(base, i)
 			return
 		}
 	}

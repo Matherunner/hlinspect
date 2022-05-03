@@ -93,12 +93,12 @@ func MakeWaypoint(pointer unsafe.Pointer) Waypoint {
 
 // Location returns Waypoint_t::vecLocation
 func (wp Waypoint) Location() [3]float32 {
-	return *(*[3]float32)(unsafe.Pointer(uintptr(wp.ptr) + 0x0))
+	return *(*[3]float32)(unsafe.Add(wp.ptr, 0x0))
 }
 
 // Type returns Waypoint_t::iType
 func (wp Waypoint) Type() int {
-	return *(*int)(unsafe.Pointer(uintptr(wp.ptr) + 0xc))
+	return *(*int)(unsafe.Add(wp.ptr, 0xc))
 }
 
 // Monster represents CBaseMonster
@@ -117,7 +117,7 @@ func (monster Monster) Pointer() unsafe.Pointer {
 
 // Schedule returns CBaseMonster::m_pSchedule
 func (monster Monster) Schedule() *Schedule {
-	ptr := *(*unsafe.Pointer)(unsafe.Pointer(uintptr(monster.ptr) + MonsterOffsets.Schedule))
+	ptr := *(*unsafe.Pointer)(unsafe.Add(monster.ptr, MonsterOffsets.Schedule))
 	if ptr == nil {
 		return nil
 	}
@@ -127,40 +127,40 @@ func (monster Monster) Schedule() *Schedule {
 
 // ScheduleIndex returns CBaseMonster::m_iScheduleIndex
 func (monster Monster) ScheduleIndex() int {
-	return int(*(*int32)(unsafe.Pointer(uintptr(monster.ptr) + MonsterOffsets.ScheduleIndex)))
+	return int(*(*int32)(unsafe.Add(monster.ptr, MonsterOffsets.ScheduleIndex)))
 }
 
 // Cine returns CBaseMonster::m_pCine
 func (monster Monster) Cine() Cine {
-	return MakeCine(*(*unsafe.Pointer)(unsafe.Pointer(uintptr(monster.ptr) + MonsterOffsets.Cine)))
+	return MakeCine(*(*unsafe.Pointer)(unsafe.Add(monster.ptr, MonsterOffsets.Cine)))
 }
 
 // Routes returns the array CBaseMontser::m_Route with ROUTE_SIZE == 8
 func (monster Monster) Routes() [8]Waypoint {
-	base := unsafe.Pointer(uintptr(monster.ptr) + MonsterOffsets.Route)
+	base := unsafe.Add(monster.ptr, MonsterOffsets.Route)
 	waypoints := [8]Waypoint{}
 	for i := range waypoints {
-		waypoints[i] = MakeWaypoint(unsafe.Pointer(uintptr(base) + uintptr(i)*MonsterOffsets.WaypointSize))
+		waypoints[i] = MakeWaypoint(unsafe.Add(base, uintptr(i)*MonsterOffsets.WaypointSize))
 	}
 	return waypoints
 }
 
 // RouteIndex returns CBaseMontser::m_iRouteIndex
 func (monster Monster) RouteIndex() int {
-	return *(*int)(unsafe.Pointer(uintptr(monster.ptr) + MonsterOffsets.RouteIndex))
+	return *(*int)(unsafe.Add(monster.ptr, MonsterOffsets.RouteIndex))
 }
 
 // MonsterState returns CBaseMontser::m_MonsterState
 func (monster Monster) MonsterState() int {
-	return *(*int)(unsafe.Pointer(uintptr(monster.ptr) + MonsterOffsets.MonsterState))
+	return *(*int)(unsafe.Add(monster.ptr, MonsterOffsets.MonsterState))
 }
 
 // AudibleList returns CBaseMonster::m_iAudibleList
 func (monster Monster) AudibleList() int {
-	return *(*int)(unsafe.Pointer(uintptr(monster.ptr) + MonsterOffsets.AudibleList))
+	return *(*int)(unsafe.Add(monster.ptr, MonsterOffsets.AudibleList))
 }
 
 // WaitFinished returns CBaseMonster::m_flWaitFinished
 func (monster Monster) WaitFinished() float32 {
-	return *(*float32)(unsafe.Pointer(uintptr(monster.ptr) + MonsterOffsets.WaitFinished))
+	return *(*float32)(unsafe.Add(monster.ptr, MonsterOffsets.WaitFinished))
 }

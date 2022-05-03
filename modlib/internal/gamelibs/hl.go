@@ -98,8 +98,8 @@ func initHLDLL(base string) (err error) {
 
 	switch reg.CBaseMonsterRouteNew.PatternKey() {
 	case registry.VersionHL8684, registry.VersionCSCZDS, registry.VersionGunman:
-		engine.MonsterOffsets.Route = *(*uintptr)(unsafe.Pointer(uintptr(reg.CBaseMonsterRouteNew.Address()) + 0x4)) - 0xc
-		engine.MonsterOffsets.RouteIndex = *(*uintptr)(unsafe.Pointer(uintptr(reg.CBaseMonsterRouteNew.Address()) + 0xa))
+		engine.MonsterOffsets.Route = *(*uintptr)(unsafe.Add(reg.CBaseMonsterRouteNew.Address(), 0x4)) - 0xc
+		engine.MonsterOffsets.RouteIndex = *(*uintptr)(unsafe.Add(reg.CBaseMonsterRouteNew.Address(), 0xa))
 	}
 
 	return nil

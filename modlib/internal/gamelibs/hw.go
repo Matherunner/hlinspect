@@ -55,25 +55,25 @@ func initHWDLL(base string) (err error) {
 
 	switch reg.HostAutoSaveF.PatternKey() {
 	case registry.VersionHL8684:
-		ptr := *(*unsafe.Pointer)(unsafe.Pointer(uintptr(reg.HostAutoSaveF.Address()) + 19))
+		ptr := *(*unsafe.Pointer)(unsafe.Add(reg.HostAutoSaveF.Address(), 19))
 		engine.Engine.SetSV(ptr)
 		logs.DLLLog.Debugf("Set SV address: %x", ptr)
 	}
 
 	switch reg.HostNoclipF.PatternKey() {
 	case registry.VersionHL8684:
-		ptr := *(*unsafe.Pointer)(unsafe.Pointer(uintptr(reg.HostNoclipF.Address()) + 31))
-		ptr = unsafe.Pointer(uintptr(ptr) - 0x14)
+		ptr := *(*unsafe.Pointer)(unsafe.Add(reg.HostNoclipF.Address(), 31))
+		ptr = unsafe.Add(ptr, -0x14)
 		engine.Engine.SetGlobalVariables(ptr)
 		logs.DLLLog.Debugf("Set GlobalVariables address: %x", ptr)
 	case registry.VersionHL4554:
-		ptr := *(*unsafe.Pointer)(unsafe.Pointer(uintptr(reg.HostNoclipF.Address()) + 28))
-		ptr = unsafe.Pointer(uintptr(ptr) - 0x14)
+		ptr := *(*unsafe.Pointer)(unsafe.Add(reg.HostNoclipF.Address(), 28))
+		ptr = unsafe.Add(ptr, -0x14)
 		engine.Engine.SetGlobalVariables(ptr)
 		logs.DLLLog.Debugf("Set GlobalVariables address: %x", ptr)
 	case registry.VersionHLNGHL:
-		ptr := *(*unsafe.Pointer)(unsafe.Pointer(uintptr(reg.HostNoclipF.Address()) + 27))
-		ptr = unsafe.Pointer(uintptr(ptr) - 0x14)
+		ptr := *(*unsafe.Pointer)(unsafe.Add(reg.HostNoclipF.Address(), 27))
+		ptr = unsafe.Add(ptr, -0x14)
 		engine.Engine.SetGlobalVariables(ptr)
 		logs.DLLLog.Debugf("Set GlobalVariables address: %x", ptr)
 	}
