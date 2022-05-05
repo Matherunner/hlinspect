@@ -1,5 +1,5 @@
-capnproto.org/go/capnp/v3 v3.0.0-alpha.2 h1:11eyK/Bj7dCRjq+5lzhhedrXMVDEEpuKOb3aZKBF5hs=
-capnproto.org/go/capnp/v3 v3.0.0-alpha.2/go.mod h1:Dynqh9/LE2Wy7jYd2wIoYgqFwh3hZHCmG7j6/uCWX6c=
+capnproto.org/go/capnp/v3 v3.0.0-alpha.2.0.20220504220541-7329fad9c27b h1:AmLYLUNonUgEEL28ggCKxdnGIyy5f+x168Ff2VhMVZ4=
+capnproto.org/go/capnp/v3 v3.0.0-alpha.2.0.20220504220541-7329fad9c27b/go.mod h1:Dynqh9/LE2Wy7jYd2wIoYgqFwh3hZHCmG7j6/uCWX6c=
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
