@@ -17,7 +17,7 @@ var (
 //go:embed patterns/patterns.json
 var patternsJSON []byte
 
-type patterns struct {
+type patternsRoot struct {
 	Symbols map[string]symbolDefinition `json:"symbols"`
 }
 
@@ -75,7 +75,7 @@ type API struct {
 }
 
 func NewAPI() (*API, error) {
-	var patterns patterns
+	var patterns patternsRoot
 	err := json.Unmarshal(patternsJSON, &patterns)
 	if err != nil {
 		return nil, err
