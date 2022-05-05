@@ -7,7 +7,7 @@ import os
 import sys
 sys.path.append('../capnp')
 # FIXME: should not hardcode this?
-sys.path.append(os.path.join(go_path, 'pkg/mod/capnproto.org/go/capnp/v3@v3.0.0-alpha.2/std'))
+sys.path.append(os.path.join(go_path, 'src/capnproto.org/go/capnp/std'))
 
 import capnp
 import hlrpc_capnp
