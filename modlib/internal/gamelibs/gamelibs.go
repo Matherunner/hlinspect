@@ -3,9 +3,16 @@ package gamelibs
 import (
 	"hlinspect/internal/gamelibs/cdefs"
 	"hlinspect/internal/gamelibs/registry"
+	"hlinspect/internal/logs"
 )
 
-var Model = NewGamelibModel(NewAPI(registry.NewAPI()), NewGL())
+var Model = func() GamelibModel {
+	apiReg, err := registry.NewAPI()
+	if err != nil {
+		logs.DLLLog.Fatalf("unable to initialise API registry: %+v", err)
+	}
+	return NewGamelibModel(NewAPI(apiReg), NewGL())
+}()
 
 type Handler = cdefs.Handler
 
