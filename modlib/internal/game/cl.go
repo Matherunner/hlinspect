@@ -21,6 +21,7 @@ func initCLDLL(base string) (err error) {
 	reg := Model.Registry()
 
 	items := map[*hooks.FunctionPattern]unsafe.Pointer{
+		&reg.CLCreateMove:                cdefs.CDefs.HookedCLCreateMove,
 		&reg.HUDRedraw:                   cdefs.CDefs.HookedHUDRedraw,
 		&reg.HUDDrawTransparentTriangles: cdefs.CDefs.HookedHUDDrawTransparentTriangles,
 		&reg.HUDVidInit:                  cdefs.CDefs.HookedHUDVidInit,

@@ -174,3 +174,13 @@ func (api *API) PMInit(ppm unsafe.Pointer) {
 func (api *API) PMPlayerMove(server int) {
 	hooks.CallFuncInts1(api.r.PMPlayerMove.Ptr(), uintptr(server))
 }
+
+func (api *API) CLCreateMove(frameTime float32, usercmd unsafe.Pointer, active int) {
+	hooks.CallFuncFloatInts2(api.r.CLCreateMove.Ptr(), frameTime, uintptr(usercmd), uintptr(active))
+}
+
+func (api *API) CbufInsertText(text string) {
+	cs := unsafe.Pointer(C.CString(text))
+	defer C.free(cs)
+	hooks.CallFuncInts1(api.r.CbufInsertText.Ptr(), uintptr(cs))
+}

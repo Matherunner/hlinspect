@@ -143,3 +143,18 @@ func (h *gameHandler) CGraphInitGraph(this unsafe.Pointer) {
 	game.Model.API().CGraphInitGraph(this)
 	engine.WorldGraph.SetPointer(this)
 }
+
+func (h *gameHandler) CLCreateMove(frameTime float32, usercmd unsafe.Pointer, active int) {
+	respChan := game.Model.Sync().InputControlResp(false)
+	if respChan != nil {
+		respChan <- true
+	}
+
+	reqChan := game.Model.Sync().InputControlReq(false)
+	if reqChan != nil {
+		cmd := <-reqChan
+		logs.DLLLog.Debugf("CMD = %+v", cmd)
+	}
+
+	game.Model.API().CLCreateMove(frameTime, usercmd, active)
+}

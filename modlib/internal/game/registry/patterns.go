@@ -33,6 +33,7 @@ type API struct {
 	// HW
 	AngleVectors               hooks.FunctionPattern `patname:"AngleVectors"`
 	BuildNumber                hooks.FunctionPattern `patname:"build_number"`
+	CbufInsertText             hooks.FunctionPattern `patname:"Cbuf_InsertText"`
 	CmdAddCommandWithFlags     hooks.FunctionPattern `patname:"Cmd_AddCommandWithFlags"`
 	CmdArgv                    hooks.FunctionPattern `patname:"Cmd_Argv"`
 	CvarRegisterVariable       hooks.FunctionPattern `patname:"Cvar_RegisterVariable"`
@@ -57,6 +58,7 @@ type API struct {
 	WorldTransform             hooks.FunctionPattern `patname:"WorldTransform"`
 
 	// CL
+	CLCreateMove                hooks.FunctionPattern `patname:"CL_CreateMove"`
 	HUDDrawTransparentTriangles hooks.FunctionPattern `patname:"HUD_DrawTransparentTriangles"`
 	HUDRedraw                   hooks.FunctionPattern `patname:"HUD_Redraw"`
 	HUDReset                    hooks.FunctionPattern `patname:"HUD_Reset"`

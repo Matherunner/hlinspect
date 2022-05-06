@@ -12,6 +12,7 @@ import "C"
 
 var CDefs = struct {
 	CCmdHandler                       unsafe.Pointer
+	HookedCLCreateMove                unsafe.Pointer
 	HookedHUDDrawTransparentTriangles unsafe.Pointer
 	HookedHUDRedraw                   unsafe.Pointer
 	HookedHUDReset                    unsafe.Pointer
@@ -25,6 +26,7 @@ var CDefs = struct {
 	CHookedCGraphInitGraph            unsafe.Pointer
 }{
 	CCmdHandler:                       C.CCmdHandler,
+	HookedCLCreateMove:                C.HookedCLCreateMove,
 	HookedHUDDrawTransparentTriangles: C.HookedHUDDrawTransparentTriangles,
 	HookedHUDRedraw:                   C.HookedHUDRedraw,
 	HookedHUDReset:                    C.HookedHUDReset,
@@ -43,6 +45,7 @@ var CDefs = struct {
 //
 // This is defined here because the hooked functions define the shape of the handler they want to call.
 type Handler interface {
+	CLCreateMove(frameTime float32, usercmd unsafe.Pointer, active int)
 	HUDDrawTransparentTriangle()
 	HUDRedraw(time float32, intermission int)
 	HUDReset()
@@ -87,6 +90,11 @@ func HookedRDrawSequentialPoly(surf uintptr, free int) {
 //export HookedMemoryInit
 func HookedMemoryInit(buf uintptr, size int) {
 	eventHandler.MemoryInit(context.TODO(), buf, size)
+}
+
+//export HookedCLCreateMove
+func HookedCLCreateMove(frameTime float32, usercmd unsafe.Pointer, active int) {
+	eventHandler.CLCreateMove(frameTime, usercmd, active)
 }
 
 //export HookedHUDRedraw

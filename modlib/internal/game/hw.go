@@ -48,6 +48,7 @@ func initHWDLL(base string) (err error) {
 		&reg.MemoryInit:                 cdefs.CDefs.HookedMemoryInit,
 		&reg.PFCheckClientI:             nil,
 		&reg.AngleVectors:               nil,
+		&reg.CbufInsertText:             nil,
 	}
 
 	errors := hooks.BatchFind(hwDLL, items)

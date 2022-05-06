@@ -3,8 +3,35 @@ using Go = import "/go.capnp";
 $Go.package("schema");
 $Go.import("hlinspect/internal/hlrpc/schema");
 
+const buttonForward :UInt16 = 1;
+const buttonBack :UInt16 = 2;
+const buttodMoveRight :UInt16 = 4;
+const buttonMoveLeft :UInt16 = 8;
+const buttonRight :UInt16 = 16;
+const buttonLeft :UInt16 = 32;
+const buttonDuck :UInt16 = 64;
+const buttonJump :UInt16 = 128;
+const buttonUse :UInt16 = 256;
+const buttonAttack1 :UInt16 = 512;
+const buttonAttack2 :UInt16 = 1024;
+const buttonReload :UInt16 = 2048;
+
 interface HalfLife {
     getFullPlayerState @0 () -> (state :FullPlayerState);
+    startInputControl @1 () -> ();
+    stopInputControl @2 () -> ();
+    inputStep @3 (cmd :CommandInput) -> (state: FullPlayerState);
+}
+
+struct CommandInput {
+    buttons @0 :UInt16;
+
+    forwardspeed @1 :Int16;
+    sidespeed @2 :Int16;
+    upspeed @3 :Int16;
+
+    yawspeed @4 :Float32;
+    pitchspeed @5 :Float32;
 }
 
 struct FullPlayerState {

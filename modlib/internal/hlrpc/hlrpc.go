@@ -2,6 +2,7 @@ package hlrpc
 
 import (
 	"context"
+	"hlinspect/internal/handlers"
 	"hlinspect/internal/hlrpc/schema"
 	"hlinspect/internal/logs"
 	"io"
@@ -11,11 +12,7 @@ import (
 	"capnproto.org/go/capnp/v3/rpc"
 )
 
-type Handler interface {
-	GetFullPlayerState(ctx context.Context, resp *schema.FullPlayerState) error
-}
-
-func Serve(handler Handler) error {
+func Serve(handler *handlers.HLRPCHandler) error {
 	// FIXME: make this configurable instead of accepting from all
 	// nolint:gosec
 	ln, err := net.Listen("tcp", "0.0.0.0:32002")
@@ -36,7 +33,7 @@ func Serve(handler Handler) error {
 	}
 }
 
-func serveHLRPC(rwc io.ReadWriteCloser, handler Handler) {
+func serveHLRPC(rwc io.ReadWriteCloser, handler *handlers.HLRPCHandler) {
 	defer rwc.Close()
 
 	main := schema.HalfLife_ServerToClient(&halflifeServer{
@@ -52,7 +49,7 @@ func serveHLRPC(rwc io.ReadWriteCloser, handler Handler) {
 }
 
 type halflifeServer struct {
-	handler Handler
+	handler *handlers.HLRPCHandler
 }
 
 func (s *halflifeServer) GetFullPlayerState(ctx context.Context, call schema.HalfLife_getFullPlayerState) error {
@@ -63,15 +60,52 @@ func (s *halflifeServer) GetFullPlayerState(ctx context.Context, call schema.Hal
 
 	_, seg, err := capnp.NewMessage(capnp.SingleSegment(nil))
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	fullState, err := schema.NewRootFullPlayerState(seg)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	err = s.handler.GetFullPlayerState(ctx, &fullState)
+	if err != nil {
+		return err
+	}
+
+	return res.SetState(fullState)
+}
+
+func (s *halflifeServer) StartInputControl(ctx context.Context, call schema.HalfLife_startInputControl) error {
+	return s.handler.StartInputControl(ctx)
+}
+
+func (s *halflifeServer) StopInputControl(ctx context.Context, call schema.HalfLife_stopInputControl) error {
+	return s.handler.StopInputControl(ctx)
+}
+
+func (s *halflifeServer) InputStep(ctx context.Context, call schema.HalfLife_inputStep) error {
+	cmd, err := call.Args().Cmd()
+	if err != nil {
+		return err
+	}
+
+	res, err := call.AllocResults()
+	if err != nil {
+		return err
+	}
+
+	_, seg, err := capnp.NewMessage(capnp.SingleSegment(nil))
+	if err != nil {
+		return err
+	}
+
+	fullState, err := schema.NewRootFullPlayerState(seg)
+	if err != nil {
+		return err
+	}
+
+	err = s.handler.InputStep(ctx, &cmd, &fullState)
 	if err != nil {
 		return err
 	}

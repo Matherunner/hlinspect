@@ -11,20 +11,22 @@ var Model = func() GamelibModel {
 	if err != nil {
 		logs.DLLLog.Fatalf("unable to initialise API registry: %+v", err)
 	}
-	return NewGamelibModel(NewAPI(apiReg), NewGL())
+	return NewGamelibModel(NewAPI(apiReg), NewGL(), NewSync())
 }()
 
 type Handler = cdefs.Handler
 
 type GamelibModel struct {
-	api *API
-	gl  *GL
+	api  *API
+	gl   *GL
+	sync *Sync
 }
 
-func NewGamelibModel(api *API, gl *GL) GamelibModel {
+func NewGamelibModel(api *API, gl *GL, sync *Sync) GamelibModel {
 	return GamelibModel{
-		api: api,
-		gl:  gl,
+		api:  api,
+		gl:   gl,
+		sync: sync,
 	}
 }
 
@@ -59,4 +61,8 @@ func (m *GamelibModel) GL() *GL {
 // Registry returns the API registry.
 func (m *GamelibModel) Registry() *registry.API {
 	return m.api.Registry()
+}
+
+func (m *GamelibModel) Sync() *Sync {
+	return m.sync
 }
