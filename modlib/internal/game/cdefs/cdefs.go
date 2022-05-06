@@ -2,6 +2,7 @@ package cdefs
 
 import (
 	"context"
+	"hlinspect/internal/logs"
 	"unsafe"
 )
 
@@ -69,65 +70,78 @@ func SetEventHandler(handler Handler) {
 // CmdHandler called by C code. This is needed because passing Go function directly to CmdAddCommand doesn't seem to work.
 //export CmdHandler
 func CmdHandler() {
+	defer logs.HandlePanic()
 	eventHandler.OnCommand()
 }
 
 //export HookedVFadeAlpha
 func HookedVFadeAlpha() int {
+	defer logs.HandlePanic()
 	return eventHandler.VFadeAlpha()
 }
 
 //export HookedRClear
 func HookedRClear() {
+	defer logs.HandlePanic()
 	eventHandler.RClear()
 }
 
 //export HookedRDrawSequentialPoly
 func HookedRDrawSequentialPoly(surf uintptr, free int) {
+	defer logs.HandlePanic()
 	eventHandler.RDrawSequentialPoly(surf, free)
 }
 
 //export HookedMemoryInit
 func HookedMemoryInit(buf uintptr, size int) {
+	defer logs.HandlePanic()
 	eventHandler.MemoryInit(context.TODO(), buf, size)
 }
 
 //export HookedCLCreateMove
 func HookedCLCreateMove(frameTime float32, usercmd unsafe.Pointer, active int) {
+	defer logs.HandlePanic()
 	eventHandler.CLCreateMove(frameTime, usercmd, active)
 }
 
 //export HookedHUDRedraw
 func HookedHUDRedraw(time float32, intermission int32) {
+	defer logs.HandlePanic()
 	eventHandler.HUDRedraw(time, int(intermission))
 }
 
 //export HookedHUDDrawTransparentTriangles
 func HookedHUDDrawTransparentTriangles() {
+	defer logs.HandlePanic()
 	eventHandler.HUDDrawTransparentTriangle()
 }
 
 //export HookedHUDVidInit
 func HookedHUDVidInit() int {
+	defer logs.HandlePanic()
 	return eventHandler.HUDVidInit()
 }
 
 //export HookedHUDReset
 func HookedHUDReset() {
+	defer logs.HandlePanic()
 	eventHandler.HUDReset()
 }
 
 //export HookedPMInit
 func HookedPMInit(ppm unsafe.Pointer) {
+	defer logs.HandlePanic()
 	eventHandler.PMInit(ppm)
 }
 
 //export HookedCGraphInitGraph
 func HookedCGraphInitGraph(this unsafe.Pointer) {
+	defer logs.HandlePanic()
 	eventHandler.CGraphInitGraph(this)
 }
 
 //export HookedPMPlayerMove
 func HookedPMPlayerMove(server int) {
+	defer logs.HandlePanic()
 	eventHandler.PMPlayerMove(server)
 }
