@@ -8,7 +8,7 @@ dll: schema
 
 schema:
 	mkdir -p internal/hlrpc/schema
-	capnp compile ../capnp/hlrpc.capnp -o go:internal/hlrpc/schema --src-prefix ../capnp -I "$(GOPATH)/src/capnproto.org/go/capnp/std"
+	capnp compile ../capnp/hlrpc.capnp -o go:internal/hlrpc/schema --src-prefix ../capnp -I ../thirdparty/go-capnproto2/std
 	go generate ./...
 
 clean:
