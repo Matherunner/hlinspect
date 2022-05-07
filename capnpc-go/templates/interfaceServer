@@ -1,0 +1,57 @@
+// A {{.Node.Name}}_Server is a {{.Node.Name}} with a local implementation.
+type {{.Node.Name}}_Server interface {
+	{{range .Methods}}
+	{{.Name|title}}({{$.G.Imports.Context}}.Context, {{$.G.RemoteNodeName .Interface $.Node}}_{{.Name}}) error
+	{{end}}
+}
+
+// {{.Node.Name}}_NewServer creates a new Server from an implementation of {{.Node.Name}}_Server.
+func {{.Node.Name}}_NewServer(s {{.Node.Name}}_Server, policy *{{.G.Imports.Server}}.Policy) *{{.G.Imports.Server}}.Server {
+	c, _ := s.({{.G.Imports.Server}}.Shutdowner)
+  return {{.G.Imports.Server}}.New({{.Node.Name}}_Methods(nil, s), s, c, policy)
+}
+
+// {{.Node.Name}}_ServerToClient creates a new Client from an implementation of {{.Node.Name}}_Server.
+// The caller is responsible for calling Release on the returned Client.
+func {{.Node.Name}}_ServerToClient(s {{.Node.Name}}_Server, policy *{{.G.Imports.Server}}.Policy) {{.Node.Name}} {
+	return {{.Node.Name}}{Client: {{.G.Capnp}}.NewClient({{.Node.Name}}_NewServer(s, policy))}
+}
+
+// {{.Node.Name}}_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
+func {{.Node.Name}}_Methods(methods []{{.G.Imports.Server}}.Method, s {{.Node.Name}}_Server) []{{.G.Imports.Server}}.Method {
+	if cap(methods) == 0 {
+		methods = make([]{{.G.Imports.Server}}.Method, 0, {{len .Methods}})
+	}
+	{{range .Methods}}
+	methods = append(methods, {{$.G.Imports.Server}}.Method{
+		Method: {{$.G.Capnp}}.Method{
+			{{template "_interfaceMethod" .}}
+		},
+		Impl: func(ctx {{$.G.Imports.Context}}.Context, call *{{$.G.Imports.Server}}.Call) error {
+			return s.{{.Name|title}}(ctx, {{$.G.RemoteNodeName .Interface $.Node}}_{{.Name}}{call})
+		},
+	})
+	{{end}}
+	return methods
+}
+{{range .Methods -}}
+{{if eq .Interface.Id $.Node.Id}}
+// {{$.Node.Name}}_{{.Name}} holds the state for a server call to {{$.Node.Name}}.{{.Name}}.
+// See server.Call for documentation.
+type {{$.Node.Name}}_{{.Name}} struct {
+	*{{$.G.Imports.Server}}.Call
+}
+
+// Args returns the call's arguments.
+func (c {{$.Node.Name}}_{{.Name}}) Args() {{$.G.RemoteNodeName .Params $.Node}} {
+	return {{$.G.RemoteNodeName .Params $.Node}}{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c {{$.Node.Name}}_{{.Name}}) AllocResults() ({{$.G.RemoteNodeName .Results $.Node}}, error) {
+	r, err := c.Call.AllocResults({{$.G.ObjectSize .Results}})
+	return {{$.G.RemoteNodeName .Results $.Node}}{Struct: r}, err
+}
+{{end}}
+{{- end}}
