@@ -1,9 +1,10 @@
 package main
 
 import (
-	"hlinspect/internal/events"
 	"hlinspect/internal/feed"
-	"hlinspect/internal/gamelibs"
+	"hlinspect/internal/game"
+	"hlinspect/internal/handlers"
+	"hlinspect/internal/hlrpc"
 	"hlinspect/internal/hooks"
 	"hlinspect/internal/logs"
 	"path/filepath"
@@ -20,13 +21,13 @@ import "C"
 var kernelDLL *hooks.Module
 
 var libraryInitializers = map[string]func(base string) error{
-	"hl.dll":     gamelibs.Model.InitHLDLL,
-	"opfor.dll":  gamelibs.Model.InitHLDLL,
-	"cz.dll":     gamelibs.Model.InitHLDLL,
-	"gunman.dll": gamelibs.Model.InitHLDLL,
-	"wanted.dll": gamelibs.Model.InitHLDLL,
-	"hw.dll":     gamelibs.Model.InitHWDLL,
-	"client.dll": gamelibs.Model.InitCLDLL,
+	"hl.dll":     game.Model.InitHLDLL,
+	"opfor.dll":  game.Model.InitHLDLL,
+	"cz.dll":     game.Model.InitHLDLL,
+	"gunman.dll": game.Model.InitHLDLL,
+	"wanted.dll": game.Model.InitHLDLL,
+	"hw.dll":     game.Model.InitHWDLL,
+	"client.dll": game.Model.InitCLDLL,
 }
 
 var loadLibraryAPattern = hooks.NewFunctionPattern("LoadLibraryA", hooks.SymbolNameMap{"Windows": "LoadLibraryA"}, nil)
@@ -102,9 +103,9 @@ func OnProcessAttach() {
 		logs.DLLLog.Panic("Unable to initialise hooks")
 	}
 
-	initLoadLibraryHooks()
+	game.Model.RegisterEventHandler(handlers.NewGameHandler())
 
-	gamelibs.Model.RegisterEventHandler(events.NewHandler())
+	initLoadLibraryHooks()
 
 	for base, initializer := range libraryInitializers {
 		logs.DLLLog.Debugf("Initialising %v", base)
@@ -112,6 +113,11 @@ func OnProcessAttach() {
 			logs.DLLLog.Warningf("Unable to initialise %v: %v", base, err)
 		}
 	}
+
+	go func() {
+		err := hlrpc.Serve(handlers.NewHLRPCHandler())
+		logs.DLLLog.Errorf("hlrpc failed: %+v", err)
+	}()
 
 	go feed.Serve()
 }

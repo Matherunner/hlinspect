@@ -1,3 +1,5 @@
 hlinspect.dll
 hlinspect.h
 *.pb.go
+*.capnp.go
+venv/

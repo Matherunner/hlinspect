@@ -28,7 +28,7 @@ Currently, this is the easiest to build on Linux using cross compilation.
 
 Set up WSL in Windows or use a Linux system.
 
-Install Go 1.17 or above.
+Install Go 1.18 or above.
 
 Install `gcc-mingw-w64` to get `i686-w64-mingw32-gcc` or similar for cross compilation.
 
@@ -44,6 +44,14 @@ Make sure `protoc-gen-go` can be found in `PATH`, which is needed by `protoc`. I
 
 ```bash
 export PATH="$PATH:"$(go env GOPATH)/bin
+```
+
+Install Cap'n Proto compiler with the `capnproto` package or similar for HLRPC.
+
+Install Golang plugin for Cap'n Proto
+
+```bash
+go install capnproto.org/go/capnp/v3/capnpc-go@latest
 ```
 
 ### Build
