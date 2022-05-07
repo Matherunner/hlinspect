@@ -1,0 +1,2 @@
+{{.G.RemoteNodeName .Typ .Node}}{Struct: {{.G.Capnp}}.MustUnmarshalRoot({{.Value}}).Struct()}
+{{- /* no EOL */ -}}

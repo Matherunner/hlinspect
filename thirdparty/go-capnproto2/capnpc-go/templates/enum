@@ -1,0 +1,44 @@
+{{with .Annotations.Doc -}}
+// {{.}}
+{{end -}}
+type {{.Node.Name}} uint16
+
+{{ template "_typeid" .Node }}
+
+{{with .EnumValues -}}
+// Values of {{$.Node.Name}}.
+const (
+{{range . -}}
+{{.FullName}} {{$.Node.Name}} = {{.Val}}
+{{end}}
+)
+
+// String returns the enum's constant name.
+func (c {{$.Node.Name}}) String() string {
+	switch c {
+	{{range . -}}
+        {{if .Tag}}case {{.FullName}}: return {{printf "%q" .Tag}}
+	{{end}}
+        {{- end}}
+	default: return ""
+	}
+}
+
+// {{$.Node.Name}}FromString returns the enum value with a name,
+// or the zero value if there's no such value.
+func {{$.Node.Name}}FromString(c string) {{$.Node.Name}} {
+	switch c {
+	{{range . -}}
+        {{if .Tag}}case {{printf "%q" .Tag}}: return {{.FullName}}
+	{{end}}
+        {{- end}}
+	default: return 0
+	}
+}
+{{end}}
+
+type {{.Node.Name}}_List = {{$.G.Capnp}}.EnumList[{{.Node.Name}}]
+
+func New{{.Node.Name}}_List(s *{{$.G.Capnp}}.Segment, sz int32) ({{.Node.Name}}_List, error) {
+	return {{.G.Capnp}}.NewEnumList[{{.Node.Name}}](s, sz)
+}
