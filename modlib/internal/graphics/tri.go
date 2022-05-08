@@ -54,7 +54,7 @@ func drawNodeLinks() {
 		drawLines([][3]float32{src, dest})
 
 		entvars := link.LinkEnt()
-		if entvars.Pointer() != nil {
+		if entvars.Ptr() != nil {
 			origin := entvars.Origin()
 			mins := entvars.Mins()
 			maxs := entvars.Maxs()
