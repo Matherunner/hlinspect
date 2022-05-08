@@ -88,7 +88,7 @@ func drawEntitiesOverlay() {
 				}
 
 				game.Model.API().VGUI2DrawSetTextColorAlpha(255, 255, 0, 255)
-				e := game.Model.API().PFCheckClientI(edict.Pointer())
+				e := game.Model.API().PFCheckClientI(edict.Ptr())
 				if e != 0 && game.Model.S().SV.EntOffset(e) != 0 {
 					game.Model.API().DrawString(screen[0], screen[1]+6*int(screenInfo.CharHeight), "In PVS")
 				} else {

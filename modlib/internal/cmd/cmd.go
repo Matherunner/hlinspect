@@ -31,7 +31,7 @@ var CommandHandlerByName = map[string]func(){
 
 		result := game.Model.API().TraceLine(position, endPos, game.TraceDontIgnoreMonsters, nil)
 		edict := engine.MakeEdict(result.Hit)
-		if edict.Pointer() == nil || edict.Free() || edict.PrivateData() == nil {
+		if edict.Ptr() == nil || edict.Free() || edict.PrivateData() == nil {
 			return
 		}
 

@@ -21,6 +21,5 @@ func (sv SV) NumEdicts() int {
 // Edict returns sv.edicts[index]
 func (sv SV) Edict(index int) Edict {
 	base := *(*unsafe.Pointer)(unsafe.Add(sv.ptr, 0x3bc58))
-	// 804 is sizeof(edict_t)
-	return MakeEdict(unsafe.Add(base, index*804))
+	return MakeEdict(unsafe.Add(base, index*EdictSize))
 }
