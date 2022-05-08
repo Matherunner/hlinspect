@@ -162,10 +162,16 @@ func (h *gameHandler) CLCreateMove(frameTime float32, usercmd unsafe.Pointer, ac
 func (h *gameHandler) SVExecuteClientMessage(cl unsafe.Pointer) {
 	game.Model.API().SVExecuteClientMessage(cl)
 
+	// TODO: this offset is different on Linux, and may vary by engine version?
+
+	// Offset client_t to get client_t::edict:
+	//   MOV        EAX,dword ptr [ESI + 0x4b9c]
+	ptr := *(*unsafe.Pointer)(unsafe.Add(cl, 0x4b9c))
+
 	player := game.Model.S().SVPlayer()
 	if player.Ptr() == nil {
-		game.Model.S().SetSVPlayer(cl)
-	} else if player.Ptr() != cl {
+		game.Model.S().SetSVPlayer(ptr)
+	} else if player.Ptr() != ptr {
 		logs.DLLLog.Fatalf("multiple players not supported")
 	}
 }

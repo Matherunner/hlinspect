@@ -22,9 +22,50 @@ func (entvars EntVars) Origin() [3]float32 {
 	return *(*[3]float32)(unsafe.Add(entvars.ptr, 0x8))
 }
 
+// Velocity returns entvars_t::velocity
+func (entvars EntVars) Velocity() [3]float32 {
+	return *(*[3]float32)(unsafe.Add(entvars.ptr, 32))
+}
+
+// BaseVelocity returns envars_t::basevelocity
+func (entvars EntVars) BaseVelocity() [3]float32 {
+	return *(*[3]float32)(unsafe.Add(entvars.ptr, 44))
+}
+
 // Angles returns entvars_t::angles
 func (entvars EntVars) Angles() [3]float32 {
 	return *(*[3]float32)(unsafe.Add(entvars.ptr, 0x50))
+}
+
+// PunchAngles returns entvars_t::punchangle
+func (entvars EntVars) PunchAngles() [3]float32 {
+	return *(*[3]float32)(unsafe.Add(entvars.ptr, 104))
+}
+
+// EntityFriction returns entvars_t::friction
+func (entvars EntVars) EntityFriction() float32 {
+	return *(*float32)(unsafe.Add(entvars.ptr, 288))
+}
+
+// EntityGravity returns entvars_t::gravity
+func (entvars EntVars) EntityGravity() float32 {
+	return *(*float32)(unsafe.Add(entvars.ptr, 284))
+}
+
+// WaterLevel returns entvars_t::waterlevel
+func (entvars EntVars) WaterLevel() int {
+	return *(*int)(unsafe.Add(entvars.ptr, 448))
+}
+
+// GroundEntity returns entvars_t::groundentity
+func (entvars EntVars) GroundEntity() Edict {
+	p := *(*unsafe.Pointer)(unsafe.Add(entvars.ptr, 412))
+	return MakeEdict(p)
+}
+
+// Flags returns entvars_t::flags
+func (entvars EntVars) Flags() int {
+	return *(*int)(unsafe.Add(entvars.ptr, 420))
 }
 
 // Classname returns entvars_t::classname

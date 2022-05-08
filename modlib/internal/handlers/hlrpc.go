@@ -15,37 +15,39 @@ func NewHLRPCHandler() *HLRPCHandler {
 }
 
 func (h *HLRPCHandler) GetFullPlayerState(ctx context.Context, resp *schema.FullPlayerState) error {
-	pos := game.Model.S().PMovePosition()
+	ev := game.Model.S().SVPlayer().EntVars()
+
+	pos := ev.Origin()
 	resp.SetPositionX(pos[0])
 	resp.SetPositionY(pos[1])
 	resp.SetPositionZ(pos[2])
 
-	vel := game.Model.S().PMoveVelocity()
+	vel := ev.Velocity()
 	resp.SetVelocityX(vel[0])
 	resp.SetVelocityY(vel[1])
 	resp.SetVelocityZ(vel[2])
 
-	basevel := game.Model.S().PMoveBasevelocity()
+	basevel := ev.BaseVelocity()
 	resp.SetBaseVelocityX(basevel[0])
 	resp.SetBaseVelocityY(basevel[1])
 	resp.SetBaseVelocityZ(basevel[2])
 
-	angles := game.Model.S().PMoveViewangles()
+	angles := ev.Angles()
 	resp.SetYaw(angles[1])
 	resp.SetPitch(angles[0])
 	resp.SetRoll(angles[2])
 
-	punchangles := game.Model.S().PMovePunchangles()
+	punchangles := ev.PunchAngles()
 	resp.SetPunchYaw(punchangles[1])
 	resp.SetPunchPitch(punchangles[0])
 	resp.SetPunchRoll(punchangles[2])
 
-	resp.SetEntityFriction(game.Model.S().PMoveEntFriction())
-	resp.SetEntityGravity(game.Model.S().PMoveEntGravity())
+	resp.SetEntityFriction(ev.EntityFriction())
+	resp.SetEntityGravity(ev.EntityGravity())
 
-	resp.SetOnGround(game.Model.S().PMoveOnground())
+	resp.SetOnGround((ev.Flags() & game.FLOnGround) != 0)
 	// TODO: duck state
-	resp.SetWaterLevel(uint8(game.Model.S().PMoveWaterlevel()))
+	resp.SetWaterLevel(uint8(ev.WaterLevel()))
 
 	return nil
 }
