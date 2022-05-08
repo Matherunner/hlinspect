@@ -31,7 +31,6 @@ func initHWDLL(base string) (err error) {
 		&reg.VFadeAlpha:                 cdefs.CDefs.HookedVFadeAlpha,
 		&reg.DrawString:                 nil,
 		&reg.VGUI2DrawSetTextColorAlpha: nil,
-		&reg.HostAutoSaveF:              nil,
 		&reg.HostNoclipF:                nil,
 		&reg.PFTracelineDLL:             nil,
 		&reg.TriGLRenderMode:            nil,
@@ -49,17 +48,13 @@ func initHWDLL(base string) (err error) {
 		&reg.PFCheckClientI:             nil,
 		&reg.AngleVectors:               nil,
 		&reg.CbufInsertText:             nil,
+		&reg.WriteDestParm:              nil,
 	}
 
 	errors := hooks.BatchFind(hwDLL, items)
 	printBatchFindErrors(errors)
 
-	switch reg.HostAutoSaveF.PatternKey() {
-	case registry.VersionHL8684:
-		ptr := *(*unsafe.Pointer)(unsafe.Add(reg.HostAutoSaveF.Ptr(), 19))
-		engine.Engine.SetSV(ptr)
-		logs.DLLLog.Debugf("Set SV address: %x", ptr)
-	}
+	initGlobalSV()
 
 	switch reg.HostNoclipF.PatternKey() {
 	case registry.VersionHL8684:
@@ -80,4 +75,13 @@ func initHWDLL(base string) (err error) {
 	}
 
 	return nil
+}
+
+func initGlobalSV() {
+	// WriteDest_Parm returns the address of sv.datagram if the argument is 0.
+	ptr := Model.API().WriteDestParm(0)
+	// Offset to get the address of sv
+	ptr = unsafe.Add(ptr, -0x3bc68)
+	engine.Engine.SetSV(ptr)
+	logs.DLLLog.Debugf("Set SV address: %x", ptr)
 }

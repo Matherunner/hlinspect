@@ -1,6 +1,7 @@
 package game
 
 import (
+	"hlinspect/internal/engine"
 	"hlinspect/internal/game/cdefs"
 	"hlinspect/internal/game/registry"
 	"hlinspect/internal/logs"
@@ -20,6 +21,7 @@ type GamelibModel struct {
 	api  *API
 	gl   *GL
 	sync *Sync
+	sv   *engine.SV
 }
 
 func NewGamelibModel(api *API, gl *GL, sync *Sync) GamelibModel {
@@ -65,4 +67,8 @@ func (m *GamelibModel) Registry() *registry.API {
 
 func (m *GamelibModel) Sync() *Sync {
 	return m.sync
+}
+
+func (m *GamelibModel) SV() *engine.SV {
+	return m.sv
 }

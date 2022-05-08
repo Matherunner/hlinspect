@@ -38,7 +38,6 @@ type API struct {
 	CmdArgv                    hooks.FunctionPattern `patname:"Cmd_Argv"`
 	CvarRegisterVariable       hooks.FunctionPattern `patname:"Cvar_RegisterVariable"`
 	DrawString                 hooks.FunctionPattern `patname:"Draw_String"`
-	HostAutoSaveF              hooks.FunctionPattern `patname:"Host_AutoSave_f"`
 	HostNoclipF                hooks.FunctionPattern `patname:"Host_Noclip_f"`
 	HudGetScreenInfo           hooks.FunctionPattern `patname:"hudGetScreenInfo"`
 	MemoryInit                 hooks.FunctionPattern `patname:"Memory_Init"`
@@ -56,6 +55,7 @@ type API struct {
 	VFadeAlpha                 hooks.FunctionPattern `patname:"V_FadeAlpha"`
 	VGUI2DrawSetTextColorAlpha hooks.FunctionPattern `patname:"VGUI2_Draw_SetTextColorAlpha"`
 	WorldTransform             hooks.FunctionPattern `patname:"WorldTransform"`
+	WriteDestParm              hooks.FunctionPattern `patname:"WriteDest_Parm"`
 
 	// CL
 	CLCreateMove                hooks.FunctionPattern `patname:"CL_CreateMove"`

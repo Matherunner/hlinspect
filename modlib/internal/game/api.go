@@ -184,3 +184,7 @@ func (api *API) CbufInsertText(text string) {
 	defer C.free(cs)
 	hooks.CallFuncInts1(api.r.CbufInsertText.Ptr(), uintptr(cs))
 }
+
+func (api *API) WriteDestParm(dest int) unsafe.Pointer {
+	return hooks.CallFuncInts1RetPtr(api.r.WriteDestParm.Ptr(), uintptr(dest))
+}
