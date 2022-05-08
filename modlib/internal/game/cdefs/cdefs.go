@@ -25,6 +25,7 @@ var CDefs = struct {
 	HookedPMInit                      unsafe.Pointer
 	HookedPMPlayerMove                unsafe.Pointer
 	CHookedCGraphInitGraph            unsafe.Pointer
+	HookedSVExecuteClientMessage      unsafe.Pointer
 }{
 	CCmdHandler:                       C.CCmdHandler,
 	HookedCLCreateMove:                C.HookedCLCreateMove,
@@ -39,6 +40,7 @@ var CDefs = struct {
 	HookedPMInit:                      C.HookedPMInit,
 	HookedPMPlayerMove:                C.HookedPMPlayerMove,
 	CHookedCGraphInitGraph:            C.CHookedCGraphInitGraph,
+	HookedSVExecuteClientMessage:      C.HookedSVExecuteClientMessage,
 }
 
 // Handler defines the interface of an event handler that will receive synchronous "events"
@@ -59,6 +61,7 @@ type Handler interface {
 	PMInit(ppm unsafe.Pointer)
 	PMPlayerMove(server int)
 	CGraphInitGraph(this unsafe.Pointer)
+	SVExecuteClientMessage(cl unsafe.Pointer)
 }
 
 var eventHandler Handler
@@ -144,4 +147,10 @@ func HookedCGraphInitGraph(this unsafe.Pointer) {
 func HookedPMPlayerMove(server int) {
 	defer logs.HandlePanic()
 	eventHandler.PMPlayerMove(server)
+}
+
+//export HookedSVExecuteClientMessage
+func HookedSVExecuteClientMessage(cl unsafe.Pointer) {
+	defer logs.HandlePanic()
+	eventHandler.SVExecuteClientMessage(cl)
 }

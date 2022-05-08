@@ -188,3 +188,7 @@ func (api *API) CbufInsertText(text string) {
 func (api *API) WriteDestParm(dest int) unsafe.Pointer {
 	return hooks.CallFuncInts1RetPtr(api.r.WriteDestParm.Ptr(), uintptr(dest))
 }
+
+func (api *API) SVExecuteClientMessage(cl unsafe.Pointer) {
+	hooks.CallFuncInts1(api.r.SVExecuteClientMessage.Ptr(), uintptr(cl))
+}

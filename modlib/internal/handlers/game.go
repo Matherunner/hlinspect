@@ -158,3 +158,14 @@ func (h *gameHandler) CLCreateMove(frameTime float32, usercmd unsafe.Pointer, ac
 
 	game.Model.API().CLCreateMove(frameTime, usercmd, active)
 }
+
+func (h *gameHandler) SVExecuteClientMessage(cl unsafe.Pointer) {
+	game.Model.API().SVExecuteClientMessage(cl)
+
+	player := game.Model.S().SVPlayer()
+	if player.Ptr() == nil {
+		game.Model.S().SetSVPlayer(cl)
+	} else if player.Ptr() != cl {
+		logs.DLLLog.Fatalf("multiple players not supported")
+	}
+}

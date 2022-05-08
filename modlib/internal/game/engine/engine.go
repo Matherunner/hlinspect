@@ -25,6 +25,7 @@ type State struct {
 	SV              SV
 	GlobalVariables GlobalVariables
 	ppmove          unsafe.Pointer
+	svPlayer        Edict
 }
 
 func NewState() *State {
@@ -43,6 +44,16 @@ func (eng *State) SetSV(pointer unsafe.Pointer) {
 // SetPPMove sets the address of ppmove
 func (eng *State) SetPPMove(pointer unsafe.Pointer) {
 	eng.ppmove = pointer
+}
+
+// SetSVPlayer sets the pointer to sv_player
+func (eng *State) SetSVPlayer(ptr unsafe.Pointer) {
+	eng.svPlayer = MakeEdict(ptr)
+}
+
+// SVPlayer returns the sv_player edict
+func (eng *State) SVPlayer() Edict {
+	return eng.svPlayer
 }
 
 // PMoveVelocity returns pmove->velocity

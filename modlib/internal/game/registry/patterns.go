@@ -46,6 +46,7 @@ type API struct {
 	RClear                     hooks.FunctionPattern `patname:"R_Clear"`
 	RDrawSequentialPoly        hooks.FunctionPattern `patname:"R_DrawSequentialPoly"`
 	ScreenTransform            hooks.FunctionPattern `patname:"ScreenTransform"`
+	SVExecuteClientMessage     hooks.FunctionPattern `patname:"SV_ExecuteClientMessage"`
 	TriGLBegin                 hooks.FunctionPattern `patname:"tri_GL_Begin"`
 	TriGLColor4f               hooks.FunctionPattern `patname:"tri_GL_Color4f"`
 	TriGLCullFace              hooks.FunctionPattern `patname:"tri_GL_CullFace"`
