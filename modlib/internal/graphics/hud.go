@@ -3,8 +3,8 @@ package graphics
 import (
 	"fmt"
 	"hlinspect/internal/cmd"
-	"hlinspect/internal/engine"
 	"hlinspect/internal/game"
+	"hlinspect/internal/game/engine"
 	"strings"
 )
 
@@ -34,9 +34,9 @@ func drawSounds() {
 }
 
 func drawEntitiesOverlay() {
-	numEdicts := engine.Engine.SV.NumEdicts()
+	numEdicts := game.Model.S().SV.NumEdicts()
 	for i := 0; i < numEdicts; i++ {
-		edict := engine.Engine.SV.Edict(i)
+		edict := game.Model.S().SV.Edict(i)
 		if edict.Free() {
 			continue
 		}
@@ -47,7 +47,7 @@ func drawEntitiesOverlay() {
 		}
 
 		entVars := edict.EntVars()
-		if !strings.HasPrefix(engine.Engine.GlobalVariables.String(entVars.Classname()), "monster_") {
+		if !strings.HasPrefix(game.Model.S().GlobalVariables.String(entVars.Classname()), "monster_") {
 			continue
 		}
 
@@ -89,7 +89,7 @@ func drawEntitiesOverlay() {
 
 				game.Model.API().VGUI2DrawSetTextColorAlpha(255, 255, 0, 255)
 				e := game.Model.API().PFCheckClientI(edict.Pointer())
-				if e != 0 && engine.Engine.SV.EntOffset(e) != 0 {
+				if e != 0 && game.Model.S().SV.EntOffset(e) != 0 {
 					game.Model.API().DrawString(screen[0], screen[1]+6*int(screenInfo.CharHeight), "In PVS")
 				} else {
 					game.Model.API().DrawString(screen[0], screen[1]+6*int(screenInfo.CharHeight), "Not in PVS")

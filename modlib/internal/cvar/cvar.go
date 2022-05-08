@@ -1,7 +1,7 @@
 package cvar
 
 import (
-	"hlinspect/internal/engine"
+	"hlinspect/internal/game/engine"
 	"strconv"
 	"unsafe"
 )

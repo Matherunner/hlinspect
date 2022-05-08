@@ -1,8 +1,8 @@
 package game
 
 import (
-	"hlinspect/internal/engine"
 	"hlinspect/internal/game/cdefs"
+	"hlinspect/internal/game/engine"
 	"hlinspect/internal/game/registry"
 	"hlinspect/internal/logs"
 )
@@ -12,23 +12,29 @@ var Model = func() GamelibModel {
 	if err != nil {
 		logs.DLLLog.Fatalf("unable to initialise API registry: %+v", err)
 	}
-	return NewGamelibModel(NewAPI(apiReg), NewGL(), NewSync())
+	return NewGamelibModel(
+		NewAPI(apiReg),
+		NewGL(),
+		NewSync(),
+		engine.NewState(),
+	)
 }()
 
 type Handler = cdefs.Handler
 
 type GamelibModel struct {
-	api  *API
-	gl   *GL
-	sync *Sync
-	sv   *engine.SV
+	api   *API
+	gl    *GL
+	sync  *Sync
+	state *engine.State
 }
 
-func NewGamelibModel(api *API, gl *GL, sync *Sync) GamelibModel {
+func NewGamelibModel(api *API, gl *GL, sync *Sync, state *engine.State) GamelibModel {
 	return GamelibModel{
-		api:  api,
-		gl:   gl,
-		sync: sync,
+		api:   api,
+		gl:    gl,
+		sync:  sync,
+		state: state,
 	}
 }
 
@@ -69,6 +75,7 @@ func (m *GamelibModel) Sync() *Sync {
 	return m.sync
 }
 
-func (m *GamelibModel) SV() *engine.SV {
-	return m.sv
+// S returns the engine state data.
+func (m *GamelibModel) S() *engine.State {
+	return m.state
 }

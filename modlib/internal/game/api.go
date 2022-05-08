@@ -1,8 +1,8 @@
 package game
 
 import (
-	"hlinspect/internal/engine"
 	"hlinspect/internal/game/cdefs"
+	"hlinspect/internal/game/engine"
 	"hlinspect/internal/game/registry"
 	"hlinspect/internal/hooks"
 	"unsafe"

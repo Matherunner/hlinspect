@@ -3,9 +3,6 @@ package engine
 import "unsafe"
 import "C"
 
-// Engine holds the state of the game engine
-var Engine State
-
 type GlobalVariables struct {
 	ptr unsafe.Pointer
 }
@@ -113,34 +110,15 @@ func (edict Edict) PrivateData() unsafe.Pointer {
 	return *(*unsafe.Pointer)(unsafe.Add(edict.ptr, 0x7c))
 }
 
-// SV represents the type of server_t
-type SV struct {
-	ptr unsafe.Pointer
-}
-
-// EntOffset returns the address offset of edict from sv.edicts
-func (sv SV) EntOffset(edict uintptr) uintptr {
-	edicts := *(*uintptr)(unsafe.Add(sv.ptr, 0x3bc58))
-	return edict - edicts
-}
-
-// NumEdicts returns the number of edicts, sv.num_edicts
-func (sv SV) NumEdicts() int {
-	return *(*int)(unsafe.Add(sv.ptr, 0x3bc50))
-}
-
-// Edict returns sv.edicts[index]
-func (sv SV) Edict(index int) Edict {
-	base := *(*unsafe.Pointer)(unsafe.Add(sv.ptr, 0x3bc58))
-	// 804 is sizeof(edict_t)
-	return MakeEdict(unsafe.Add(base, index*804))
-}
-
 // State interface to the game engine
 type State struct {
 	SV              SV
 	GlobalVariables GlobalVariables
 	ppmove          unsafe.Pointer
+}
+
+func NewState() *State {
+	return &State{}
 }
 
 func (eng *State) SetGlobalVariables(pointer unsafe.Pointer) {

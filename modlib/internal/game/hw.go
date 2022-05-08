@@ -1,7 +1,6 @@
 package game
 
 import (
-	"hlinspect/internal/engine"
 	"hlinspect/internal/game/cdefs"
 	"hlinspect/internal/game/registry"
 	"hlinspect/internal/hooks"
@@ -60,17 +59,17 @@ func initHWDLL(base string) (err error) {
 	case registry.VersionHL8684:
 		ptr := *(*unsafe.Pointer)(unsafe.Add(reg.HostNoclipF.Ptr(), 31))
 		ptr = unsafe.Add(ptr, -0x14)
-		engine.Engine.SetGlobalVariables(ptr)
+		Model.S().SetGlobalVariables(ptr)
 		logs.DLLLog.Debugf("Set GlobalVariables address: %x", ptr)
 	case registry.VersionHL4554:
 		ptr := *(*unsafe.Pointer)(unsafe.Add(reg.HostNoclipF.Ptr(), 28))
 		ptr = unsafe.Add(ptr, -0x14)
-		engine.Engine.SetGlobalVariables(ptr)
+		Model.S().SetGlobalVariables(ptr)
 		logs.DLLLog.Debugf("Set GlobalVariables address: %x", ptr)
 	case registry.VersionHLNGHL:
 		ptr := *(*unsafe.Pointer)(unsafe.Add(reg.HostNoclipF.Ptr(), 27))
 		ptr = unsafe.Add(ptr, -0x14)
-		engine.Engine.SetGlobalVariables(ptr)
+		Model.S().SetGlobalVariables(ptr)
 		logs.DLLLog.Debugf("Set GlobalVariables address: %x", ptr)
 	}
 
@@ -82,6 +81,6 @@ func initGlobalSV() {
 	ptr := Model.API().WriteDestParm(0)
 	// Offset to get the address of sv
 	ptr = unsafe.Add(ptr, -0x3bc68)
-	engine.Engine.SetSV(ptr)
+	Model.S().SetSV(ptr)
 	logs.DLLLog.Debugf("Set SV address: %x", ptr)
 }

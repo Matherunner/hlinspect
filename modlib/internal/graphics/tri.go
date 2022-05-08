@@ -3,8 +3,8 @@ package graphics
 import (
 	"hlinspect/internal/cmd"
 	"hlinspect/internal/cvar"
-	"hlinspect/internal/engine"
 	"hlinspect/internal/game"
+	"hlinspect/internal/game/engine"
 	"strings"
 )
 
@@ -73,14 +73,14 @@ func drawScriptedSequences() {
 	game.Model.API().TriGLCullFace(game.TriNone)
 	game.Model.API().TriGLRenderMode(game.KRenderTransAdd)
 
-	numEdicts := engine.Engine.SV.NumEdicts()
+	numEdicts := game.Model.S().SV.NumEdicts()
 	for i := 0; i < numEdicts; i++ {
-		edict := engine.Engine.SV.Edict(i)
+		edict := game.Model.S().SV.Edict(i)
 		if edict.Free() {
 			continue
 		}
 
-		className := engine.Engine.GlobalVariables.String(edict.EntVars().Classname())
+		className := game.Model.S().GlobalVariables.String(edict.EntVars().Classname())
 		if className == "scripted_sequence" {
 			cine := engine.MakeCine(edict.PrivateData())
 			interruptible := cine.Interruptible()
@@ -105,14 +105,14 @@ func drawScriptedSequencesPossessions() {
 	game.Model.API().TriGLCullFace(game.TriNone)
 	game.Model.API().TriGLRenderMode(game.KRenderTransAdd)
 
-	numEdicts := engine.Engine.SV.NumEdicts()
+	numEdicts := game.Model.S().SV.NumEdicts()
 	for i := 0; i < numEdicts; i++ {
-		edict := engine.Engine.SV.Edict(i)
+		edict := game.Model.S().SV.Edict(i)
 		if edict.Free() {
 			continue
 		}
 
-		className := engine.Engine.GlobalVariables.String(edict.EntVars().Classname())
+		className := game.Model.S().GlobalVariables.String(edict.EntVars().Classname())
 		if className == "monster_human_torch_ally" || className == "monster_scientist" {
 			monster := engine.MakeMonster(edict.PrivateData())
 			cine := monster.Cine()
@@ -134,14 +134,14 @@ func drawMonsterRoutes() {
 	game.Model.API().TriGLCullFace(game.TriNone)
 	game.Model.API().TriGLRenderMode(game.KRenderTransAdd)
 
-	numEdicts := engine.Engine.SV.NumEdicts()
+	numEdicts := game.Model.S().SV.NumEdicts()
 	for i := 0; i < numEdicts; i++ {
-		edict := engine.Engine.SV.Edict(i)
+		edict := game.Model.S().SV.Edict(i)
 		if edict.Free() {
 			continue
 		}
 
-		className := engine.Engine.GlobalVariables.String(edict.EntVars().Classname())
+		className := game.Model.S().GlobalVariables.String(edict.EntVars().Classname())
 		if strings.HasPrefix(className, "monster_") {
 			if edict.PrivateData() == nil {
 				continue
@@ -173,16 +173,16 @@ func drawBoundingBoxes() {
 	game.Model.API().TriGLCullFace(game.TriNone)
 	game.Model.API().TriGLRenderMode(game.KRenderTransAdd)
 
-	numEdicts := engine.Engine.SV.NumEdicts()
+	numEdicts := game.Model.S().SV.NumEdicts()
 	for i := 0; i < numEdicts; i++ {
-		edict := engine.Engine.SV.Edict(i)
+		edict := game.Model.S().SV.Edict(i)
 		if edict.Free() {
 			continue
 		}
 
 		// Mins and Maxs are more accurate than AbsMin and AbsMax, see alien grunt's bbox
 		entVars := edict.EntVars()
-		className := engine.Engine.GlobalVariables.String(entVars.Classname())
+		className := game.Model.S().GlobalVariables.String(entVars.Classname())
 		if className == "monster_alien_grunt" {
 			origin := entVars.Origin()
 			mins := entVars.Mins()
@@ -202,15 +202,15 @@ func drawSoundLinks() {
 	game.Model.API().TriGLCullFace(game.TriNone)
 	game.Model.API().TriGLRenderMode(game.KRenderTransAdd)
 
-	numEdicts := engine.Engine.SV.NumEdicts()
+	numEdicts := game.Model.S().SV.NumEdicts()
 	for i := 0; i < numEdicts; i++ {
-		edict := engine.Engine.SV.Edict(i)
+		edict := game.Model.S().SV.Edict(i)
 		if edict.Free() {
 			continue
 		}
 
 		entVars := edict.EntVars()
-		className := engine.Engine.GlobalVariables.String(entVars.Classname())
+		className := game.Model.S().GlobalVariables.String(entVars.Classname())
 		if strings.HasPrefix(className, "monster_") {
 			origin := entVars.Origin()
 			monster := engine.MakeMonster(edict.PrivateData())
@@ -219,7 +219,7 @@ func drawSoundLinks() {
 			}
 
 			e := game.Model.API().PFCheckClientI(edict.Pointer())
-			if e == 0 || engine.Engine.SV.EntOffset(e) == 0 {
+			if e == 0 || game.Model.S().SV.EntOffset(e) == 0 {
 				// Not in PVS
 				if monster.MonsterState() != engine.MonsterStateCombat {
 					// If this condition is true, then Listen is not called in the game
@@ -246,15 +246,15 @@ func drawInfoBigMomma() {
 	game.Model.API().TriGLCullFace(game.TriNone)
 	game.Model.API().TriGLRenderMode(game.KRenderTransAdd)
 
-	numEdicts := engine.Engine.SV.NumEdicts()
+	numEdicts := game.Model.S().SV.NumEdicts()
 	for i := 0; i < numEdicts; i++ {
-		edict := engine.Engine.SV.Edict(i)
+		edict := game.Model.S().SV.Edict(i)
 		if edict.Free() {
 			continue
 		}
 
 		entVars := edict.EntVars()
-		className := engine.Engine.GlobalVariables.String(entVars.Classname())
+		className := game.Model.S().GlobalVariables.String(entVars.Classname())
 		if strings.HasPrefix(className, "info_bigmomma") {
 			origin := entVars.Origin()
 			drawPyramid(origin, 50, 100)
