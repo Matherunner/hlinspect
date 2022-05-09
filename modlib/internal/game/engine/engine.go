@@ -12,18 +12,11 @@ func (globals GlobalVariables) Time() float32 {
 	return *(*float32)(globals.ptr)
 }
 
-func (globals GlobalVariables) StringBase() unsafe.Pointer {
-	return *(*unsafe.Pointer)(unsafe.Add(globals.ptr, 0x98))
-}
-
-func (globals GlobalVariables) String(offset uint32) string {
-	return C.GoString((*C.char)(unsafe.Add(globals.StringBase(), offset)))
-}
-
 // State interface to the game engine
 type State struct {
 	SV              SV
 	GlobalVariables GlobalVariables
+	prStrings       unsafe.Pointer
 	ppmove          unsafe.Pointer
 	svPlayer        Edict
 }
@@ -39,6 +32,11 @@ func (eng *State) SetGlobalVariables(pointer unsafe.Pointer) {
 // SetSV sets the address of sv
 func (eng *State) SetSV(pointer unsafe.Pointer) {
 	eng.SV.ptr = pointer
+}
+
+// SetPRStrings sets the address of pr_strings
+func (eng *State) SetPRStrings(ptr unsafe.Pointer) {
+	eng.prStrings = ptr
 }
 
 // SetPPMove sets the address of ppmove

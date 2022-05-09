@@ -80,7 +80,7 @@ func drawScriptedSequences() {
 			continue
 		}
 
-		className := game.Model.S().GlobalVariables.String(edict.EntVars().Classname())
+		className := game.Model.API().SzFromIndex(edict.EntVars().Classname())
 		if className == "scripted_sequence" {
 			cine := engine.MakeCine(edict.PrivateData())
 			interruptible := cine.Interruptible()
@@ -112,7 +112,7 @@ func drawScriptedSequencesPossessions() {
 			continue
 		}
 
-		className := game.Model.S().GlobalVariables.String(edict.EntVars().Classname())
+		className := game.Model.API().SzFromIndex(edict.EntVars().Classname())
 		if className == "monster_human_torch_ally" || className == "monster_scientist" {
 			monster := engine.MakeMonster(edict.PrivateData())
 			cine := monster.Cine()
@@ -141,7 +141,7 @@ func drawMonsterRoutes() {
 			continue
 		}
 
-		className := game.Model.S().GlobalVariables.String(edict.EntVars().Classname())
+		className := game.Model.API().SzFromIndex(edict.EntVars().Classname())
 		if strings.HasPrefix(className, "monster_") {
 			if edict.PrivateData() == nil {
 				continue
@@ -182,7 +182,7 @@ func drawBoundingBoxes() {
 
 		// Mins and Maxs are more accurate than AbsMin and AbsMax, see alien grunt's bbox
 		entVars := edict.EntVars()
-		className := game.Model.S().GlobalVariables.String(entVars.Classname())
+		className := game.Model.API().SzFromIndex(entVars.Classname())
 		if className == "monster_alien_grunt" {
 			origin := entVars.Origin()
 			mins := entVars.Mins()
@@ -210,7 +210,7 @@ func drawSoundLinks() {
 		}
 
 		entVars := edict.EntVars()
-		className := game.Model.S().GlobalVariables.String(entVars.Classname())
+		className := game.Model.API().SzFromIndex(entVars.Classname())
 		if strings.HasPrefix(className, "monster_") {
 			origin := entVars.Origin()
 			monster := engine.MakeMonster(edict.PrivateData())
@@ -254,7 +254,7 @@ func drawInfoBigMomma() {
 		}
 
 		entVars := edict.EntVars()
-		className := game.Model.S().GlobalVariables.String(entVars.Classname())
+		className := game.Model.API().SzFromIndex(entVars.Classname())
 		if strings.HasPrefix(className, "info_bigmomma") {
 			origin := entVars.Origin()
 			drawPyramid(origin, 50, 100)

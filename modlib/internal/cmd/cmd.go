@@ -61,7 +61,7 @@ var CommandHandlerByName = map[string]func(){
 			}
 
 			entVars := edict.EntVars()
-			className := game.Model.S().GlobalVariables.String(entVars.Classname())
+			className := game.Model.API().SzFromIndex(entVars.Classname())
 			if className != "scripted_sequence" {
 				continue
 			}

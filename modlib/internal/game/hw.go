@@ -49,6 +49,7 @@ func initHWDLL(base string) (err error) {
 		&reg.CbufInsertText:             nil,
 		&reg.WriteDestParm:              nil,
 		&reg.SVExecuteClientMessage:     cdefs.CDefs.HookedSVExecuteClientMessage,
+		&reg.SzFromIndex:                nil,
 	}
 
 	errors := hooks.BatchFind(hwDLL, items)

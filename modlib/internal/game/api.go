@@ -192,3 +192,8 @@ func (api *API) WriteDestParm(dest int) unsafe.Pointer {
 func (api *API) SVExecuteClientMessage(cl unsafe.Pointer) {
 	hooks.CallFuncInts1(api.r.SVExecuteClientMessage.Ptr(), uintptr(cl))
 }
+
+func (api *API) SzFromIndex(index uint) string {
+	s := hooks.CallFuncInts1RetPtr(api.r.SzFromIndex.Ptr(), uintptr(index))
+	return C.GoString((*C.char)(s))
+}

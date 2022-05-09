@@ -47,7 +47,7 @@ func drawEntitiesOverlay() {
 		}
 
 		entVars := edict.EntVars()
-		if !strings.HasPrefix(game.Model.S().GlobalVariables.String(entVars.Classname()), "monster_") {
+		if !strings.HasPrefix(game.Model.API().SzFromIndex(entVars.Classname()), "monster_") {
 			continue
 		}
 

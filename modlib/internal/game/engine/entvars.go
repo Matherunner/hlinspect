@@ -69,13 +69,13 @@ func (entvars EntVars) Flags() int {
 }
 
 // Classname returns entvars_t::classname
-func (entvars EntVars) Classname() uint32 {
-	return *(*uint32)(unsafe.Add(entvars.ptr, 0x0))
+func (entvars EntVars) Classname() uint {
+	return *(*uint)(unsafe.Add(entvars.ptr, 0x0))
 }
 
 // Targetname returns entvars_t::targetname
-func (entvars EntVars) Targetname() uint32 {
-	return *(*uint32)(unsafe.Add(entvars.ptr, 0x1cc))
+func (entvars EntVars) Targetname() uint {
+	return *(*uint)(unsafe.Add(entvars.ptr, 0x1cc))
 }
 
 // Mins returns entvars_t::mins
