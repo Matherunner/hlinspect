@@ -4,9 +4,9 @@ import (
 	"context"
 	"hlinspect/internal/cmd"
 	"hlinspect/internal/cvar"
-	"hlinspect/internal/engine"
 	"hlinspect/internal/feed"
 	"hlinspect/internal/game"
+	"hlinspect/internal/game/engine"
 	"hlinspect/internal/graphics"
 	"hlinspect/internal/logs"
 	"hlinspect/internal/proto"
@@ -109,28 +109,28 @@ func (h *gameHandler) HUDReset() {
 func (h *gameHandler) PMInit(ppm unsafe.Pointer) {
 	game.Model.API().PMInit(ppm)
 
-	engine.Engine.SetPPMove(ppm)
+	game.Model.S().SetPPMove(ppm)
 	logs.DLLLog.Debugf("Set PPMOVE with address = %x", ppm)
 }
 
 func (h *gameHandler) PMPlayerMove(server int) {
 	binary, err := proto.Serialize(&proto.PMove{
 		Stage:        proto.PMoveStagePre,
-		Velocity:     engine.Engine.PMoveVelocity(),
-		Position:     engine.Engine.PMovePosition(),
-		Viewangles:   engine.Engine.PMoveViewangles(),
-		Basevelocity: engine.Engine.PMoveBasevelocity(),
-		FSU:          engine.Engine.PMoveCmdFSU(),
-		Punchangles:  engine.Engine.PMovePunchangles(),
-		EntFriction:  engine.Engine.PMoveEntFriction(),
-		EntGravity:   engine.Engine.PMoveEntGravity(),
-		FrameTime:    engine.Engine.PMoveFrameTime(),
-		Buttons:      engine.Engine.PMoveCmdButtons(),
-		Onground:     engine.Engine.PMoveOnground(),
-		Flags:        engine.Engine.PMoveFlags(),
-		Waterlevel:   engine.Engine.PMoveWaterlevel(),
-		InDuck:       engine.Engine.PMoveInDuck(),
-		Impulse:      engine.Engine.PMoveImpulse(),
+		Velocity:     game.Model.S().PMoveVelocity(),
+		Position:     game.Model.S().PMovePosition(),
+		Viewangles:   game.Model.S().PMoveViewangles(),
+		Basevelocity: game.Model.S().PMoveBasevelocity(),
+		FSU:          game.Model.S().PMoveCmdFSU(),
+		Punchangles:  game.Model.S().PMovePunchangles(),
+		EntFriction:  game.Model.S().PMoveEntFriction(),
+		EntGravity:   game.Model.S().PMoveEntGravity(),
+		FrameTime:    game.Model.S().PMoveFrameTime(),
+		Buttons:      game.Model.S().PMoveCmdButtons(),
+		Onground:     game.Model.S().PMoveOnground(),
+		Flags:        game.Model.S().PMoveFlags(),
+		Waterlevel:   game.Model.S().PMoveWaterlevel(),
+		InDuck:       game.Model.S().PMoveInDuck(),
+		Impulse:      game.Model.S().PMoveImpulse(),
 	})
 	if err == nil {
 		feed.Broadcast(binary)
@@ -157,4 +157,21 @@ func (h *gameHandler) CLCreateMove(frameTime float32, usercmd unsafe.Pointer, ac
 	}
 
 	game.Model.API().CLCreateMove(frameTime, usercmd, active)
+}
+
+func (h *gameHandler) SVExecuteClientMessage(cl unsafe.Pointer) {
+	game.Model.API().SVExecuteClientMessage(cl)
+
+	// TODO: this offset is different on Linux, and may vary by engine version?
+
+	// Offset client_t to get client_t::edict:
+	//   MOV        EAX,dword ptr [ESI + 0x4b9c]
+	ptr := *(*unsafe.Pointer)(unsafe.Add(cl, 0x4b9c))
+
+	player := game.Model.S().SVPlayer()
+	if player.Ptr() == nil {
+		game.Model.S().SetSVPlayer(ptr)
+	} else if player.Ptr() != ptr {
+		logs.DLLLog.Fatalf("multiple players not supported")
+	}
 }

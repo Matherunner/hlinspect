@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"hlinspect/internal/engine"
 	"hlinspect/internal/game"
+	"hlinspect/internal/game/engine"
 	"math"
 	"unsafe"
 )
@@ -16,10 +16,10 @@ var CommandHandlerByName = map[string]func(){
 	"hli_npc_track_add": func() {
 		// TODO: uncomment this
 
-		position := engine.Engine.PMovePosition()
+		position := game.Model.S().PMovePosition()
 		position[2] += 28
 
-		viewangles := engine.Engine.PMoveViewangles()
+		viewangles := game.Model.S().PMoveViewangles()
 
 		forward, _, _ := game.Model.API().AngleVectors(viewangles)
 		endPos := [3]float32{}
@@ -31,7 +31,7 @@ var CommandHandlerByName = map[string]func(){
 
 		result := game.Model.API().TraceLine(position, endPos, game.TraceDontIgnoreMonsters, nil)
 		edict := engine.MakeEdict(result.Hit)
-		if edict.Pointer() == nil || edict.Free() || edict.PrivateData() == nil {
+		if edict.Ptr() == nil || edict.Free() || edict.PrivateData() == nil {
 			return
 		}
 
@@ -50,18 +50,18 @@ var CommandHandlerByName = map[string]func(){
 
 	},
 	"hli_cine_radius_nearest_add": func() {
-		position := engine.Engine.PMovePosition()
+		position := game.Model.S().PMovePosition()
 		minDistance := math.MaxFloat64
 		var minEnt unsafe.Pointer
-		numEdicts := engine.Engine.SV.NumEdicts()
+		numEdicts := game.Model.S().SV().NumEdicts()
 		for i := 0; i < numEdicts; i++ {
-			edict := engine.Engine.SV.Edict(i)
+			edict := game.Model.S().SV().Edict(i)
 			if edict.Free() {
 				continue
 			}
 
 			entVars := edict.EntVars()
-			className := engine.Engine.GlobalVariables.String(entVars.Classname())
+			className := game.Model.API().SzFromIndex(entVars.Classname())
 			if className != "scripted_sequence" {
 				continue
 			}

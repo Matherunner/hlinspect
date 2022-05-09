@@ -1,8 +1,8 @@
 package game
 
 import (
-	"hlinspect/internal/engine"
 	"hlinspect/internal/game/cdefs"
+	"hlinspect/internal/game/engine"
 	"hlinspect/internal/game/registry"
 	"hlinspect/internal/hooks"
 	"unsafe"
@@ -183,4 +183,17 @@ func (api *API) CbufInsertText(text string) {
 	cs := unsafe.Pointer(C.CString(text))
 	defer C.free(cs)
 	hooks.CallFuncInts1(api.r.CbufInsertText.Ptr(), uintptr(cs))
+}
+
+func (api *API) WriteDestParm(dest int) unsafe.Pointer {
+	return hooks.CallFuncInts1RetPtr(api.r.WriteDestParm.Ptr(), uintptr(dest))
+}
+
+func (api *API) SVExecuteClientMessage(cl unsafe.Pointer) {
+	hooks.CallFuncInts1(api.r.SVExecuteClientMessage.Ptr(), uintptr(cl))
+}
+
+func (api *API) SzFromIndex(index uint) string {
+	s := hooks.CallFuncInts1RetPtr(api.r.SzFromIndex.Ptr(), uintptr(index))
+	return C.GoString((*C.char)(s))
 }

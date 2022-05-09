@@ -314,6 +314,18 @@
                 "HL-8684": "55 8B EC 51 A1 ?? ?? ?? ?? 53 56 57 83 B8 F8 02 00 00 01 75 63 E8 ?? ?? ?? ?? 68 03 03 00 00 68 02 03 00 00"
             }
         },
+        "SV_ExecuteClientMessage": {
+            "#": "Search for \"SV_ReadClientMessage: badread\"",
+            "dlls": [
+                "hw"
+            ],
+            "names": {
+                "Linux": "SV_ExecuteClientMessage"
+            },
+            "patterns": {
+                "HL-8684": "55 8B EC 8B 0D ?? ?? ?? ?? 56 8B 75 08 C7 05 ?? ?? ?? ?? 00 00 00 00 DD 05 ?? ?? ?? ?? 8B 46 5C"
+            }
+        },
         "ScreenTransform": {
             "#": "",
             "dlls": [
@@ -323,6 +335,18 @@
             "patterns": {
                 "HL-4554": "51 8B 44 24 08 8B 4C 24 0C D9 05 ?? ?? ?? ?? D8 08 D9 05 ?? ?? ?? ?? D8 48 08 DE C1",
                 "HL-8684": "55 8B EC 51 8B 45 08 8B 4D 0C D9 05 ?? ?? ?? ?? D8 08 D9 05 ?? ?? ?? ?? D8 48 08 DE C1"
+            }
+        },
+        "SzFromIndex": {
+            "#": "Search for \"Bad entity in IndexOfEdict\" to find IndexOfEdict, then find the cross reference from a function table. Move 5 entries up in the table to find SzFromIndex.",
+            "dlls": [
+                "hw"
+            ],
+            "names": {
+                "Linux": "SzFromIndex"
+            },
+            "patterns": {
+                "HL-8684": "55 8B EC 8B 45 08 8B 0D ?? ?? ?? ?? 03 C1 5D C3 55 8B EC 8B 45 08 05"
             }
         },
         "VGUI2_Draw_SetTextColorAlpha": {
@@ -366,6 +390,18 @@
             "patterns": {
                 "HL-4554": "83 EC 08 8B 44 24 0C 8B 4C 24 10 D9 05 ?? ?? ?? ?? D8 08 D9 05 ?? ?? ?? ?? D8 48 08",
                 "HL-8684": "55 8B EC 83 EC 08 8B 45 08 8B 4D 0C D9 05 ?? ?? ?? ?? D8 08 D9 05 ?? ?? ?? ?? D8 48"
+            }
+        },
+        "WriteDest_Parm": {
+            "#": "Search for \"WriteDest_Parm: not a client\"",
+            "dlls": [
+                "hw"
+            ],
+            "names": {
+                "Linux": "WriteDest_Parm"
+            },
+            "patterns": {
+                "HL-8684": "55 8B EC 56 57 8B 7D 08 83 FF 09 0F 87 89 00 00 00 FF 24 BD ?? ?? ?? ?? 5F B8 ?? ?? ?? ?? 5E 5D C3 A1 ?? ?? ?? ?? 50"
             }
         },
         "build_number": {

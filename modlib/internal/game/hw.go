@@ -1,7 +1,6 @@
 package game
 
 import (
-	"hlinspect/internal/engine"
 	"hlinspect/internal/game/cdefs"
 	"hlinspect/internal/game/registry"
 	"hlinspect/internal/hooks"
@@ -31,7 +30,6 @@ func initHWDLL(base string) (err error) {
 		&reg.VFadeAlpha:                 cdefs.CDefs.HookedVFadeAlpha,
 		&reg.DrawString:                 nil,
 		&reg.VGUI2DrawSetTextColorAlpha: nil,
-		&reg.HostAutoSaveF:              nil,
 		&reg.HostNoclipF:                nil,
 		&reg.PFTracelineDLL:             nil,
 		&reg.TriGLRenderMode:            nil,
@@ -49,35 +47,42 @@ func initHWDLL(base string) (err error) {
 		&reg.PFCheckClientI:             nil,
 		&reg.AngleVectors:               nil,
 		&reg.CbufInsertText:             nil,
+		&reg.WriteDestParm:              nil,
+		&reg.SVExecuteClientMessage:     cdefs.CDefs.HookedSVExecuteClientMessage,
+		&reg.SzFromIndex:                nil,
 	}
 
 	errors := hooks.BatchFind(hwDLL, items)
 	printBatchFindErrors(errors)
 
-	switch reg.HostAutoSaveF.PatternKey() {
-	case registry.VersionHL8684:
-		ptr := *(*unsafe.Pointer)(unsafe.Add(reg.HostAutoSaveF.Ptr(), 19))
-		engine.Engine.SetSV(ptr)
-		logs.DLLLog.Debugf("Set SV address: %x", ptr)
-	}
+	initGlobalSV()
 
 	switch reg.HostNoclipF.PatternKey() {
 	case registry.VersionHL8684:
 		ptr := *(*unsafe.Pointer)(unsafe.Add(reg.HostNoclipF.Ptr(), 31))
 		ptr = unsafe.Add(ptr, -0x14)
-		engine.Engine.SetGlobalVariables(ptr)
+		Model.S().SetGlobalVariables(ptr)
 		logs.DLLLog.Debugf("Set GlobalVariables address: %x", ptr)
 	case registry.VersionHL4554:
 		ptr := *(*unsafe.Pointer)(unsafe.Add(reg.HostNoclipF.Ptr(), 28))
 		ptr = unsafe.Add(ptr, -0x14)
-		engine.Engine.SetGlobalVariables(ptr)
+		Model.S().SetGlobalVariables(ptr)
 		logs.DLLLog.Debugf("Set GlobalVariables address: %x", ptr)
 	case registry.VersionHLNGHL:
 		ptr := *(*unsafe.Pointer)(unsafe.Add(reg.HostNoclipF.Ptr(), 27))
 		ptr = unsafe.Add(ptr, -0x14)
-		engine.Engine.SetGlobalVariables(ptr)
+		Model.S().SetGlobalVariables(ptr)
 		logs.DLLLog.Debugf("Set GlobalVariables address: %x", ptr)
 	}
 
 	return nil
+}
+
+func initGlobalSV() {
+	// WriteDest_Parm returns the address of sv.datagram if the argument is 0.
+	ptr := Model.API().WriteDestParm(0)
+	// Offset to get the address of sv
+	ptr = unsafe.Add(ptr, -0x3bc68)
+	Model.S().SetSV(ptr)
+	logs.DLLLog.Debugf("Set SV address: %x", ptr)
 }

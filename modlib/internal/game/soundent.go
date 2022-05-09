@@ -3,7 +3,7 @@ package game
 // TODO: should this file really be here? or on a different layer?
 
 import (
-	"hlinspect/internal/engine"
+	"hlinspect/internal/game/engine"
 )
 
 // SoundItem is an internal representation of a sound
