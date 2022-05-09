@@ -15,7 +15,7 @@ func (globals GlobalVariables) Time() float32 {
 // State interface to the game engine
 type State struct {
 	sv              SV
-	GlobalVariables GlobalVariables
+	globalVariables GlobalVariables
 	prStrings       unsafe.Pointer
 	ppmove          unsafe.Pointer
 	svPlayer        Edict
@@ -26,7 +26,7 @@ func NewState() *State {
 }
 
 func (eng *State) SetGlobalVariables(pointer unsafe.Pointer) {
-	eng.GlobalVariables.ptr = pointer
+	eng.globalVariables.ptr = pointer
 }
 
 // SetSV sets the address of sv
