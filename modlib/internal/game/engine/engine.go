@@ -14,7 +14,7 @@ func (globals GlobalVariables) Time() float32 {
 
 // State interface to the game engine
 type State struct {
-	SV              SV
+	sv              SV
 	GlobalVariables GlobalVariables
 	prStrings       unsafe.Pointer
 	ppmove          unsafe.Pointer
@@ -31,7 +31,7 @@ func (eng *State) SetGlobalVariables(pointer unsafe.Pointer) {
 
 // SetSV sets the address of sv
 func (eng *State) SetSV(pointer unsafe.Pointer) {
-	eng.SV.ptr = pointer
+	eng.sv.ptr = pointer
 }
 
 // SetPRStrings sets the address of pr_strings
@@ -52,6 +52,10 @@ func (eng *State) SetSVPlayer(ptr unsafe.Pointer) {
 // SVPlayer returns the sv_player edict
 func (eng *State) SVPlayer() Edict {
 	return eng.svPlayer
+}
+
+func (eng *State) SV() SV {
+	return eng.sv
 }
 
 // PMoveVelocity returns pmove->velocity

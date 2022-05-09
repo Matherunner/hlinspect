@@ -34,9 +34,9 @@ func drawSounds() {
 }
 
 func drawEntitiesOverlay() {
-	numEdicts := game.Model.S().SV.NumEdicts()
+	numEdicts := game.Model.S().SV().NumEdicts()
 	for i := 0; i < numEdicts; i++ {
-		edict := game.Model.S().SV.Edict(i)
+		edict := game.Model.S().SV().Edict(i)
 		if edict.Free() {
 			continue
 		}
@@ -89,7 +89,7 @@ func drawEntitiesOverlay() {
 
 				game.Model.API().VGUI2DrawSetTextColorAlpha(255, 255, 0, 255)
 				e := game.Model.API().PFCheckClientI(edict.Ptr())
-				if e != 0 && game.Model.S().SV.EntOffset(e) != 0 {
+				if e != 0 && game.Model.S().SV().EntOffset(e) != 0 {
 					game.Model.API().DrawString(screen[0], screen[1]+6*int(screenInfo.CharHeight), "In PVS")
 				} else {
 					game.Model.API().DrawString(screen[0], screen[1]+6*int(screenInfo.CharHeight), "Not in PVS")

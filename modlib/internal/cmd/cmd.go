@@ -53,9 +53,9 @@ var CommandHandlerByName = map[string]func(){
 		position := game.Model.S().PMovePosition()
 		minDistance := math.MaxFloat64
 		var minEnt unsafe.Pointer
-		numEdicts := game.Model.S().SV.NumEdicts()
+		numEdicts := game.Model.S().SV().NumEdicts()
 		for i := 0; i < numEdicts; i++ {
-			edict := game.Model.S().SV.Edict(i)
+			edict := game.Model.S().SV().Edict(i)
 			if edict.Free() {
 				continue
 			}

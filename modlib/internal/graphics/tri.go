@@ -73,9 +73,9 @@ func drawScriptedSequences() {
 	game.Model.API().TriGLCullFace(game.TriNone)
 	game.Model.API().TriGLRenderMode(game.KRenderTransAdd)
 
-	numEdicts := game.Model.S().SV.NumEdicts()
+	numEdicts := game.Model.S().SV().NumEdicts()
 	for i := 0; i < numEdicts; i++ {
-		edict := game.Model.S().SV.Edict(i)
+		edict := game.Model.S().SV().Edict(i)
 		if edict.Free() {
 			continue
 		}
@@ -105,9 +105,9 @@ func drawScriptedSequencesPossessions() {
 	game.Model.API().TriGLCullFace(game.TriNone)
 	game.Model.API().TriGLRenderMode(game.KRenderTransAdd)
 
-	numEdicts := game.Model.S().SV.NumEdicts()
+	numEdicts := game.Model.S().SV().NumEdicts()
 	for i := 0; i < numEdicts; i++ {
-		edict := game.Model.S().SV.Edict(i)
+		edict := game.Model.S().SV().Edict(i)
 		if edict.Free() {
 			continue
 		}
@@ -134,9 +134,9 @@ func drawMonsterRoutes() {
 	game.Model.API().TriGLCullFace(game.TriNone)
 	game.Model.API().TriGLRenderMode(game.KRenderTransAdd)
 
-	numEdicts := game.Model.S().SV.NumEdicts()
+	numEdicts := game.Model.S().SV().NumEdicts()
 	for i := 0; i < numEdicts; i++ {
-		edict := game.Model.S().SV.Edict(i)
+		edict := game.Model.S().SV().Edict(i)
 		if edict.Free() {
 			continue
 		}
@@ -173,9 +173,9 @@ func drawBoundingBoxes() {
 	game.Model.API().TriGLCullFace(game.TriNone)
 	game.Model.API().TriGLRenderMode(game.KRenderTransAdd)
 
-	numEdicts := game.Model.S().SV.NumEdicts()
+	numEdicts := game.Model.S().SV().NumEdicts()
 	for i := 0; i < numEdicts; i++ {
-		edict := game.Model.S().SV.Edict(i)
+		edict := game.Model.S().SV().Edict(i)
 		if edict.Free() {
 			continue
 		}
@@ -202,9 +202,9 @@ func drawSoundLinks() {
 	game.Model.API().TriGLCullFace(game.TriNone)
 	game.Model.API().TriGLRenderMode(game.KRenderTransAdd)
 
-	numEdicts := game.Model.S().SV.NumEdicts()
+	numEdicts := game.Model.S().SV().NumEdicts()
 	for i := 0; i < numEdicts; i++ {
-		edict := game.Model.S().SV.Edict(i)
+		edict := game.Model.S().SV().Edict(i)
 		if edict.Free() {
 			continue
 		}
@@ -219,7 +219,7 @@ func drawSoundLinks() {
 			}
 
 			e := game.Model.API().PFCheckClientI(edict.Ptr())
-			if e == 0 || game.Model.S().SV.EntOffset(e) == 0 {
+			if e == 0 || game.Model.S().SV().EntOffset(e) == 0 {
 				// Not in PVS
 				if monster.MonsterState() != engine.MonsterStateCombat {
 					// If this condition is true, then Listen is not called in the game
@@ -246,9 +246,9 @@ func drawInfoBigMomma() {
 	game.Model.API().TriGLCullFace(game.TriNone)
 	game.Model.API().TriGLRenderMode(game.KRenderTransAdd)
 
-	numEdicts := game.Model.S().SV.NumEdicts()
+	numEdicts := game.Model.S().SV().NumEdicts()
 	for i := 0; i < numEdicts; i++ {
-		edict := game.Model.S().SV.Edict(i)
+		edict := game.Model.S().SV().Edict(i)
 		if edict.Free() {
 			continue
 		}
