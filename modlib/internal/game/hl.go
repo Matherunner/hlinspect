@@ -75,6 +75,7 @@ func initHLDLL(base string) (err error) {
 		engine.MonsterOffsets.WaitFinished = 0x150
 		engine.CineOffsets.Radius = 0x350
 		engine.CineOffsets.Interruptible = 0x36c
+		engine.GraphConsts.CNodeSize = 0x60
 	case registry.VersionGunman:
 		engine.MonsterOffsets.MonsterState = 0x140
 		engine.MonsterOffsets.Schedule = 0x14c
