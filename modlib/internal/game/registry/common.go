@@ -2,6 +2,7 @@ package registry
 
 const (
 	VersionHL8684     = "HL-8684"
+	VersionHL6153     = "HL-6153"
 	VersionHL4554     = "HL-4554"
 	VersionHLNGHL     = "HL-NGHL"
 	VersionHLWON      = "HL-WON"
