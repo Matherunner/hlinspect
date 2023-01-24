@@ -7,10 +7,12 @@ const (
 	VersionHLWON      = "HL-WON"
 	VersionBigLolly   = "BigLolly"
 	VersionTWHLTower2 = "TWHL-Tower-2"
-	VersionOF8684     = "OpFor-8684"
-	VersionOFWON      = "OpFor-WON"
+	VersionOF8684     = "OF-8684"
+	VersionOF6153     = "OF-6153"
+	VersionOFWON      = "OF-WON"
+	VersionCSCZDS8684 = "CSCZDS8684"
 	VersionCSCZDS     = "CSCZDS"
 	VersionGunman     = "Gunman"
-
-	VersionWindowsHLDLL = "Windows-HL-DLL"
+	VersionCryOfFear11 = "CryOfFear11"
+	VersionCryOfFear14 = "CryOfFear14"
 )

@@ -70,6 +70,7 @@ type API struct {
 	CBaseMonsterChangeSchedule    hooks.FunctionPattern `patname:"CBaseMonster::ChangeSchedule"`
 	CBaseMonsterPBestSound        hooks.FunctionPattern `patname:"CBaseMonster::PBestSound"`
 	CBaseMonsterRouteNew          hooks.FunctionPattern `patname:"CBaseMonster::RouteNew"`
+	CBasePlayerForceClientDllUpdate hooks.FunctionPattern `patname:"CBasePlayer::ForceClientDllUpdate"`
 	CGraphInitGraph               hooks.FunctionPattern `patname:"CGraph::InitGraph"`
 	CSoundEntActiveList           hooks.FunctionPattern `patname:"CSoundEnt::ActiveList"`
 	CSoundEntSoundPointerForIndex hooks.FunctionPattern `patname:"CSoundEnt::SoundPointerForIndex"`
