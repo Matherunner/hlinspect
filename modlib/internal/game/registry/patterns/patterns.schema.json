@@ -6,17 +6,20 @@
     "$defs": {
         "patternKeys": {
             "enum": [
-                "BigLolly",
+                "HL-WON",
+                "HL-NGHL",
+                "HL-4554",
+                "HL-6153",
+                "HL-8684",
+                "OF-WON",
+                "OF-6153",
+                "OF-8684",
                 "CSCZDS",
                 "Gunman",
-                "HL-4554",
-                "HL-8183",
-                "HL-8684",
-                "HL-NGHL",
-                "HL-WON",
-                "OF-8684",
-                "OF-WON",
-                "TWHL-Tower-2"
+                "CryOfFear11",
+                "CryOfFear14",
+                "TWHL-Tower-2",
+                "BigLolly"
             ]
         },
         "symbolKeys": {

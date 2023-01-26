@@ -67,15 +67,16 @@ type API struct {
 	HUDVidInit                  hooks.FunctionPattern `patname:"HUD_VidInit"`
 
 	// HL
-	CBaseMonsterChangeSchedule    hooks.FunctionPattern `patname:"CBaseMonster::ChangeSchedule"`
-	CBaseMonsterPBestSound        hooks.FunctionPattern `patname:"CBaseMonster::PBestSound"`
-	CBaseMonsterRouteNew          hooks.FunctionPattern `patname:"CBaseMonster::RouteNew"`
-	CGraphInitGraph               hooks.FunctionPattern `patname:"CGraph::InitGraph"`
-	CSoundEntActiveList           hooks.FunctionPattern `patname:"CSoundEnt::ActiveList"`
-	CSoundEntSoundPointerForIndex hooks.FunctionPattern `patname:"CSoundEnt::SoundPointerForIndex"`
-	PMInit                        hooks.FunctionPattern `patname:"PM_Init"`
-	PMPlayerMove                  hooks.FunctionPattern `patname:"PM_PlayerMove"`
-	WorldGraph                    hooks.FunctionPattern `patname:"WorldGraph"`
+	CBaseMonsterChangeSchedule      hooks.FunctionPattern `patname:"CBaseMonster::ChangeSchedule"`
+	CBaseMonsterPBestSound          hooks.FunctionPattern `patname:"CBaseMonster::PBestSound"`
+	CBaseMonsterRouteNew            hooks.FunctionPattern `patname:"CBaseMonster::RouteNew"`
+	CBasePlayerForceClientDllUpdate hooks.FunctionPattern `patname:"CBasePlayer::ForceClientDllUpdate"`
+	CGraphInitGraph                 hooks.FunctionPattern `patname:"CGraph::InitGraph"`
+	CSoundEntActiveList             hooks.FunctionPattern `patname:"CSoundEnt::ActiveList"`
+	CSoundEntSoundPointerForIndex   hooks.FunctionPattern `patname:"CSoundEnt::SoundPointerForIndex"`
+	PMInit                          hooks.FunctionPattern `patname:"PM_Init"`
+	PMPlayerMove                    hooks.FunctionPattern `patname:"PM_PlayerMove"`
+	WorldGraph                      hooks.FunctionPattern `patname:"WorldGraph"`
 }
 
 func NewAPI() (*API, error) {

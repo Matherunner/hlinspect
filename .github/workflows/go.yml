@@ -6,10 +6,12 @@ on:
   pull_request:
     branches: [ master ]
   workflow_dispatch:
+  schedule:
+    - cron: '0 0 1 * *' # Monthly
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     defaults:
       run:
@@ -32,6 +34,7 @@ jobs:
       uses: arduino/setup-protoc@v1
       with:
         version: '3.x'
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install protoc-gen-go
       run: go install google.golang.org/protobuf/cmd/protoc-gen-go
@@ -40,7 +43,7 @@ jobs:
       run: sudo apt install capnproto
 
     - name: Install go-capnproto2
-      run: go install capnproto.org/go/capnp/v3/capnpc-go@latest
+      run: go install capnproto.org/go/capnp/v3/capnpc-go
 
     - name: Put GOBIN in PATH
       run: printf "$(go env GOPATH)/bin\n" >> $GITHUB_PATH
